@@ -1,2 +1,2 @@
 # es
-"emacs settings"
+"emacs settings" for David J.
