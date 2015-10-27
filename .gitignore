@@ -1,0 +1,6 @@
+.cask/
+auto-save-list/
+emacs-init.el
+*.~undo-tree~
+
+/ac-comphist.dat
