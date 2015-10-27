@@ -241,10 +241,8 @@
      (add-hook 'dired-mode-hook 'helm-gtags-mode)
      (add-hook 'eshell-mode-hook 'helm-gtags-mode)
      (add-hook 'c-mode-common-hook 'my-helm-gtags-mode-hook)
-     (add-hook 'c-mode-hook 'helm-gtags-mode)
-     (add-hook 'c++-mode-hook 'helm-gtags-mode)
-     (add-hook 'asm-mode-hook 'helm-gtags-mode)
-     (add-hook 'java-mode-hook 'helm-gtags-mode)
+     (add-hook 'c-mode-hook 'my-helm-gtags-mode-hook)
+     (add-hook 'c++-mode-hook 'my-helm-gtags-mode-hook)
      #+END_SRC
 
 ** =popwin=
@@ -396,12 +394,12 @@
    #+END_SRC
 
 ** Line Numbers
-   #+BEGIN_SRC emacs-lisp
-     (req-package linum
-       :config
-       (add-hook 'prog-mode-hook
-                 '(lambda () (linum-mode 1))))   
-   #+END_SRC
+;   #+BEGIN_SRC emacs-lisp
+;     (req-package linum
+;       :config
+;       (add-hook 'prog-mode-hook
+;                 '(lambda () (linum-mode 1))))   
+;   #+END_SRC
 
 *** Relative Line Numbers
     I was a little spoiled by this feature in Vim, and not having it
@@ -471,16 +469,16 @@
    #+BEGIN_SRC emacs-lisp
      (req-package ggtags
        :config
-       (add-hook 'prog-mode-hook
-                 (lambda ()
-                   (when (derived-mode-p
-                          'c-mode
-                          'c++-mode
-                          'python-mode
-                          'java-mode
-                          'asm-mode)
-                     (progn
-                       (ggtags-mode)))))
+;       (add-hook 'prog-mode-hook
+;                 (lambda ()
+;                   (when (derived-mode-p
+;                          'c-mode
+;                          'c++-mode
+;                          'python-mode
+;                          'java-mode
+;                          'asm-mode)
+;                     (progn
+;                       (ggtags-mode)))))
        (define-key ggtags-mode-map (kbd "C-c g u") 'ggtags-update-tags))
    #+END_SRC
 
@@ -585,15 +583,15 @@
    get away with just including the former here, but just in case we
    want a bit more control or we decide that =drupal-mode= isn't worth
    it, we'll make separate =req-package= blocks.
-   #+BEGIN_SRC emacs-lisp
-     (req-package php-mode
-       :init (setq php-template-compatibility nil))
-
-     (req-package web-mode)
-
-     (req-package drupal-mode
-       :require (php-mode ggtags))
-   #+END_SRC
+;   #+BEGIN_SRC emacs-lisp
+;     (req-package php-mode
+;       :init (setq php-template-compatibility nil))
+;
+;     (req-package web-mode)
+;
+;     (req-package drupal-mode
+;       :require (php-mode ggtags))
+;   #+END_SRC
 
 ** Javascript
    #+BEGIN_SRC emacs-lisp
@@ -1068,6 +1066,10 @@
        "Switch to my notes dir."
        (interactive)
        (find-file "~/Notes"))
+   #+END_SRC
+** hook adjustment
+   #+BEGIN_SRC emacs-lisp
+     (setq dired-mode-hook (remove 'drupal-mode-bootstrap dired-mode-hook))
    #+END_SRC
 ** Last History
    #+BEGIN_SRC emacs-lisp
