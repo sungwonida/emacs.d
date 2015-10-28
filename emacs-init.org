@@ -213,7 +213,9 @@
    #+BEGIN_SRC emacs-lisp
      (req-package helm
        :config
-       (helm-mode 1))
+       (helm-mode 1)
+       (global-set-key (kbd "C-c h") 'helm-command-prefix)
+       (global-unset-key (kbd "C-x c")))
      (req-package helm-config
        :require popwin
        :diminish (helm-mode . "")
