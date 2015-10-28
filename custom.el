@@ -7,6 +7,13 @@
  '(TeX-PDF-mode t)
  '(bmkp-last-as-first-bookmark-file "~/.emacs.d/bookmarks")
  '(c-basic-offset 4)
+ '(c-default-style
+   (quote
+    ((c-mode . "k&r")
+     (c++-mode . "k&r")
+     (java-mode . "java")
+     (awk-mode . "awk")
+     (other . "gnu"))))
  '(cua-enable-cua-keys nil)
  '(cua-mode t nil (cua-base))
  '(custom-raised-buttons t)
