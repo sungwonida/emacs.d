@@ -5,16 +5,14 @@
  ;; If there is more than one, they won't work right.
  '(LaTeX-command "latex -shell-escape")
  '(TeX-PDF-mode t)
+ '(bmkp-last-as-first-bookmark-file "~/.emacs.d/bookmarks")
+ '(c-basic-offset 4)
+ '(cua-enable-cua-keys nil)
+ '(cua-mode t nil (cua-base))
  '(custom-raised-buttons t)
  '(custom-safe-themes
    (quote
-    ("a27c00821ccfd5a78b01e4f35dc056706dd9ede09a8b90c6955ae6a390eb1c1e" default)))
- '(undo-tree-history-directory-alist (quote (("." . "~/.emacs.d/undofiles"))))
- '(bmkp-last-as-first-bookmark-file "~/.emacs.d/bookmarks")
- '(c-basic-offset 4)
-; '(c-default-style "k&r")
- '(cua-enable-cua-keys nil)
- '(cua-mode t nil (cua-base))
+    ("3c83b3676d796422704082049fc38b6966bcad960f896669dfc21a7a37a748fa" "a27c00821ccfd5a78b01e4f35dc056706dd9ede09a8b90c6955ae6a390eb1c1e" default)))
  '(default-frame-alist (quote ((menu-bar-lines . 1))))
  '(display-time-day-and-date t)
  '(display-time-mode t)
@@ -39,7 +37,6 @@
  '(indent-tabs-mode nil)
  '(large-file-warning-threshold 10000000)
  '(make-backup-files nil)
-; '(package-user-dir "~/.emacs.d/packages")
  '(php-completion-file "~/.emacs.d/php-completion-file")
  '(recentf-mode t)
  '(safe-local-variable-values (quote ((dired-omit-mode . t))))
@@ -55,6 +52,7 @@
  '(text-mode-hook (quote (text-mode-hook-identify)))
  '(tool-bar-mode nil)
  '(transient-mark-mode t)
+ '(undo-tree-history-directory-alist (quote (("." . "~/.emacs.d/undofiles"))))
  '(uniquify-buffer-name-style (quote forward) nil (uniquify)))
 
 (custom-set-faces
