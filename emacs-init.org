@@ -239,7 +239,8 @@
        (define-key helm-gtags-mode-map (kbd "M-.") 'helm-gtags-dwim)
        (define-key helm-gtags-mode-map (kbd "M-,") 'helm-gtags-find-rtag) ;helm-gtags-pop-stack
        (define-key helm-gtags-mode-map (kbd "C-c C-,") 'helm-gtags-previous-history)
-       (define-key helm-gtags-mode-map (kbd "C-c C-.") 'helm-gtags-next-history))
+       (define-key helm-gtags-mode-map (kbd "C-c C-.") 'helm-gtags-next-history)
+       (define-key helm-gtags-mode-map (kbd "C-c g u") 'helm-gtags-update-tags))
      (add-hook 'dired-mode-hook 'helm-gtags-mode)
      (add-hook 'eshell-mode-hook 'helm-gtags-mode)
      (add-hook 'c-mode-common-hook 'my-helm-mode-hook)
@@ -247,7 +248,7 @@
      (add-hook 'c++-mode-hook 'my-helm-mode-hook)
      (global-set-key (kbd "C-c h") 'helm-command-prefix)
      (global-unset-key (kbd "C-x c"))
-     #+END_SRC
+   #+END_SRC
 
 ** =popwin=
    The one annoying thing about =helm= is that the window it opens to show
@@ -470,21 +471,23 @@
    #+END_SRC
 
 ** Tags
-   #+BEGIN_SRC emacs-lisp
-     (req-package ggtags
-       :config
-       (add-hook 'prog-mode-hook
-                 (lambda ()
-                   (when (derived-mode-p
-                          'c-mode
-                          'c++-mode
-                          'python-mode
-                          'java-mode
-                          'asm-mode)
-                     (progn
-                       (ggtags-mode)))))
-       (define-key ggtags-mode-map (kbd "C-c g u") 'ggtags-update-tags))
-   #+END_SRC
+;   #+BEGIN_SRC emacs-lisp
+;     (req-package ggtags
+;       :config
+;       (add-hook 'prog-mode-hook
+;                 (lambda ()
+;                   (when (derived-mode-p
+;                          'c-mode
+;                          'c++-mode
+;                          'python-mode
+;                          'java-mode
+;                          'asm-mode)
+;                     (progn
+;                       (ggtags-mode)))))
+;       (eval-after-load "ggtags"
+;         '(progn
+;            (define-key ggtags-mode-map (kbd "C-c g u") 'ggtags-update-tags))))
+;   #+END_SRC
 
 ** Grepping
    Except really I'm =ag=ging.
