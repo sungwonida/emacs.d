@@ -980,8 +980,8 @@
    #+END_SRC
 ** Last History
    #+BEGIN_SRC emacs-lisp
-     (define-key global-map [(control x)(control r)]  'recentf-open-files)
-     (recentf-open-files)
+     ;(define-key global-map [(control x)(control r)]  'recentf-open-files)
+     ;(recentf-open-files)
    #+END_SRC
 * Fulfill Requirements
   At long last we need only call the following function to send =req-package= on
