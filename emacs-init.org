@@ -227,11 +227,18 @@
     
 ** Faces
    #+BEGIN_SRC emacs-lisp
-     (req-package faces
-                  :config
-                  (progn
-                    (set-face-attribute 'default nil :family "DejaVu Sans Mono")
-                    (set-face-attribute 'default nil :height 120)))   
+     (cond
+      ((string-equal system-type "windows-nt")
+       (req-package unicode-fonts
+         :config
+         (unicode-fonts-setup))))
+     (add-to-list 'default-frame-alist '(font . "NanumGothicCoding-11"))
+     (add-to-list 'default-frame-alist '(line-spacing . 2))
+     (set-fontset-font "fontset-default" '(#x1100 . #xffdc) '("나눔고딕코딩" . "unicode-bmp"))
+     (set-language-environment '"Korean")
+     (prefer-coding-system 'utf-8)
+     (setq font-lock-comment-face 'italic)
+     (set-face-foreground 'italic "gray50")
    #+END_SRC
 
 ** Cleanup
@@ -515,6 +522,11 @@
      (req-package cider)
    #+END_SRC
 
+** Markdown
+   #+BEGIN_SRC emacs-lisp
+     (req-package markdown-mode)
+   #+END_SRC
+
 * Annoyances
   Fixing a couple of gripes I have with Emacs.
 
@@ -560,23 +572,10 @@
 * swjung
 ** faces
    #+BEGIN_SRC emacs-lisp
-     (cond
-      ((string-equal system-type "windows-nt")
-       (req-package unicode-fonts
-         :config
-         (unicode-fonts-setup))))
-     (add-to-list 'default-frame-alist '(font . "NanumGothicCoding-11"))
-     (add-to-list 'default-frame-alist '(line-spacing . 2))
-     (set-fontset-font "fontset-default" '(#x1100 . #xffdc) '("나눔고딕코딩" . "unicode-bmp"))
-     (set-language-environment '"Korean")
-     (prefer-coding-system 'utf-8)
      (setq x-select-enable-clipboard t)
      (setq interprogram-paste-function 'x-selection-value)
-     (setq font-lock-comment-face 'italic)
-     (set-face-foreground 'italic "gray50")
      (add-to-list 'load-path "~/.emacs.d/packages")
      (setq scroll-step 1)
-     ;(fset 'yes-or-no-p 'y-or-n-p)
      (setq inhibit-startup-message t)
      ;(local-set-key (kbd "M-C-g") 'org-plot/gnuplot)
      
