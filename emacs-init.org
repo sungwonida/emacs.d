@@ -542,7 +542,7 @@
 
 ** Python
    #+BEGIN_SRC emacs-lisp
-     (when (executable-find "ipython")
+     (when (executable-find "python")
        (setq python-shell-interpreter "ipython"))
    #+END_SRC
 
