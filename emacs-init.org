@@ -527,6 +527,12 @@
      (req-package markdown-mode)
    #+END_SRC
 
+** Python
+   #+BEGIN_SRC emacs-lisp
+     (when (executable-find "ipython")
+       (setq python-shell-interpreter "ipython"))
+   #+END_SRC
+
 * Annoyances
   Fixing a couple of gripes I have with Emacs.
 
@@ -632,7 +638,7 @@
    #+END_SRC
 ** evil
    #+BEGIN_SRC emacs-lisp
-     (define-key global-map (kbd "C-z") 'evil-mode)
+     ;(define-key global-map (kbd "C-z") 'evil-mode)
    #+END_SRC
 ** muon
    #+BEGIN_SRC emacs-lisp
