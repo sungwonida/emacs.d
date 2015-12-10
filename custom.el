@@ -44,6 +44,8 @@
  '(indent-tabs-mode nil)
  '(large-file-warning-threshold 10000000)
  '(make-backup-files nil)
+ '(ns-command-modifier (quote meta))
+ '(ns-right-command-modifier (quote super))
  '(php-completion-file "~/.emacs.d/php-completion-file")
  '(recentf-mode t)
  '(safe-local-variable-values (quote ((dired-omit-mode . t))))
