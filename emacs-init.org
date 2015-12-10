@@ -142,6 +142,19 @@
 
      (global-set-key (kbd "C-c h") 'helm-command-prefix)
      (global-unset-key (kbd "C-x c"))
+
+     (setq helm-split-window-in-side-p               t
+           helm-move-to-line-cycle-in-source         t
+           helm-ff-search-library-in-sexp            t
+           helm-scroll-amount                        8
+           helm-ff-file-name-history-use-recentf     t
+           helm-gtags-ignore-case                    t
+           helm-gtags-auto-update                    t
+           helm-gtags-use-input-at-cursor            t
+           helm-gtags-pulse-at-cursor                t
+           helm-gtags-prefix-key                     "\C-cg"
+           helm-gtags-suggested-key-mapping          t
+           )
    #+END_SRC
 
 ** =popwin=
