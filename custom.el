@@ -50,7 +50,7 @@
  '(recentf-mode t)
  '(safe-local-variable-values (quote ((dired-omit-mode . t))))
  '(scroll-bar-mode nil)
- '(semantic-c-obey-conditional-section-parsing-flag t)
+ '(semantic-c-obey-conditional-section-parsing-flag nil)
  '(semantic-default-c-path (quote ("~/Development/cs/muon")))
  '(semantic-imenu-bucketize-file nil)
  '(semantic-mode t)
