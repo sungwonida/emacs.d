@@ -1013,6 +1013,11 @@
      ;(define-key global-map [(control x)(control r)]  'recentf-open-files)
      ;(recentf-open-files)
    #+END_SRC
+** eshell
+   #+BEGIN_SRC emacs-lisp
+     (add-hook 'eshell-mode-hook
+               '(lambda () (define-key eshell-mode-map (kbd "C-c C-l") 'helm-eshell-history)))
+   #+END_SRC
 * Fulfill Requirements
   At long last we need only call the following function to send =req-package= on
   its merry way.
