@@ -106,7 +106,9 @@
    #+BEGIN_SRC emacs-lisp
      (req-package helm
        :config
-       (helm-mode 1))
+       (helm-mode 1)
+       (bind-key* "M-x" 'helm-M-x)
+       (bind-key* "C-x C-f" 'helm-find-files))
      (req-package helm-config
        :require popwin
        :diminish (helm-mode . "")
@@ -114,9 +116,7 @@
          (setq helm-ff-auto-update-initial-value)
          (setq popwin:special-display-config
                (append helm-popwin
-                       popwin:special-display-config))
-         (bind-key* "M-x" 'helm-M-x)
-         (bind-key* "C-x C-f" 'helm-find-files)))
+                       popwin:special-display-config))))
      (req-package helm-git)
      ;(req-package helm-git-files
      ;  :config
@@ -664,7 +664,7 @@
      (defun build-muon ()
        "build-muon"
        (interactive)
-       (compile "cd /home/swjung/Development/cs/muon/ && ./build_csfp.sh --enable_encrypt")
+       (compile "cd /home/swjung/Development/cs/muon/ && ./build_csfp.sh")
      )
      
      (defun build-muon-debug ()
