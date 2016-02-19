@@ -787,10 +787,11 @@
 ** company
    #+BEGIN_SRC emacs-lisp
      (req-package company
-       (add-hook 'after-init-hook 'global-company-mode)
        (defun my-company-mode-hook ()
+         (company-mode t)
          (define-key company-mode-map [backtab] 'company-complete))
-       (add-hook 'company-mode-hook 'my-company-mode-hook))
+       (add-hook 'prog-mode-hook 'my-company-mode-hook)
+       (add-hook 'eshell-mode-hook 'my-company-mode-hook))
    #+END_SRC
 ** redo
    #+BEGIN_SRC emacs-lisp
