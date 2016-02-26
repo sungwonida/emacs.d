@@ -1,0 +1,6 @@
+[submodule "packages/emacs-tdd"]
+	path = packages/emacs-tdd
+	url = https://github.com/jorgenschaefer/emacs-tdd
+[submodule "packages/emacs-realtime-markdown-viewer"]
+	path = packages/emacs-realtime-markdown-viewer
+	url = https://github.com/syohex/emacs-realtime-markdown-viewer
