@@ -1021,6 +1021,12 @@
      (add-hook 'eshell-mode-hook
                '(lambda () (define-key eshell-mode-map (kbd "C-c C-l") 'helm-eshell-history)))
    #+END_SRC
+** tdd
+   Turn on/off the mode manually because it runs recompile automatically after saving any buffer
+   no matters it's prog-mode or not.
+   #+BEGIN_SRC emacs-lisp
+     (req-package tdd)
+   #+END_SRC
 * Fulfill Requirements
   At long last we need only call the following function to send =req-package= on
   its merry way.
