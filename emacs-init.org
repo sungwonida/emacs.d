@@ -549,7 +549,7 @@
 ** Python
    #+BEGIN_SRC emacs-lisp
      (when (executable-find "python")
-       (setq python-shell-interpreter "ipython"))
+       (setq python-shell-interpreter "ipython3"))
    #+END_SRC
 
 * Annoyances
