@@ -4,3 +4,12 @@ emacs-init.el
 *.~undo-tree~
 
 /ac-comphist.dat
+completions
+ede-projects.el
+recentf
+session.*
+tramp
+semanticdb/
+image-dired/
+helm-doc.org
+eshell/
