@@ -294,7 +294,7 @@
      (req-package flycheck
        :diminish (global-flycheck-mode . " ✓ ")
        :config
-       (add-hook 'after-init-hook 'global-flycheck-mode)
+       (add-hook 'prog-mode-hook 'flycheck-mode)
        (define-key flycheck-mode-map (kbd "C-c f l") #'flycheck-list-errors)
        (define-key flycheck-mode-map (kbd "C-c f p") #'flycheck-previous-error)
        (define-key flycheck-mode-map (kbd "C-c f n") #'flycheck-next-error))
