@@ -46,6 +46,9 @@
  '(make-backup-files nil)
  '(ns-command-modifier (quote meta))
  '(ns-right-command-modifier (quote super))
+ '(package-selected-packages
+   (quote
+    (redo+ company cus-edit+ markdown-mode cider tern-auto-complete tern idris-mode auto-complete-auctex ac-math ghc shm flycheck-haskell haskell-mode evil-leader helm-ag color-identifiers-mode rainbow-mode rainbow-delimiters linum-relative magit helm-flycheck flycheck nyan-mode smart-mode-line helm-gtags helm-git-grep helm-ls-git helm-git popwin helm req-package pallet moe-theme evil)))
  '(php-completion-file "~/.emacs.d/php-completion-file")
  '(recentf-mode t)
  '(safe-local-variable-values (quote ((dired-omit-mode . t))))
@@ -69,5 +72,5 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(shm-current-face ((t (:background "#525252"))) t))
+ '(shm-current-face ((t (:background "#525252")))))
 

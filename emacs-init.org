@@ -617,7 +617,6 @@
      ("Notes" (or
      (mode . org-mode)
      (filename . ".org")))
-     ("Development (Fermion / Muon)" (filename . "Development/cs/"))
      ("Coding stuffs" (or
      (mode . c-mode)
      (mode . c++-mode)
@@ -651,131 +650,6 @@
 ** evil
    #+BEGIN_SRC emacs-lisp
      ;(define-key global-map (kbd "C-z") 'evil-mode)
-   #+END_SRC
-** muon
-   #+BEGIN_SRC emacs-lisp
-     (defun build-muon ()
-       "build-muon"
-       (interactive)
-       (compile "cd /home/swjung/Development/cs/muon/ && ./build_csfp.sh")
-     )
-     
-     (defun build-muon-debug ()
-       "build-muon-debug"
-       (interactive)
-       (compile "cd /home/swjung/Development/cs/muon/ && ./build_csfp.sh --enable_encrypt --debug")
-     )
-     
-     (defun build-muon-image-stitcher ()
-       "build-muon-image-stitcher"
-       (interactive)
-       (compile "cd /home/swjung/Development/cs/muon/ && ./build_csfp.sh --enable_encrypt --build_image_stitcher")
-     )
-     
-     (defun build-muon-image-stitcher-debug ()
-       "build-muon-image-stitcher-debug"
-       (interactive)
-       (compile "cd /home/swjung/Development/cs/muon/ && ./build_csfp.sh --enable_encrypt --build_image_stitcher --debug")
-     )
-     
-     (defun build-muon-android ()
-       "build-muon-android"
-       (interactive)
-     ;  (compile "cd /home/swjung/Development/cs/muon/ && ./build_csfp.sh --spec android_aarch64-linux-android-4.9_m64_arm64-v8a.spec --library_type shared --enable_encrypt")
-     (compile "cd /home/swjung/Development/cs/muon/ && ./build_csfp.sh --spec android_arm-linux-androideabi-4.6_m32_armeabi-v7a.spec --library_type shared --enable_encrypt")
-     )
-     
-     (defun cp-libs-for-android ()
-       "cp-libs-for-android"
-       (interactive)
-       (start-process-shell-command "cp-libs-for-android" "*cp-libs-for-android*" "/home/swjung/Development/cs/muon/localutil/cp_libs_for_android.sh")
-     )
-     
-     (defun build-csfp-gui ()
-       "build-csfp-gui"
-       (interactive)
-       (start-process-shell-command "cp-libs-for-android" "*build-csfp-gui*" "cd /home/swjung/Development/cs/csfp_gui/gui && ./make_gui.sh --ix11094a --muon --cp --build --install")
-       (message "csfp-gui build done.")
-     )
-     
-     (defun clean-muon ()
-       "Clean muon for the PC."
-       (interactive)
-       (message "Clearing muon compilation environment (PC)..")
-       (start-process-shell-command "clean-muon" "*clean build*" "cd /home/swjung/Development/cs/muon && ./build_csfp.sh dist-clean")
-       (message "Clean done.")
-     )
-     
-     (defun run-muon (mode train query)
-       "Run muon with interative argument"
-       (interactive
-        (list (let* ((dm "ipmerge")
-     				(mode (read-string 
-     					   (format "mode (default `%s'): " dm))))
-     		   (if (string= "" mode) dm mode))
-     		 (let* ((dt "~/Development/cs/muon/img/l0_00.bmp")
-     				(train (read-string 
-     						(format "train path (default `%s'): " dt))))
-     		   (if (string= "" train) dt train))
-     		 (let* ((dq "~/Development/cs/muon/img/l0_01.bmp")
-     				(query (read-string 
-     						(format "query path (default `%s'): " dq))))
-     		   (if (string= "" query) dq query))
-     		 )
-     ;		 (if (string= "fenrol" mode)
-     ;			 (let* ((dq1 "~/Development/cs/muon/img/l0_02.bmp")
-     ;					(query1 (read-string 
-     ;							(format "another query path (default `%s'): " dq1))))
-     ;			   (if (string= "" query1) dq1 query1)))
-     ;		 ))
-      ; (if (= mode (string fenrol)) 
-     ;	  (async-shell-command (concat "cd ~/Development/cs/muon/ && ./csfp" " -m " mode " " train " " query " " query1) "muon-execution"))
-        )
-       (async-shell-command (concat "cd ~/Development/cs/muon/ && ./csfp" " -m " mode " " train " " query) "muon-execution")
-       )
-     
-     (defun build-muon-board ()
-       "Build muon for the board."
-       (interactive)
-       (message "Building muon (board)..")
-       (compile "cd /home/swjung/Development/cs/muon/stm32f4 && make")
-     )
-     
-     (defun clean-muon-board ()
-       "Clean muon for the board."
-       (interactive)
-       (message "Clearing muon compilation environment (board)..")
-       (start-process-shell-command "clean-muon" "*clean build*" "cd /home/swjung/Development/cs/muon/stm32f4 && make clean")
-       (message "Clean done.")
-     )
-     
-     (defun flash-muon ()
-       "Flash muon into the board."
-       (interactive)
-       (message "Flashing muon.bin to connected STM32 board..")
-       (async-shell-command "st-flash write /home/swjung/Development/cs/muon/stm32f4/muon.bin 0x8000000" "flash_m4"))
-     
-     (defun start-st-link-server ()
-       "Start ST-Link server."
-       (interactive)
-       (message "Starting ST-Link server..")
-       (async-shell-command "st-util" "debug-server"))
-     
-     (defun debug-muon-board ()
-       "Debug muon for the board using GDB."
-       (interactive)
-       (async-shell-command "arm-none-eabi-gdb /home/swjung/Development/cs/muon/stm32f4/muon.elf" "gdb-muon")
-     )
-     
-     ;(define-key global-map [(f10)] 'run-muon)
-     (define-key global-map [(f11)] 'clean-muon)
-     (define-key global-map [(f12)] 'build-muon)
-     (define-key global-map [(f9)] 'build-muon-debug)
-     (define-key global-map [(f7)] 'build-muon-image-stitcher)
-     (define-key global-map [(f8)] 'build-muon-image-stitcher-debug)
-     (define-key global-map [(f4)] 'build-muon-android)
-     (define-key global-map [(f5)] 'cp-libs-for-android)
-     (define-key global-map [(f6)] 'build-csfp-gui)
    #+END_SRC
 ** company
    #+BEGIN_SRC emacs-lisp
