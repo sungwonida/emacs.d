@@ -145,6 +145,7 @@
 
      (global-set-key (kbd "C-c h") 'helm-command-prefix)
      (global-unset-key (kbd "C-x c"))
+     (define-key global-map (kbd "\C-x \C-b") 'helm-buffers-list)
 
      (setq helm-split-window-in-side-p               t
            helm-move-to-line-cycle-in-source         t
@@ -273,6 +274,8 @@
      (req-package menu-bar
                   :config
                   (menu-bar-mode -1))   
+
+     (setq scroll-step 1)
    #+END_SRC
 
    I also use [[http://www.emacswiki.org/emacs/DiminishedModes][diminish]] to clean up the modeline.
@@ -597,68 +600,69 @@
        :init (customize-toggle-outside-change-updates))
    #+END_SRC
 
-* swjung
-** faces
+** Clipboard
    #+BEGIN_SRC emacs-lisp
      (setq x-select-enable-clipboard t)
      (setq interprogram-paste-function 'x-selection-value)
-     (add-to-list 'load-path "~/.emacs.d/packages")
-     (let ((default-directory "~/.emacs.d/packages"))
-           (normal-top-level-add-subdirs-to-load-path))
-     (setq scroll-step 1)
+   #+END_SRC
+
+* swjung
+** startup
+   #+BEGIN_SRC emacs-lisp
      (setq inhibit-startup-message t)
-     ;(local-set-key (kbd "M-C-g") 'org-plot/gnuplot)
-     
-     (defun jm-ndic (word)
-     "search WORD in endic.naver.com"
-     (interactive
-     (list (let* ((wd (current-word))
-     (word (read-string
-     (format "Dict what (default `%s'): " wd))))
-     (if (string= "" word) wd word))))
-     ;  (browse-url (concat "http://dic.naver.com/search.naver?query=" word)
-     (browse-url (concat "http://endic.naver.com/popManager.nhn?sLn=kr&m=search&searchOption=&query=" word)
-     ))
-     
-     (define-key global-map [(control x) (j)] 'jm-ndic)
-     
-     (setq ibuffer-saved-filter-groups
-     '(("default"
-     ("Dired" (mode . dired-mode))
-     ("TODO" (filename . "todo.org"))
-     ("Notes" (or
-     (mode . org-mode)
-     (filename . ".org")))
-     ("Coding stuffs" (or
-     (mode . c-mode)
-     (mode . c++-mode)
-     (mode . python-mode)
-     (mode . shell-script-mode)
-     (mode . sh-mode)
-     ))
-     ("Emacs" (or
-     (filename . ".emacs")
-     (name . "^\\*scratch\\*$")
-     (name . "^\\*Messages\\*$")
-     (name . "^\\*eshell\\*$")
-     (mode . Custom-mode)))
-     ("Help" (or
-     (mode . Man-mode)
-     (mode . Info-mode)
-     (mode . Help-mode)
-     (mode . help-mode)
-     (name . "^\\*Help*\\*$"))))))
-     (setq ibuffer-expert t)
-     (add-hook 'ibuffer-mode-hook
-     (lambda ()
-     (ibuffer-auto-mode 1)
-     (ibuffer-switch-to-saved-filter-groups "default")))
-     (eval-after-load "ibuffer"
-     '(define-key ibuffer-mode-map (kbd "* f") 'ibuffer-mark-by-file-name-regexp))
-     
-     (define-key global-map (kbd "\C-x \C-b") 'helm-buffers-list)
 
    #+END_SRC
+** jm-ndic
+   #+BEGIN_SRC emacs-lisp
+     (defun jm-ndic (word)
+       "search WORD in endic.naver.com"
+       (interactive
+        (list (let* ((wd (current-word))
+                     (word (read-string
+                            (format "Dict what (default `%s'): " wd))))
+                (if (string= "" word) wd word))))
+       (browse-url (concat "http://endic.naver.com/popManager.nhn?sLn=kr&m=search&searchOption=&query=" word)))
+     
+     (define-key global-map [(control x) (j)] 'jm-ndic)
+   #+END_SRC
+
+** ibuffer
+   #+BEGIN_SRC emacs-lisp
+     (setq ibuffer-saved-filter-groups
+           '(("default"
+              ("Dired" (mode . dired-mode))
+              ("TODO" (filename . "todo.org"))
+              ("Notes" (or
+                        (mode . org-mode)
+                        (filename . ".org")))
+              ("Coding stuffs" (or
+                                (mode . c-mode)
+                                (mode . c++-mode)
+                                (mode . python-mode)
+                                (mode . shell-script-mode)
+                                (mode . sh-mode)
+                                ))
+              ("Emacs" (or
+                        (filename . ".emacs")
+                        (name . "^\\*scratch\\*$")
+                        (name . "^\\*Messages\\*$")
+                        (name . "^\\*eshell\\*$")
+                        (mode . Custom-mode)))
+              ("Help" (or
+                       (mode . Man-mode)
+                       (mode . Info-mode)
+                       (mode . Help-mode)
+                       (mode . help-mode)
+                       (name . "^\\*Help*\\*$"))))))
+     (setq ibuffer-expert t)
+     (add-hook 'ibuffer-mode-hook
+               (lambda ()
+                 (ibuffer-auto-mode 1)
+                 (ibuffer-switch-to-saved-filter-groups "default")))
+     (eval-after-load "ibuffer"
+       '(define-key ibuffer-mode-map (kbd "* f") 'ibuffer-mark-by-file-name-regexp))
+   #+END_SRC
+
 ** evil
    #+BEGIN_SRC emacs-lisp
      ;(define-key global-map (kbd "C-z") 'evil-mode)
@@ -890,8 +894,7 @@
    #+END_SRC
 ** Last History
    #+BEGIN_SRC emacs-lisp
-     ;(define-key global-map [(control x)(control r)]  'recentf-open-files)
-     ;(recentf-open-files)
+     (define-key global-map [(control x)(control r)]  'recentf-open-files)
    #+END_SRC
 ** eshell
    #+BEGIN_SRC emacs-lisp
@@ -904,6 +907,13 @@
    #+BEGIN_SRC emacs-lisp
      (req-package tdd)
    #+END_SRC
+** additional packages
+   #+BEGIN_SRC emacs-lisp
+     (add-to-list 'load-path "~/.emacs.d/packages")
+     (let ((default-directory "~/.emacs.d/packages"))
+       (normal-top-level-add-subdirs-to-load-path))
+   #+END_SRC
+
 * Fulfill Requirements
   At long last we need only call the following function to send =req-package= on
   its merry way.
