@@ -45,7 +45,7 @@
      (depends-on "pallet")
      (depends-on "req-package")
      (depends-on "moe-theme")
-     ;(depends-on "evil")
+     (depends-on "evil")
    #+END_SRC
 
    Then run the following command in your =.emacs.d= directory to set up Pallet:
@@ -90,6 +90,113 @@
   through =bind-key= and any overrides or conflicts. This is really
   the killer convenience of using =bind-key=.
 
+* Evil
+  I was a diehard Vim user for a long time, and I still prefer the Vim way of
+  interacting with text. [[https://gitorious.org/evil/pages/Home][Evil]] is a (mostly feature-complete) Vim emulation mode
+  for Emacs. It has sane defaults and I rarely find weirdness or lacking
+  features.
+
+** =evil=
+   Here we have our first package with dependencies. Historically, I've had
+   little annoyances when =evil= loads before =evil-leader=, so we'll make sure
+   it gets loaded first. By default, =evil= uses its own cursor which shows up
+   black regardless of face settings. Setting =evil-default-cursor= lets us use
+   the cursor we're used to. I also redefine a couple of =ex= commands for
+   convenience.
+
+   #+BEGIN_SRC emacs-lisp
+     (req-package evil
+       :require (helm-config undo-tree evil-surround ace-jump-mode)
+       :ensure evil
+       :init
+       (progn
+         (setq evil-default-cursor t)
+         ;(evil-mode 1)
+         (setq evil-motion-state-modes
+               (append evil-emacs-state-modes evil-motion-state-modes))
+         (setq evil-emacs-state-modes '(magit-mode dired-mode)))
+       :config
+       (progn
+         (evil-ex-define-cmd "e[dit]" 'helm-find-files)
+         (evil-ex-define-cmd "b[uffer]" 'helm-buffers-list)
+         (bind-key "[escape]" 'keyboard-escape-quit evil-normal-state-map)
+         (bind-key "[escape]" 'keyboard-escape-quit evil-visual-state-map)
+         (bind-key "<escape>" 'keyboard-escape-quit)
+         (bind-key "\"" 'ace-jump-mode evil-normal-state-map)
+         (evil-define-key 'normal
+                          tern-mode-keymap "gd" 'tern-find-definition)))
+   #+END_SRC
+
+*** =evil-leader=
+    =<leader>= is a really useful shorthand in Vim, and [[https://github.com/cofi/evil-leader][evil-leader]] brings the
+    same facility to Evil. For really common commands, leader bindings can save
+    those precious keystrokes.
+
+    #+BEGIN_SRC emacs-lisp
+      (req-package evil-leader
+                   :require evil
+                   :ensure evil-leader
+                   :init
+                   (progn
+                     (evil-leader/set-leader "<SPC>")
+                     (global-evil-leader-mode 1)
+                     (evil-leader/set-key
+                       "l" 'org-insert-link
+                       "o" 'other-window
+                       "d" 'delete-window
+                       "D" 'delete-other-windows
+                       "h" 'split-window-below
+                       "v" 'split-window-right
+                       "k" 'kill-buffer
+                       "K" 'kill-buffer-and-window
+                       "f" 'dired
+                       "gs" 'magit-status)))
+    #+END_SRC
+
+*** =evil-numbers=
+    One of the little Vim conveniences not found in vanilla Evil is incrementing
+    and decrementing numbers with =C-a= and =C-x=, respectively, likely because
+    these are already important bindings in Emacs. However, by limiting the
+    effect to normal mode, we can use [[https://github.com/cofi/evil-numbers][evil-numbers]] to bring this functionality
+    back without stomping all over existing bindings.
+
+    #+BEGIN_SRC emacs-lisp
+      (req-package evil-numbers
+                   :require evil
+                   :config
+                   (progn
+                     (bind-key "C-a" 'evil-numbers/inc-at-pt evil-normal-state-map)
+                     (bind-key "C-x" 'evil-numbers/dec-at-pt evil-normal-state-map)))
+    #+END_SRC
+
+*** =evil-surround=
+    Working with delimiter pairs is common enough that Tim Pope wrote a plugin
+    to ease working with them in Vim, called [[https://github.com/tpope/vim-surround][vim-surround]]. [[https://github.com/timcharper/evil-surround][evil-surround]]
+    emulates this functionality in =evil=. It's quite extensible, but the
+    defaults seem to cover all my needs. Check out the README for some examples.
+
+    #+BEGIN_SRC emacs-lisp
+      (req-package evil-surround
+                   :init (global-evil-surround-mode 1))
+    #+END_SRC
+
+*** =undo-tree=
+    Standard Emacs undo is kind of confusing. [[http://www.dr-qubit.org/emacs.php#undo-tree][undo-tree]] replaces this with a
+    simpler tree structure. It also allows us to visualize the tree directly.
+
+    #+BEGIN_SRC emacs-lisp
+      (req-package undo-tree
+                   :diminish ""
+                   :init
+                   (progn
+                     (setq undo-tree-auto-save-history t)
+                     (global-undo-tree-mode)))    
+    #+END_SRC
+    
+*** =ace-jump-mode=
+    #+BEGIN_SRC emacs-lisp
+      (req-package ace-jump-mode)
+    #+END_SRC
 * Helm 
   Coming from Vim, I was very used to the fuzzy matching of CtrlP. [[http://www.emacswiki.org/emacs/InteractivelyDoThings][Ido]] is a
   popular choice when one wishes to add this functionality to Emacs since it is
@@ -665,7 +772,7 @@
 
 ** evil
    #+BEGIN_SRC emacs-lisp
-     ;(define-key global-map (kbd "C-z") 'evil-mode)
+     (define-key global-map [(f11)] 'evil-mode)
    #+END_SRC
 ** company
    #+BEGIN_SRC emacs-lisp
