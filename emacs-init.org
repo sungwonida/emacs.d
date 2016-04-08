@@ -989,11 +989,22 @@
      (define-key global-map [(control up)]  'spawn-window-up)
    #+END_SRC
 ** Notes
+   TODO: Substitute hard-coded path to finding from root path with minimal argument
+         e.g. (defun inbox () ... (get-note "inbox.org"))
    #+BEGIN_SRC emacs-lisp
+     (setq notes-root-path "~/Notes/")
      (defun notes ()
        "Switch to my notes dir."
        (interactive)
-       (find-file "~/Notes"))
+       (find-file notes-root-path))
+     (defun inbox ()
+       "Show my own inbox."
+       (interactive)
+       (find-file (concat notes-root-path "inbox.org")))
+     (defun voca ()
+       "Show my vocabulary tables."
+       (interactive)
+       (find-file (concat notes-root-path "study/voca.org")))
    #+END_SRC
 ** hook adjustment
    #+BEGIN_SRC emacs-lisp
