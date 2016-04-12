@@ -716,7 +716,9 @@
      (setq interprogram-paste-function 'x-selection-value)
    #+END_SRC
 
-* swjung
+* Others
+  A lot of conveniences collected by David Jung.
+
 ** startup
    #+BEGIN_SRC emacs-lisp
      (setq inhibit-startup-message t)
@@ -1028,7 +1030,16 @@
    #+BEGIN_SRC emacs-lisp
      (req-package tdd)
    #+END_SRC
-** additional packages
+
+** anything
+   #+BEGIN_SRC emacs-lisp
+     (req-package anything)
+     (req-package anything-config
+       :config
+       (define-key global-map (kbd "M-+") 'anything))
+   #+END_SRC
+
+** local packages
    #+BEGIN_SRC emacs-lisp
      (add-to-list 'load-path "~/.emacs.d/packages")
      (let ((default-directory "~/.emacs.d/packages"))
