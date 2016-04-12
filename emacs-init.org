@@ -283,16 +283,19 @@
 
 * Org
   #+BEGIN_SRC emacs-lisp
-    (req-package org
-      :config
-      (progn
-        (add-hook 'org-mode-hook
-                  '(lambda ()
-                     (setq mode-name " ꙮ ")))
-        (bind-key* "C-c c" 'org-capture)
-        (bind-key* "C-c l" 'org-store-link)
-        (bind-key* "C-c a" 'org-agenda)
-        (bind-key* "C-c b" 'org-iswitch)))
+     (req-package org
+       :config
+       (progn
+         (add-hook 'org-mode-hook
+                   '(lambda ()
+                      (setq mode-name " ꙮ ")))
+         (bind-key* "C-c c" 'org-capture)
+         (bind-key* "C-c l" 'org-store-link)
+         (bind-key* "C-c a" 'org-agenda)
+         (bind-key* "C-c b" 'org-iswitch))
+       :init
+       (progn
+         (setq org-image-actual-width nil)))
   #+END_SRC
 
 * UI
