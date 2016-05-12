@@ -397,6 +397,15 @@
                   :diminish (server-buffer-clients . ""))
    #+END_SRC
 
+** Anzu
+   This is helpful when searching a string that appears many times in the buffer.
+
+   #+BEGIN_SRC emacs-lisp
+     (req-package anzu
+                  :config
+                  (global-anzu-mode +1))
+   #+END_SRC
+
 * IDE
   A few conveniences that I like to have in all my =prog-mode= buffers.
 
