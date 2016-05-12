@@ -177,7 +177,7 @@
 
     #+BEGIN_SRC emacs-lisp
       (req-package evil-surround
-                   :init (global-evil-surround-mode 1))
+                   :init (global-evil-surround-mode 0))
     #+END_SRC
 
 *** =undo-tree=
