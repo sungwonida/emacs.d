@@ -684,12 +684,15 @@
    #+BEGIN_SRC emacs-lisp
      (defun eshell-mode-hook-func ()
        (setq exec-path-from-shell-check-startup-files nil)
+       (setq exec-path-from-shell-variables '("PATH"))
        (exec-path-from-shell-initialize))
 
      (req-package exec-path-from-shell
        :init
        (when
-           (not (eq system-type 'windows-nt))
+           (or
+            (not (eq system-type 'windows-nt))
+            (memq window-system '(mac ns)))
          (add-hook 'eshell-mode-hook 'eshell-mode-hook-func)))
    #+END_SRC
 
