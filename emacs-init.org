@@ -41,7 +41,7 @@
    #+BEGIN_SRC emacs-lisp :tangle no
      (source gnu)
      (source melpa)
-     
+
      (depends-on "pallet")
      (depends-on "req-package")
      (depends-on "moe-theme")
@@ -68,7 +68,7 @@
   management tool. The documentation for =use-package= is immensely helpful for
   figuring out how to describe package dependencies and settings. =req-package=
   adds the =:require= keyword which allows us to define dependencies between
-  related packages. 
+  related packages.
 ** Initialize =req-package=
    With the preceding process complete, we just need to add the following line
    to our init file to begin using =req-package=:
@@ -190,14 +190,14 @@
                    :init
                    (progn
                      (setq undo-tree-auto-save-history t)
-                     (global-undo-tree-mode)))    
+                     (global-undo-tree-mode)))
     #+END_SRC
-    
+
 *** =ace-jump-mode=
     #+BEGIN_SRC emacs-lisp
       (req-package ace-jump-mode)
     #+END_SRC
-* Helm 
+* Helm
   Coming from Vim, I was very used to the fuzzy matching of CtrlP. [[http://www.emacswiki.org/emacs/InteractivelyDoThings][Ido]] is a
   popular choice when one wishes to add this functionality to Emacs since it is
   built in and there is a fairly significant ecosystem built around it. I used
@@ -272,7 +272,7 @@
    The one annoying thing about =helm= is that the window it opens to show
    results is kinda huge. I use [[https://github.com/m2ym/popwin-el][popwin]] to limit the height of most of the
    Helm buffers.
-   
+
    #+BEGIN_SRC emacs-lisp
      (req-package popwin
        (popwin-mode 1)
@@ -307,12 +307,12 @@
    Structured Haskell Mode easier, and I like the colors of
    [[https://github.com/kuanyui/moe-theme.el][moe-theme]]. It's bright and has good default faces for most
    modes. It also has dark and light versions, which is convenient.
-   
+
    I also advise =load-theme= to fully unload the previous theme
    before loading a new one.
 
    #+BEGIN_SRC emacs-lisp
-     (defadvice load-theme 
+     (defadvice load-theme
        (before theme-dont-propagate activate)
        (mapc #'disable-theme custom-enabled-themes))
 
@@ -327,12 +327,12 @@
    [[https://github.com/Bruce-Connor/smart-mode-line][smart-mode-line]]. It's compatible with just about anything you can imagine,
    and it's easy to set up.
 
-   
+
 *** =smart-mode-line=
     #+BEGIN_SRC emacs-lisp
       (req-package smart-mode-line
                    :require nyan-mode
-                   :init (sml/setup))    
+                   :init (sml/setup))
     #+END_SRC
 
 *** =nyan-mode=
@@ -344,14 +344,14 @@
                (progn
                  (nyan-mode)
                  (setq nyan-wavy-trail t))
-               :config (nyan-start-animation))    
+               :config (nyan-start-animation))
     #+END_SRC
 
 *** =powerline=
     #+BEGIN_SRC emacs-lisp :tangle no
       (req-package powerline)
     #+END_SRC
-    
+
 ** Faces
    #+BEGIN_SRC emacs-lisp
      (cond
@@ -371,19 +371,19 @@
 
 ** Cleanup
    Who wants all that toolbars and scrollbars noise?
-   
+
    #+BEGIN_SRC emacs-lisp
      (req-package scroll-bar
                   :config
                   (scroll-bar-mode -1))
-     
+
      (req-package tool-bar
                   :config
                   (tool-bar-mode -1))
-     
+
      (req-package menu-bar
                   :config
-                  (menu-bar-mode -1))   
+                  (menu-bar-mode -1))
 
      (setq scroll-step 1)
    #+END_SRC
@@ -392,7 +392,7 @@
 
    #+BEGIN_SRC emacs-lisp
      (req-package diminish)
-     
+
      (req-package server
                   :diminish (server-buffer-clients . ""))
    #+END_SRC
@@ -412,7 +412,7 @@
 ** Flycheck
    Flycheck has helped me write more programs than I'm totally
    comfortable admitting.
-   
+
    #+BEGIN_SRC emacs-lisp
      (req-package flycheck
        :diminish (global-flycheck-mode . " ✓ ")
@@ -448,7 +448,7 @@
 ;     (req-package linum
 ;       :config
 ;       (add-hook 'prog-mode-hook
-;                 '(lambda () (linum-mode 1))))   
+;                 '(lambda () (linum-mode 1))))
 ;   #+END_SRC
 
 *** Relative Line Numbers
@@ -485,7 +485,7 @@
        :diminish (rainbow-mode . "")
        :config (add-hook 'prog-mode-hook 'rainbow-mode))
    #+END_SRC
-   
+
    There's also an interesting mode for uniquely coloring identifiers in code
    so that they are easy to scan for. It's still a bit iffy, but it's fun to
    try.
@@ -500,7 +500,7 @@
          (add-hook 'emacs-lisp-mode-hook 'color-identifiers-mode)
          (add-hook 'ruby-mode-hook 'color-identifiers-mode)))
    #+END_SRC
- 
+
 ** Completion
    #+BEGIN_SRC emacs-lisp
      (req-package auto-complete-config
@@ -601,7 +601,7 @@
        :init
        (add-hook 'emacs-lisp-mode-hook
                  (lambda ()
-                   (setq mode-name " ξ ")))) 
+                   (setq mode-name " ξ "))))
    #+END_SRC
 
 ** LaTeX
@@ -618,7 +618,7 @@
      (req-package auto-complete-auctex
        :require auto-complete-config)
    #+END_SRC
- 
+
 ** R
    #+BEGIN_SRC emacs-lisp
      (req-package ess-site
@@ -629,7 +629,7 @@
    #+BEGIN_SRC emacs-lisp
      (req-package idris-mode)
    #+END_SRC
-   
+
 ** PHP/Drupal
    [[https://github.com/arnested/drupal-mode][drupal-mode]] has [[https://github.com/ejmr/php-mode][php-mode]] as a dependency, so we could conceivably
    get away with just including the former here, but just in case we
@@ -755,38 +755,45 @@
                             (format "Dict what (default `%s'): " wd))))
                 (if (string= "" word) wd word))))
        (browse-url (concat "http://endic.naver.com/popManager.nhn?sLn=kr&m=search&searchOption=&query=" word)))
-     
+
      (define-key global-map [(control x) (j)] 'jm-ndic)
    #+END_SRC
 
 ** ibuffer
    #+BEGIN_SRC emacs-lisp
      (setq ibuffer-saved-filter-groups
-           '(("default"
-              ("Dired" (mode . dired-mode))
-              ("TODO" (filename . "todo.org"))
-              ("Notes" (or
-                        (mode . org-mode)
-                        (filename . ".org")))
-              ("Coding stuffs" (or
-                                (mode . c-mode)
-                                (mode . c++-mode)
-                                (mode . python-mode)
-                                (mode . shell-script-mode)
-                                (mode . sh-mode)
-                                ))
-              ("Emacs" (or
-                        (filename . ".emacs")
-                        (name . "^\\*scratch\\*$")
-                        (name . "^\\*Messages\\*$")
-                        (name . "^\\*eshell\\*$")
-                        (mode . Custom-mode)))
-              ("Help" (or
-                       (mode . Man-mode)
-                       (mode . Info-mode)
-                       (mode . Help-mode)
-                       (mode . help-mode)
-                       (name . "^\\*Help*\\*$"))))))
+      '(("default"
+         ("Dired" (mode . dired-mode))
+         ("TODO" (filename . "todo\.org"))
+         ("Notes" (or
+                   (mode . org-mode)
+                   (filename . ".*\.org")))
+         ("Programming" (or
+                         (mode . c-mode)
+                         (mode . c++-mode)
+                         (mode . python-mode)
+                         (mode . shell-script-mode)
+                         (mode . sh-mode)))
+         ("Emacs" (or
+                   (name . "^\\*scratch\\*$")
+                   (name . "^\\*Messages\\*$")
+                   (name . "^\\*Warning\\*$")
+                   (name . "^\\*eshell\\*$")
+                   (mode . Custom-mode)))
+         ("Help" (or
+                  (mode . Man-mode)
+                  (mode . Info-mode)
+                  (mode . Help-mode)
+                  (mode . help-mode)
+                  (name . "^\\*Help*\\*$")))
+         ("Version Control" (or
+                             (mode . magit-status-mode)
+                             (mode . magit-diff-mode)
+                             (mode . magit-refs-mode)
+                             (mode . magit-revision-mode)
+                             (mode . magit-log-mode)
+                             (mode . magit-process-mode)
+                             (mode . magit-stash-mode))))))
      (setq ibuffer-expert t)
      (add-hook 'ibuffer-mode-hook
                (lambda ()
@@ -857,14 +864,14 @@
           )
        )
      )
-      
+
      (defun my-semantic-parse-current-dir (regex)
        "
         Parses all files under the current directory matching regex
        "
        (my-semantic-parse-dir (file-name-directory(buffer-file-name)) regex)
      )
-      
+
      (defun create-tags-curdir ()
        "
         Parses all the c/c++ related files under the current directory
@@ -873,7 +880,7 @@
        (interactive)
        (my-semantic-parse-current-dir c-files-regex)
      )
-      
+
      (defun create-tags (dir)
        "Prompts the user for a directory and parses all c/c++ related files
         under the directory
@@ -902,15 +909,15 @@
        "Sort dired listings with directories first."
        (save-excursion
          (let (buffer-read-only)
-           (forward-line 2) ;; beyond dir. header 
+           (forward-line 2) ;; beyond dir. header
            (sort-regexp-fields t "^.*$" "[ ]*." (point) (point-max)))
          (set-buffer-modified-p nil)))
-     
+
      (defadvice dired-readin
        (after dired-after-updating-hook first () activate)
        "Sort dired listings with directories first before adding marks."
        (mydired-sort))
-     
+
      (add-hook 'dired-mode-hook
                (function (lambda ()
      		      (load "dired-x")
@@ -919,7 +926,7 @@
      		      (setq dired-omit-files "^\\.?#\\|^\\.$\\|^\\.\\.$\\|^\\..+$")
      		      (setq dired-omit-extensions '("~"))
                            )))
-     
+
      (defun my-dired-mode-hook ()
        (define-key dired-mode-map [backspace] 'dired-up-directory))
      (add-hook 'dired-mode-hook 'my-dired-mode-hook)
@@ -997,9 +1004,9 @@
    #+END_SRC
 ** Easier Transition between Windows
    #+BEGIN_SRC emacs-lisp
-     ;  M-up, M-down, M-left, and M-right keys.  
+     ;  M-up, M-down, M-left, and M-right keys.
      (windmove-default-keybindings 'meta)
-     
+
      ;; Spawning Window
      (fset 'spawn-window-right
            (lambda (&optional arg) "Keyboard macro." (interactive "p") (kmacro-exec-ring-item (quote ([24 49 24 51 M-left] 0 "%d")) arg)))
@@ -1074,4 +1081,3 @@
   #+BEGIN_SRC emacs-lisp
     (req-package-finish)
   #+END_SRC
-
