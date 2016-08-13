@@ -699,7 +699,10 @@
            (or
             (not (eq system-type 'windows-nt))
             (memq window-system '(mac ns)))
-         (add-hook 'eshell-mode-hook 'eshell-mode-hook-func)))
+       (setq exec-path-from-shell-check-startup-files nil)
+       (setq exec-path-from-shell-variables '("PATH"))
+       (exec-path-from-shell-initialize)))
+;         (add-hook 'eshell-mode-hook 'eshell-mode-hook-func)))
    #+END_SRC
 
 ** Backups and Autosave Files
