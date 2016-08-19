@@ -688,11 +688,6 @@
 
 ** Exec path
    #+BEGIN_SRC emacs-lisp
-     (defun eshell-mode-hook-func ()
-       (setq exec-path-from-shell-check-startup-files nil)
-       (setq exec-path-from-shell-variables '("PATH"))
-       (exec-path-from-shell-initialize))
-
      (req-package exec-path-from-shell
        :init
        (when
@@ -702,7 +697,6 @@
        (setq exec-path-from-shell-check-startup-files nil)
        (setq exec-path-from-shell-variables '("PATH"))
        (exec-path-from-shell-initialize)))
-;         (add-hook 'eshell-mode-hook 'eshell-mode-hook-func)))
    #+END_SRC
 
 ** Backups and Autosave Files
@@ -754,6 +748,13 @@
      (setq inhibit-startup-message t)
 
    #+END_SRC
+** local packages
+   #+BEGIN_SRC emacs-lisp
+     (add-to-list 'load-path "~/.emacs.d/packages")
+     (let ((default-directory "~/.emacs.d/packages"))
+       (normal-top-level-add-subdirs-to-load-path))
+   #+END_SRC
+
 ** jm-ndic
    #+BEGIN_SRC emacs-lisp
      (defun jm-ndic (word)
@@ -1065,7 +1066,7 @@
    Turn on/off the mode manually because it runs recompile automatically after saving any buffer
    no matters it's prog-mode or not.
    #+BEGIN_SRC emacs-lisp
-     (req-package tdd)
+   (req-package tdd)
    #+END_SRC
 
 ** anything
@@ -1076,13 +1077,12 @@
        (define-key global-map (kbd "M-+") 'anything))
    #+END_SRC
 
-** local packages
+** Communicate with Chrome
    #+BEGIN_SRC emacs-lisp
-     (add-to-list 'load-path "~/.emacs.d/packages")
-     (let ((default-directory "~/.emacs.d/packages"))
-       (normal-top-level-add-subdirs-to-load-path))
+   (req-package edit-server
+   :init
+   (edit-server-start))
    #+END_SRC
-
 * Fulfill Requirements
   At long last we need only call the following function to send =req-package= on
   its merry way.
