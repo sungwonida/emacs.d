@@ -295,7 +295,11 @@
          (bind-key* "C-c b" 'org-iswitch))
        :init
        (progn
-         (setq org-image-actual-width nil)))
+         (setq org-image-actual-width nil)
+         (setq org-html-inline-image-rules
+         '(("file" . "\\.\\(jpeg\\|jpg\\|png\\|gif\\|svg\\|bmp\\)\\'")
+         ("http" . "\\.\\(jpeg\\|jpg\\|png\\|gif\\|svg\\|bmp\\)\\'")
+         ("https" . "\\.\\(jpeg\\|jpg\\|png\\|gif\\|svg\\|bmp\\)\\'")))))
   #+END_SRC
 
 * UI
