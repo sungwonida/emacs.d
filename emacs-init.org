@@ -413,6 +413,14 @@
 * IDE
   A few conveniences that I like to have in all my =prog-mode= buffers.
 
+** Semantic
+   #+BEGIN_SRC emacs-lisp
+   (req-package semantic
+   :config
+   (define-key global-map (kbd "C-c i j") 'semantic-ia-fast-jump)
+   (define-key global-map (kbd "C-c i m") 'semantic-ia-complete-symbol-menu))
+   #+END_SRC
+
 ** Flycheck
    Flycheck has helped me write more programs than I'm totally
    comfortable admitting.
