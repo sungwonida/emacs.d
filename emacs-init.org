@@ -1095,6 +1095,24 @@
    :init
    (edit-server-start))
    #+END_SRC
+** Publishing the live buffer
+   [[http://stackoverflow.com/questions/36183071/how-can-i-real-time-preview-markdown-in-emacs]]
+   1) M-x httpd-start
+   2) M-x impatient-mode
+   3) localhost:8080/imp
+
+   #+BEGIN_SRC emacs-lisp
+   (req-package impatient-mode
+     :init
+     (defun markdown-html (buffer)
+       (princ (with-current-buffer buffer
+       (format "<!DOCTYPE html><html><title>Impatient Markdown</title><xmp theme=\"united\" style=\"display:none;\"> %s  </xmp><script src=\"http://strapdownjs.com/v/0.2/strapdown.js\"></script></html>" (buffer-substring-no-properties (point-min) (point-max))))
+       (current-buffer))))
+   #+END_SRC
+
+   4) M-x imp-set-user-filter RET markdown-html RET
+   5) go back to browser
+
 * Fulfill Requirements
   At long last we need only call the following function to send =req-package= on
   its merry way.
