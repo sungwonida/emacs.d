@@ -752,6 +752,13 @@
      (add-hook 'prog-mode-hook
                   (lambda () (add-to-list 'write-file-functions 'delete-trailing-whitespace)))
    #+END_SRC
+** Keyboard Issue in Windows
+   #+BEGIN_SRC emacs-lisp
+     (cond
+      ((string-equal system-type "windows-nt")
+	  (global-set-key [C-kanji] 'set-mark-command)))
+   #+END_SRC
+
 * Others
   A lot of conveniences collected by David Jung.
 
