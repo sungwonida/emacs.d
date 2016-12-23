@@ -1109,6 +1109,7 @@
    3) localhost:8080/imp
 
    #+BEGIN_SRC emacs-lisp
+   (req-package simple-httpd)
    (req-package impatient-mode
      :init
      (defun markdown-html (buffer)
