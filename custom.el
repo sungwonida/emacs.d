@@ -15,7 +15,7 @@
      (awk-mode . "awk")
      (other . "gnu"))))
  '(cua-enable-cua-keys nil)
- '(cua-mode t nil (cua-base))
+ '(cua-mode nil nil (cua-base))
  '(custom-raised-buttons t)
  '(custom-safe-themes
    (quote
@@ -53,7 +53,7 @@
  '(recentf-mode t)
  '(safe-local-variable-values (quote ((dired-omit-mode . t))))
  '(scroll-bar-mode nil)
- '(semantic-c-obey-conditional-section-parsing-flag nil)
+ '(semantic-c-obey-conditional-section-parsing-flag t)
  '(semantic-default-c-path (quote ("~/Development/cs/muon")))
  '(semantic-imenu-bucketize-file nil)
  '(semantic-mode t)
