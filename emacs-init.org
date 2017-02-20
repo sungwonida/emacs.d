@@ -1078,8 +1078,10 @@
    #+END_SRC
 ** eshell
    #+BEGIN_SRC emacs-lisp
-     (add-hook 'eshell-mode-hook
-               '(lambda () (define-key eshell-mode-map (kbd "C-c C-l") 'helm-eshell-history)))
+    (add-hook 'eshell-mode-hook
+        '(lambda () (define-key eshell-mode-map (kbd "C-c C-l") 'helm-eshell-history)))
+    (add-hook 'eshell-mode-hook
+        '(lambda () (setenv "TERM" "xterm-256color")))
    #+END_SRC
 ** tdd
    Turn on/off the mode manually because it runs recompile automatically after saving any buffer
