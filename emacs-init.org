@@ -313,6 +313,10 @@
 
 ** Clojure
    #+BEGIN_SRC emacs-lisp
+     (cond
+      ((string-equal system-type "darwin")
+       (req-package spinner
+        :loader :gnu)))
      (req-package cider)
    #+END_SRC
 
