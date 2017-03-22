@@ -110,16 +110,11 @@
        (bind-key* "C-x C-f" 'helm-find-files))
      (req-package helm-config
        :require popwin
-       :diminish (helm-mode . "")
        (progn
          (setq helm-ff-auto-update-initial-value)
          (setq popwin:special-display-config
                (append helm-popwin
                        popwin:special-display-config))))
-     (req-package helm-git)
-     ;(req-package helm-git-files
-     ;  :config
-     ;  (define-key global-map (kbd "C-c h f") 'helm-git-files))
      (req-package helm-ls-git
        :config
        (define-key global-map (kbd "C-c h f") 'helm-ls-git-ls))
@@ -303,6 +298,60 @@
                   (global-anzu-mode +1))
    #+END_SRC
 
+* Languages
+** Emacs Lisp
+   #+BEGIN_SRC emacs-lisp
+     (req-package lisp-mode
+       :init
+       (add-hook 'emacs-lisp-mode-hook
+                 (lambda ()
+                   (setq mode-name " ξ "))))
+   #+END_SRC
+
+** R
+   #+BEGIN_SRC emacs-lisp
+     (req-package ess-site
+       :ensure ess)
+   #+END_SRC
+
+** Javascript
+   #+BEGIN_SRC emacs-lisp
+     (req-package tern
+       :require tern-auto-complete
+       :init
+       (progn
+         (add-hook 'js-mode-hook
+                   (lambda ()
+                     (tern-mode t))))
+       :config
+       (progn
+         (tern-ac-setup)))
+
+     (req-package tern-auto-complete)
+   #+END_SRC
+
+** Clojure
+   #+BEGIN_SRC emacs-lisp
+     (req-package cider)
+   #+END_SRC
+
+** Markdown
+   #+BEGIN_SRC emacs-lisp
+     (req-package markdown-mode)
+   #+END_SRC
+
+** Python
+   #+BEGIN_SRC emacs-lisp
+     (when (executable-find "python")
+       (setq python-shell-interpreter "ipython3"))
+   #+END_SRC
+
+** Octave
+   #+BEGIN_SRC emacs-lisp
+   (req-package octave-mode
+   :init
+   (add-to-list 'auto-mode-alist '("\\.m\\'" . octave-mode)))
+   #+END_SRC
 * IDE
   A few conveniences that I like to have in all my =prog-mode= buffers.
 
@@ -347,23 +396,6 @@
        (define-key global-map (kbd "C-x v y") 'magit-show-refs-popup)
        (define-key global-map (kbd "C-x v l") 'magit-log-head))
    #+END_SRC
-
-** Line Numbers
-;   #+BEGIN_SRC emacs-lisp
-;     (req-package linum
-;       :config
-;       (add-hook 'prog-mode-hook
-;                 '(lambda () (linum-mode 1))))
-;   #+END_SRC
-
-*** Relative Line Numbers
-    I was a little spoiled by this feature in Vim, and not having it
-    just doesn't sit well with me.
-
-    #+BEGIN_SRC emacs-lisp
-      (req-package linum-relative
-        :init (setq linum-relative-current-symbol ""))
-    #+END_SRC
 
 ** Delimiters
    I like my delimiters matched and visually distinct. I used [[https://bitbucket.org/kovisoft/paredit][paredit]] for a
@@ -413,31 +445,8 @@
        :init
        (progn
          (ac-config-default)
-         (setq ac-auto-start 3))
-       :config
-       (progn
-         (require 'ac-math)
-         (require 'auto-complete-auctex)))
+         (setq ac-auto-start 3)))
    #+END_SRC
-
-** Tags
-;   #+BEGIN_SRC emacs-lisp
-;     (req-package ggtags
-;       :config
-;       (add-hook 'prog-mode-hook
-;                 (lambda ()
-;                   (when (derived-mode-p
-;                          'c-mode
-;                          'c++-mode
-;                          'python-mode
-;                          'java-mode
-;                          'asm-mode)
-;                     (progn
-;                       (ggtags-mode)))))
-;       (eval-after-load "ggtags"
-;         '(progn
-;            (define-key ggtags-mode-map (kbd "C-c g u") 'ggtags-update-tags))))
-;   #+END_SRC
 
 ** Grepping
    Except really I'm =ag=ging.
@@ -446,148 +455,6 @@
        :require evil-leader)
    #+END_SRC
 
-* Languages
-** Haskell
-   #+BEGIN_SRC emacs-lisp
-     (req-package haskell-mode
-       :require (flycheck flycheck-haskell)
-       :commands haskell-mode
-       :init
-       (add-to-list 'auto-mode-alist '("\\.l?hs$" . haskell-mode))
-       :config
-       (progn
-         (req-package inf-haskell)
-         (req-package hs-lint)
-         (bind-key "C-x C-d" nil haskell-mode-map)
-         (bind-key "C-c C-z" 'haskell-interactive-switch haskell-mode-map)
-         (bind-key "C-c C-l" 'haskell-process-load-file haskell-mode-map)
-         (bind-key "C-c C-b" 'haskell-interactive-switch haskell-mode-map)
-         (bind-key "C-c C-t" 'haskell-process-do-type haskell-mode-map)
-         (bind-key "C-c C-i" 'haskell-process-do-info haskell-mode-map)
-         (bind-key "C-c M-." nil haskell-mode-map)
-         (bind-key "C-c C-d" nil haskell-mode-map)
-         (defun my-haskell-hook ()
-           (setq mode-name " λ ")
-           (turn-on-haskell-doc)
-           (diminish 'haskell-doc-mode "")
-           (capitalized-words-mode)
-           (diminish 'capitalized-words-mode "")
-           (turn-on-eldoc-mode)
-           (diminish 'eldoc-mode "")
-           (turn-on-haskell-decl-scan)
-           (setq evil-auto-indent nil))
-         (setq haskell-font-lock-symbols 'unicode)
-         (setq haskell-literate-default 'tex)
-         (setq haskell-stylish-on-save t)
-         (setq haskell-tags-on-save t)
-         (add-hook 'haskell-mode-hook 'my-haskell-hook)))
-
-     (req-package flycheck-haskell
-       :config (add-hook 'flycheck-mode-hook #'flycheck-haskell-setup))
-   #+END_SRC
-*** Structured Haskell Mode
-    #+BEGIN_SRC emacs-lisp
-      (req-package shm
-                   :require haskell-mode
-                   :commands structured-haskell-mode
-                   :init (add-hook 'haskell-mode-hook
-                                   'structured-haskell-mode))
-    #+END_SRC
-
-*** ghc-mod
-    #+BEGIN_SRC emacs-lisp
-      (req-package ghc
-        :init (add-hook 'haskell-mode-hook (lambda () (ghc-init))))
-    #+END_SRC
-
-** Emacs Lisp
-   #+BEGIN_SRC emacs-lisp
-     (req-package lisp-mode
-       :init
-       (add-hook 'emacs-lisp-mode-hook
-                 (lambda ()
-                   (setq mode-name " ξ "))))
-   #+END_SRC
-
-** LaTeX
-   All you need is AUCTeX, end of story.
-
-   #+BEGIN_SRC emacs-lisp
-     (req-package tex-site
-       :require auto-complete-config
-       :ensure auctex)
-
-     (req-package ac-math
-       :require auto-complete-config)
-
-     (req-package auto-complete-auctex
-       :require auto-complete-config)
-   #+END_SRC
-
-** R
-   #+BEGIN_SRC emacs-lisp
-     (req-package ess-site
-       :ensure ess)
-   #+END_SRC
-
-** Idris
-   #+BEGIN_SRC emacs-lisp
-     (req-package idris-mode)
-   #+END_SRC
-
-** PHP/Drupal
-   [[https://github.com/arnested/drupal-mode][drupal-mode]] has [[https://github.com/ejmr/php-mode][php-mode]] as a dependency, so we could conceivably
-   get away with just including the former here, but just in case we
-   want a bit more control or we decide that =drupal-mode= isn't worth
-   it, we'll make separate =req-package= blocks.
-;   #+BEGIN_SRC emacs-lisp
-;     (req-package php-mode
-;       :init (setq php-template-compatibility nil))
-;
-;     (req-package web-mode)
-;
-;     (req-package drupal-mode
-;       :require (php-mode ggtags))
-;   #+END_SRC
-
-** Javascript
-   #+BEGIN_SRC emacs-lisp
-     (req-package tern
-       :require tern-auto-complete
-       :init
-       (progn
-         (add-hook 'js-mode-hook
-                   (lambda ()
-                     (tern-mode t))))
-       :config
-       (progn
-         (tern-ac-setup)))
-
-     (req-package tern-auto-complete)
-   #+END_SRC
-
-** Clojure
-   #+BEGIN_SRC emacs-lisp
-     (req-package cider)
-   #+END_SRC
-
-** Markdown
-   #+BEGIN_SRC emacs-lisp
-     (req-package markdown-mode)
-   #+END_SRC
-
-** Python
-   #+BEGIN_SRC emacs-lisp
-     (when (executable-find "python")
-       (setq python-shell-interpreter "ipython3"))
-   #+END_SRC
-
-** Octave
-   #+BEGIN_SRC emacs-lisp
-   (req-package octave-mode
-   :init
-   (add-to-list 'auto-mode-alist '("\\.m\\'" . octave-mode)))
-   #+END_SRC
 * Annoyances
   Fixing a couple of gripes I have with Emacs.
 
@@ -623,15 +490,6 @@
 
    #+BEGIN_SRC emacs-lisp
      (defalias 'yes-or-no-p 'y-or-n-p)
-   #+END_SRC
-
-** Customizations
-   [[http://www.emacswiki.org/emacs/cus-edit%2B.el][cus-edit+]] is a really handy way to keep your customizations up to
-   date, especially if you set your =custom-file=.
-
-   #+BEGIN_SRC emacs-lisp
-     (req-package cus-edit+
-       :init (customize-toggle-outside-change-updates))
    #+END_SRC
 
 ** Clipboard
