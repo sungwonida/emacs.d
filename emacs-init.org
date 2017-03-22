@@ -239,6 +239,7 @@
      (prefer-coding-system 'utf-8)
      (setq font-lock-comment-face 'italic)
      (set-face-foreground 'italic "gray50")
+     (set-face-attribute 'region nil :background "#aaff90")
    #+END_SRC
 
 ** Cleanup
