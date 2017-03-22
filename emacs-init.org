@@ -39,13 +39,11 @@
 
    #+NAME: Cask
    #+BEGIN_SRC emacs-lisp :tangle no
-     (source gnu)
      (source melpa-stable)
+     (source gnu)
 
      (depends-on "pallet")
      (depends-on "req-package")
-     (depends-on "moe-theme")
-     (depends-on "evil")
    #+END_SRC
 
    Then run the following command in your =.emacs.d= directory to set up Pallet:
