@@ -1,5 +1,5 @@
 (source gnu)
-(source melpa)
+(source melpa-stable)
 
 (depends-on "pallet")
 (depends-on "req-package")

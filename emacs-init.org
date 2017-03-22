@@ -40,7 +40,7 @@
    #+NAME: Cask
    #+BEGIN_SRC emacs-lisp :tangle no
      (source gnu)
-     (source melpa)
+     (source melpa-stable)
 
      (depends-on "pallet")
      (depends-on "req-package")
