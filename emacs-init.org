@@ -193,26 +193,6 @@
   I'm pretty picky about how I want my editor to look, so there's a fair bit of
   configuration that goes here.
 
-** Theme
-   I've switched entirely to dark themes to make working with
-   Structured Haskell Mode easier, and I like the colors of
-   [[https://github.com/kuanyui/moe-theme.el][moe-theme]]. It's bright and has good default faces for most
-   modes. It also has dark and light versions, which is convenient.
-
-   I also advise =load-theme= to fully unload the previous theme
-   before loading a new one.
-
-   #+BEGIN_SRC emacs-lisp
-     (defadvice load-theme
-       (before theme-dont-propagate activate)
-       (mapc #'disable-theme custom-enabled-themes))
-
-     (req-package moe-theme)
-
-     (req-package moe-theme-switcher
-       :require moe-theme)
-   #+END_SRC
-
 ** Modeline
    Powerline is very popular in Vim (and with Evil users), but I much prefer
    [[https://github.com/Bruce-Connor/smart-mode-line][smart-mode-line]]. It's compatible with just about anything you can imagine,
