@@ -224,13 +224,6 @@
    and it's easy to set up.
 
 
-*** =smart-mode-line=
-    #+BEGIN_SRC emacs-lisp
-      (req-package smart-mode-line
-                   :require nyan-mode
-                   :init (sml/setup))
-    #+END_SRC
-
 *** =nyan-mode=
     [[https://github.com/TeMPOraL/nyan-mode][nyan-mode]] is a goofy way to display one's location in a file.
 
@@ -242,6 +235,14 @@
                  (setq nyan-wavy-trail t))
                :config (nyan-start-animation))
     #+END_SRC
+
+*** =smart-mode-line=
+    #+BEGIN_SRC emacs-lisp
+      (req-package smart-mode-line
+                   :require nyan-mode
+                   :init (sml/setup))
+    #+END_SRC
+
 
 *** =powerline=
     #+BEGIN_SRC emacs-lisp :tangle no
