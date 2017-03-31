@@ -5,7 +5,7 @@
 ;; a file `init.org` would generate `init.el`, obliterating this file in the
 ;; process. So your config org file should not be named "init.org".
 
-;; Initialize cask to get the correct version of org-mode 
+;; Initialize cask to get the correct version of org-mode
 
 ;; Added by Package.el.  This must come before configurations of
 ;; installed packages.  Don't delete this line.  If you don't want it,
@@ -17,7 +17,7 @@
 (cask-initialize)
 
 (require 'ob-tangle)
-(setq debug-on-error t)
+;(setq debug-on-error t)
 (org-babel-load-file
  (expand-file-name "emacs-init.org"
                    user-emacs-directory))
