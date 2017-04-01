@@ -77,6 +77,13 @@
      (load custom-file)
    #+END_SRC
 
+** Local Packages
+   #+BEGIN_SRC emacs-lisp
+     (add-to-list 'load-path "~/.emacs.d/packages")
+     (let ((default-directory "~/.emacs.d/packages"))
+       (normal-top-level-add-subdirs-to-load-path))
+   #+END_SRC
+
 * Keybindings with =bind-key=
   There are a number of ways to bind keys in Emacs, but I find
   =bind-key=, bundled with =use-package=, easier to work with and,
@@ -503,13 +510,6 @@
      (setq inhibit-startup-message t)
 
    #+END_SRC
-** local packages
-   #+BEGIN_SRC emacs-lisp
-     (add-to-list 'load-path "~/.emacs.d/packages")
-     (let ((default-directory "~/.emacs.d/packages"))
-       (normal-top-level-add-subdirs-to-load-path))
-   #+END_SRC
-
 ** jm-ndic
    #+BEGIN_SRC emacs-lisp
      (defun jm-ndic (word)
