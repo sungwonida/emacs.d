@@ -786,9 +786,7 @@
      (define-key global-map [(control down)]  'spawn-window-down)
      (define-key global-map [(control up)]  'spawn-window-up)
    #+END_SRC
-** Notes
-   TODO: Substitute hard-coded path to finding from root path with minimal argument
-         e.g. (defun inbox () ... (get-note "inbox.org"))
+** My Swiss army Knife
 #+BEGIN_SRC emacs-lisp
     (setq notes-root-path "~/my_Swiss_army_Knife/")
     (defun notes ()
