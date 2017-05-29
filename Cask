@@ -1,4 +1,4 @@
-(source melpa-stable)
+(source melpa)
 (source gnu)
 
 (depends-on "pallet")
