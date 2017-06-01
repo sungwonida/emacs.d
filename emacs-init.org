@@ -802,6 +802,10 @@
         (interactive)
         (find-file (concat notes-root-path "study/voca.org")))
 #+END_SRC
+** Nuts and Bolts for CB Projects
+#+BEGIN_SRC emacs-lisp
+   (org-babel-load-file (concat notes-root-path "development/cb_internal_functions.org"))
+#+END_SRC
 ** hook adjustment
    #+BEGIN_SRC emacs-lisp
      (setq dired-mode-hook (remove 'drupal-mode-bootstrap dired-mode-hook))
