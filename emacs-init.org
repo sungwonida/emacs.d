@@ -340,10 +340,19 @@
 
 ** Octave
    #+BEGIN_SRC emacs-lisp
-   (req-package octave-mode
-   :init
-   (add-to-list 'auto-mode-alist '("\\.m\\'" . octave-mode)))
+     (req-package octave-mode
+     :init
+     (add-to-list 'auto-mode-alist '("\\.m\\'" . octave-mode)))
+
+     (defun my-octave-mode-hook ()
+     (define-key octave-mode-map (kbd "M-s M-l") 'octave-send-line)
+     (define-key octave-mode-map (kbd "M-s M-b") 'octave-send-block)
+     (define-key octave-mode-map (kbd "M-s M-f") 'octave-send-defun)
+     (define-key octave-mode-map (kbd "M-s M-a") 'octave-send-buffer)
+     (define-key octave-mode-map (kbd "M-s M-r") 'octave-send-region))
+     (add-hook 'octave-mode-hook 'my-octave-mode-hook)
    #+END_SRC
+
 * IDE
   A few conveniences that I like to have in all my =prog-mode= buffers.
 
