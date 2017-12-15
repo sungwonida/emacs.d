@@ -15,7 +15,7 @@
      (awk-mode . "awk")
      (other . "gnu"))))
  '(cua-enable-cua-keys nil)
- '(cua-mode nil nil (cua-base))
+ '(cua-mode t nil (cua-base))
  '(custom-raised-buttons t)
  '(custom-safe-themes
    (quote
@@ -38,7 +38,6 @@
  '(global-semantic-idle-summary-mode t)
  '(global-semantic-stickyfunc-mode t)
  '(global-semanticdb-minor-mode t)
- '(gud-gdb-command-name "gdb --annotate=1 -i=mi ~/Development/cs/muon/csfp")
  '(image-dired-display-window-height-correction 0)
  '(image-dired-display-window-width-correction 1)
  '(indent-tabs-mode nil)
@@ -48,8 +47,9 @@
  '(ns-right-command-modifier (quote super))
  '(package-selected-packages
    (quote
-    (impatient-mode websocket ess auctex smartparens redo+ company cus-edit+ markdown-mode cider tern-auto-complete tern idris-mode auto-complete-auctex ac-math ghc shm flycheck-haskell haskell-mode evil-leader helm-ag color-identifiers-mode rainbow-mode rainbow-delimiters linum-relative magit helm-flycheck flycheck nyan-mode smart-mode-line helm-gtags helm-git-grep helm-ls-git popwin helm req-package pallet moe-theme evil)))
+    (plantuml-mode impatient-mode websocket ess auctex smartparens redo+ company cus-edit+ markdown-mode cider tern-auto-complete tern idris-mode auto-complete-auctex ac-math ghc shm flycheck-haskell haskell-mode evil-leader helm-ag color-identifiers-mode rainbow-mode rainbow-delimiters linum-relative magit helm-flycheck flycheck nyan-mode smart-mode-line helm-gtags helm-git-grep helm-ls-git popwin helm req-package pallet moe-theme evil)))
  '(php-completion-file "~/.emacs.d/php-completion-file")
+ '(plantuml-jar-path "/home/david/.emacs.d/packages/plantuml.1.2017.18.jar")
  '(recentf-mode t)
  '(safe-local-variable-values (quote ((dired-omit-mode . t))))
  '(scroll-bar-mode nil)

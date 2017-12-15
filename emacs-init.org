@@ -247,6 +247,17 @@
      (setq font-lock-comment-face 'italic)
      (set-face-foreground 'italic "gray50")
      (set-face-attribute 'region nil :background "#aaff90")
+
+     ; (font-family-list)C-j on *scratch* to list
+     (setq my-buffer-face-font-family '(:family "Latin Modern Mono"))
+     (defun my-buffer-face-mode ()
+        "Sets preconfigured font in current buffer"
+        (interactive)
+        (setq buffer-face-mode-face my-buffer-face-font-family)
+        (buffer-face-mode))
+     (define-key global-map (kbd "<f12>") 'my-buffer-face-mode)
+     ;(set-face-attribute 'default t :font "Latin Modern Mono")
+     (set-frame-font "Latin Modern Mono" nil t)
    #+END_SRC
 
 ** Cleanup
