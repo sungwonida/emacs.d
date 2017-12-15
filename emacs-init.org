@@ -353,6 +353,13 @@
      (add-hook 'octave-mode-hook 'my-octave-mode-hook)
    #+END_SRC
 
+** PlantUML
+   #+BEGIN_SRC emacs-lisp
+   (req-package plantuml-mode
+   :init
+   (add-to-list 'auto-mode-alist '("\\.plantuml\\'" . plantuml-mode)))
+   #+END_SRC
+
 * IDE
   A few conveniences that I like to have in all my =prog-mode= buffers.
 
