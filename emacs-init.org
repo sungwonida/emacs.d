@@ -257,7 +257,9 @@
         (buffer-face-mode))
      (define-key global-map (kbd "<f12>") 'my-buffer-face-mode)
      ;(set-face-attribute 'default t :font "Latin Modern Mono")
-     (set-frame-font "Latin Modern Mono" nil t)
+     (if (string-equal system-type "darwin") 
+         (set-frame-font "AppleMyungjo" nil t)
+         (set-frame-font "Latin Modern Mono" nil t))
    #+END_SRC
 
 ** Cleanup
