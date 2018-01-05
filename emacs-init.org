@@ -147,6 +147,7 @@
      ;(global-set-key (kbd "C-c h") 'helm-command-prefix)
      (global-unset-key (kbd "C-x c"))
      (define-key global-map (kbd "\C-x \C-b") 'helm-buffers-list)
+     (define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action)
 
      (setq helm-split-window-in-side-p               t
            helm-move-to-line-cycle-in-source         t
