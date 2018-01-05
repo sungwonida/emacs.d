@@ -257,7 +257,7 @@
         (buffer-face-mode))
      (define-key global-map (kbd "<f12>") 'my-buffer-face-mode)
      ;(set-face-attribute 'default t :font "Latin Modern Mono")
-     (if (string-equal system-type "darwin") 
+     (if (string-equal system-type "darwin")
          (set-frame-font "AppleMyungjo" nil t)
          (set-frame-font "Latin Modern Mono" nil t))
    #+END_SRC
@@ -521,8 +521,12 @@
 
 ** Whitespace
    #+BEGIN_SRC emacs-lisp
-     (add-hook 'prog-mode-hook
-                  (lambda () (add-to-list 'write-file-functions 'delete-trailing-whitespace)))
+    (add-hook 'c-mode-common-hook
+        (lambda () (add-to-list 'local-write-file-hooks 'delete-trailing-whitespace)))
+    (add-hook 'c-mode-hook
+        (lambda () (add-to-list 'local-write-file-hooks 'delete-trailing-whitespace)))
+    (add-hook 'c++-mode-hook
+        (lambda () (add-to-list 'local-write-file-hooks 'delete-trailing-whitespace)))
    #+END_SRC
 ** Keyboard Issue in Windows
    #+BEGIN_SRC emacs-lisp
