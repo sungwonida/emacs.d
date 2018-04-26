@@ -23,6 +23,8 @@
  '(default-frame-alist (quote ((menu-bar-lines . 1))))
  '(display-time-day-and-date t)
  '(display-time-mode t)
+ '(dropbox-consumer-key "2d5ky7qn3z6eo8n")
+ '(dropbox-consumer-secret "ekkaftx7u02tcy4")
  '(dynamic-completion-mode t)
  '(ecb-compile-window-temporally-enlarge (quote after-display))
  '(ecb-layout-name "left-dir-plus-speedbar")
@@ -47,7 +49,7 @@
  '(ns-right-command-modifier (quote super))
  '(package-selected-packages
    (quote
-    (plantuml-mode impatient-mode websocket ess auctex smartparens redo+ company cus-edit+ markdown-mode cider tern-auto-complete tern idris-mode auto-complete-auctex ac-math ghc shm flycheck-haskell haskell-mode evil-leader helm-ag color-identifiers-mode rainbow-mode rainbow-delimiters linum-relative magit helm-flycheck flycheck nyan-mode smart-mode-line helm-gtags helm-git-grep helm-ls-git popwin helm req-package pallet moe-theme evil)))
+    (google-translate plantuml-mode impatient-mode websocket ess auctex smartparens redo+ company cus-edit+ markdown-mode cider tern-auto-complete tern idris-mode auto-complete-auctex ac-math ghc shm flycheck-haskell haskell-mode evil-leader helm-ag color-identifiers-mode rainbow-mode rainbow-delimiters linum-relative magit helm-flycheck flycheck nyan-mode smart-mode-line helm-gtags helm-git-grep helm-ls-git popwin helm req-package pallet moe-theme evil)))
  '(php-completion-file "~/.emacs.d/php-completion-file")
  '(plantuml-jar-path "/home/david/.emacs.d/packages/plantuml.1.2017.18.jar")
  '(recentf-mode t)
@@ -73,5 +75,6 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(dired-directory ((t (:foreground "blue"))))
- '(font-lock-function-name-face ((t (:foreground "blue1" :slant italic :height 1.2 :family "DejaVu Serif"))))
+ '(font-lock-function-name-face ((t (:foreground "blue1" :height 1.0 :family "DejaVu Serif"))))
+ '(nxml-element-local-name ((t (:foreground "blue"))))
  '(shm-current-face ((t (:background "#525252")))))

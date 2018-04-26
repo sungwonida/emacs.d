@@ -1,2 +1,2 @@
 # emacs.d
-"emacs settings" for David J.
+"emacs settings" by David Jung
