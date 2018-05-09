@@ -586,6 +586,12 @@
      (define-key global-map [(control x) (j)] 'jm-ndic)
    #+END_SRC
 
+** google-translate
+   #+BEGIN_SRC emacs-lisp
+   (req-package google-translate)
+   (define-key global-map [(control x) (g)] 'google-translate-at-point)
+   #+END_SRC
+
 ** ibuffer
    #+BEGIN_SRC emacs-lisp
      (setq ibuffer-saved-filter-groups
