@@ -502,7 +502,7 @@
              (set-window-buffer new-win buffer)
              new-win))))
    ;; use display-buffer-alist instead of display-buffer-function if the following line won't work
-   (setq display-buffer-function 'display-new-buffer)
+   ;(setq display-buffer-function 'display-new-buffer)
    #+END_SRC
 
 * Annoyances
