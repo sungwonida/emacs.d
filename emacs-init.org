@@ -349,8 +349,29 @@
 
 ** Python
    #+BEGIN_SRC emacs-lisp
+     (req-package virtualenvwrapper
+        :config
+        (venv-initialize-interactive-shells) ;; if you want interactive shell support
+        (venv-initialize-eshell) ;; if you want eshell support
+        ;; note that setting `venv-location` is not necessary if you
+        ;; use the default location (`~/.virtualenvs`), or if the
+        ;; the environment variable `WORKON_HOME` points to the right place
+        ;(setq venv-location "/path/to/your/virtualenvs/")
+        )
+
+    (defun my-eshell-mode-hook ()
+        (setq eshell-prompt-function 
+            (lambda ()
+                (concat 
+                    (if venv-current-name 
+                        (concat "(" venv-current-name ") ") 
+                        "") 
+                    (#[0 "\300\301 !\302 \303U\203 \304\202 \305P\207"
+                        [abbreviate-file-name eshell/pwd user-uid 0 " # " " $ "]
+                        3])))))
+
      (when (executable-find "python")
-       (setq python-shell-interpreter "python3"))
+        (setq python-shell-interpreter "python3"))
    #+END_SRC
 
 ** Octave
@@ -888,6 +909,7 @@
         '(lambda () (define-key eshell-mode-map (kbd "C-c C-l") 'helm-eshell-history)))
     (add-hook 'eshell-mode-hook
         '(lambda () (setenv "TERM" "xterm-256color")))
+    (add-hook 'eshell-mode-hook 'my-eshell-mode-hook)
    #+END_SRC
 ** tdd
    Turn on/off the mode manually because it runs recompile automatically after saving any buffer
