@@ -349,8 +349,8 @@
 
 ** Python
    #+BEGIN_SRC emacs-lisp
-     (when (executable-find "python")
-       (setq python-shell-interpreter "python3"))
+     (when (executable-find "python3")
+       (setq python-shell-interpreter "ipython3"))
    #+END_SRC
 
 ** Octave
