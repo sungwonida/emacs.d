@@ -867,7 +867,9 @@
 #+END_SRC
 ** Nuts and Bolts for CB Projects
 #+BEGIN_SRC emacs-lisp
-   (org-babel-load-file (concat notes-root-path "development/cb_internal_functions.org"))
+    (setq cb_functions_file (concat notes-root-path "development/cb_internal_functions.org"))
+    (if (file-directory-p cb_functions_file)
+        (org-babel-load-file cb_functions_file))
 #+END_SRC
 ** hook adjustment
    #+BEGIN_SRC emacs-lisp
