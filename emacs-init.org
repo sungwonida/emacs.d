@@ -246,6 +246,7 @@
      (setq font-lock-comment-face 'italic)
      (set-face-foreground 'italic "gray50")
      (set-face-attribute 'region nil :background "#aaff90")
+     (add-hook 'prog-mode-hook '(lambda () (setq tab-width 4)))
    #+END_SRC
 
 ** Cleanup
@@ -556,6 +557,7 @@
      (setq inhibit-startup-message t)
 
    #+END_SRC
+
 ** jm-ndic
    #+BEGIN_SRC emacs-lisp
      (defun jm-ndic (word)
