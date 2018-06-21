@@ -179,23 +179,20 @@
 
 * Org
   #+BEGIN_SRC emacs-lisp
-     (req-package org
-       :config
-       (progn
-         (add-hook 'org-mode-hook
-                   '(lambda ()
-                      (setq mode-name " ꙮ ")))
-         (bind-key* "C-c c" 'org-capture)
-         (bind-key* "C-c l" 'org-store-link)
-         (bind-key* "C-c a" 'org-agenda)
-         (bind-key* "C-c b" 'org-iswitch))
-       :init
-       (progn
-         (setq org-image-actual-width nil)
-         (setq org-html-inline-image-rules
-         '(("file" . "\\.\\(jpeg\\|jpg\\|png\\|gif\\|svg\\|bmp\\)\\'")
-         ("http" . "\\.\\(jpeg\\|jpg\\|png\\|gif\\|svg\\|bmp\\)\\'")
-         ("https" . "\\.\\(jpeg\\|jpg\\|png\\|gif\\|svg\\|bmp\\)\\'")))))
+    (req-package org
+      :config
+      (progn
+        (bind-key* "C-c c" 'org-capture)
+        (bind-key* "C-c l" 'org-store-link)
+        (bind-key* "C-c a" 'org-agenda)
+        (bind-key* "C-c b" 'org-iswitch))
+      :init
+      (progn
+        (setq org-image-actual-width nil)
+        (setq org-html-inline-image-rules
+        '(("file" . "\\.\\(jpeg\\|jpg\\|png\\|gif\\|svg\\|bmp\\)\\'")
+        ("http" . "\\.\\(jpeg\\|jpg\\|png\\|gif\\|svg\\|bmp\\)\\'")
+        ("https" . "\\.\\(jpeg\\|jpg\\|png\\|gif\\|svg\\|bmp\\)\\'")))))
   #+END_SRC
 
 * UI
@@ -242,26 +239,24 @@
          (unicode-fonts-setup))))
      (add-to-list 'default-frame-alist '(font . "NanumGothicCoding-11"))
      (add-to-list 'default-frame-alist '(line-spacing . 2))
-     (when (not (eq system-type 'cygwin))
-       (set-fontset-font "fontset-default" '(#x1100 . #xffdc) '("나눔고딕코딩" . "unicode-bmp")))
      (set-language-environment '"Korean")
      (prefer-coding-system 'utf-8)
      (setq font-lock-comment-face 'italic)
      (set-face-foreground 'italic "gray50")
      (set-face-attribute 'region nil :background "#aaff90")
 
-     ; (font-family-list)C-j on *scratch* to list
-     (setq my-buffer-face-font-family '(:family "Latin Modern Mono"))
-     (defun my-buffer-face-mode ()
-        "Sets preconfigured font in current buffer"
-        (interactive)
-        (setq buffer-face-mode-face my-buffer-face-font-family)
-        (buffer-face-mode))
-     (define-key global-map (kbd "<f12>") 'my-buffer-face-mode)
-     ;(set-face-attribute 'default t :font "Latin Modern Mono")
-     (if (string-equal system-type "darwin")
-         (set-frame-font "AppleMyungjo" nil t)
-         (set-frame-font "Latin Modern Mono" nil t))
+     ;; ; (font-family-list)C-j on *scratch* to list
+     ;; (setq my-buffer-face-font-family '(:family "Latin Modern Mono"))
+     ;; (defun my-buffer-face-mode ()
+     ;;    "Sets preconfigured font in current buffer"
+     ;;    (interactive)
+     ;;    (setq buffer-face-mode-face my-buffer-face-font-family)
+     ;;    (buffer-face-mode))
+     ;; (define-key global-map (kbd "<f12>") 'my-buffer-face-mode)
+     ;; ;(set-face-attribute 'default t :font "Latin Modern Mono")
+     ;; (if (string-equal system-type "darwin")
+     ;;     (set-frame-font "AppleMyungjo" nil t)
+     ;;     (set-frame-font "Latin Modern Mono" nil t))
    #+END_SRC
 
 ** Cleanup
