@@ -239,24 +239,13 @@
          (unicode-fonts-setup))))
      (add-to-list 'default-frame-alist '(font . "NanumGothicCoding-11"))
      (add-to-list 'default-frame-alist '(line-spacing . 2))
+     (when (not (eq system-type 'cygwin))
+       (set-fontset-font "fontset-default" '(#x1100 . #xffdc) '("나눔고딕코딩" . "unicode-bmp")))
      (set-language-environment '"Korean")
      (prefer-coding-system 'utf-8)
      (setq font-lock-comment-face 'italic)
      (set-face-foreground 'italic "gray50")
      (set-face-attribute 'region nil :background "#aaff90")
-
-     ;; ; (font-family-list)C-j on *scratch* to list
-     ;; (setq my-buffer-face-font-family '(:family "Latin Modern Mono"))
-     ;; (defun my-buffer-face-mode ()
-     ;;    "Sets preconfigured font in current buffer"
-     ;;    (interactive)
-     ;;    (setq buffer-face-mode-face my-buffer-face-font-family)
-     ;;    (buffer-face-mode))
-     ;; (define-key global-map (kbd "<f12>") 'my-buffer-face-mode)
-     ;; ;(set-face-attribute 'default t :font "Latin Modern Mono")
-     ;; (if (string-equal system-type "darwin")
-     ;;     (set-frame-font "AppleMyungjo" nil t)
-     ;;     (set-frame-font "Latin Modern Mono" nil t))
    #+END_SRC
 
 ** Cleanup
@@ -582,10 +571,11 @@
    #+END_SRC
 
 ** google-translate
-   #+BEGIN_SRC emacs-lisp
-   (req-package google-translate)
-   (define-key global-map [(control x) (g)] 'google-translate-at-point)
-   #+END_SRC
+    #+BEGIN_SRC emacs-lisp
+    (req-package google-translate)
+    (define-key global-map [(control x) (g)] 'google-translate-at-point)
+    (define-key global-map [(control x) (control g)] 'google-translate-query-translate)
+    #+END_SRC
 
 ** ibuffer
    #+BEGIN_SRC emacs-lisp
@@ -656,68 +646,6 @@
        (interactive)
        (insert (format-time-string "%Y-%m-%d %a %p %l:%M")))
    #+END_SRC
-** TAGS creating
-   #+BEGIN_SRC emacs-lisp
-     (defvar c-files-regex ".*\\.\\(c\\|cpp\\|h\\|hpp\\)"
-       "A regular expression to match any c/c++ related files under a directory")
-     (defun my-semantic-parse-dir (root regex)
-       "
-        This function is an attempt of mine to force semantic to
-        parse all source files under a root directory. Arguments:
-        -- root: The full path to the root directory
-        -- regex: A regular expression against which to match all files in the directory
-       "
-       (let (
-             ;;make sure that root has a trailing slash and is a dir
-             (root (file-name-as-directory root))
-             (files (directory-files root t ))
-            )
-         ;; remove current dir and parent dir from list
-         (setq files (delete (format "%s." root) files))
-         (setq files (delete (format "%s.." root) files))
-         ;; remove any known version control directories
-         (setq files (delete (format "%s.git" root) files))
-         (setq files (delete (format "%s.hg" root) files))
-         (while files
-           (setq file (pop files))
-           (if (not(file-accessible-directory-p file))
-               ;;if it's a file that matches the regex we seek
-               (progn (when (string-match-p regex file)
-                        (save-excursion
-                          (semanticdb-file-table-object file))
-                ))
-               ;;else if it's a directory
-               (my-semantic-parse-dir file regex)
-           )
-          )
-       )
-     )
-
-     (defun my-semantic-parse-current-dir (regex)
-       "
-        Parses all files under the current directory matching regex
-       "
-       (my-semantic-parse-dir (file-name-directory(buffer-file-name)) regex)
-     )
-
-     (defun create-tags-curdir ()
-       "
-        Parses all the c/c++ related files under the current directory
-        and inputs their data into semantic
-       "
-       (interactive)
-       (my-semantic-parse-current-dir c-files-regex)
-     )
-
-     (defun create-tags (dir)
-       "Prompts the user for a directory and parses all c/c++ related files
-        under the directory
-       "
-       (interactive (list (read-directory-name "Provide the directory to search in:")))
-       (my-semantic-parse-dir (expand-file-name dir) c-files-regex)
-     )
-   #+END_SRC
-
 ** Dired Enhancements
    #+BEGIN_SRC emacs-lisp
      (eval-after-load "dired"
@@ -786,23 +714,6 @@
                  (local-set-key (kbd "C-c <down>") 'hs-hide-all)
                  (local-set-key (kbd "C-c <up>") 'hs-show-all)))
    #+END_SRC
-** Ido
-;   #+BEGIN_SRC emacs-lisp
-;     (req-package ido-vertical-mode
-;       (ido-mode t)
-;       (setq ido-vertical-define-keys 'C-n-and-C-p-only)
-;       (setq ido-vertical-show-count t)
-;       (setq ido-use-faces t)
-;       (set-face-attribute 'ido-vertical-first-match-face nil
-;                           :background nil
-;                           :foreground "orange")
-;       (set-face-attribute 'ido-vertical-only-match-face nil
-;                           :background nil
-;                           :foreground nil)
-;       (set-face-attribute 'ido-vertical-match-face nil
-;                           :foreground nil)
-;       (ido-vertical-mode t))
-;   #+END_SRC
 ** c-highlight
    #+BEGIN_SRC emacs-lisp
      (defun cpp-highlight-if-0/1 ()
@@ -868,13 +779,9 @@
 ** Nuts and Bolts for CB Projects
 #+BEGIN_SRC emacs-lisp
     (setq cb_functions_file (concat notes-root-path "development/cb_internal_functions.org"))
-    (if (file-directory-p cb_functions_file)
+    (if (file-exists-p cb_functions_file)
         (org-babel-load-file cb_functions_file))
 #+END_SRC
-** hook adjustment
-   #+BEGIN_SRC emacs-lisp
-     (setq dired-mode-hook (remove 'drupal-mode-bootstrap dired-mode-hook))
-   #+END_SRC
 ** Last History
    #+BEGIN_SRC emacs-lisp
      (define-key global-map [(control x)(control r)]  'recentf-open-files)
