@@ -574,9 +574,11 @@
 
 ** google-translate
     #+BEGIN_SRC emacs-lisp
-    (req-package google-translate)
-    (define-key global-map [(control x) (g)] 'google-translate-at-point)
-    (define-key global-map [(control x) (control g)] 'google-translate-query-translate)
+    (req-package google-translate
+        (setq google-translate-default-source-language "en")
+        (setq google-translate-default-target-language "ko")
+        (define-key global-map [(control x) (g)] 'google-translate-at-point)
+        (define-key global-map [(control x) (control g)] 'google-translate-query-translate))
     #+END_SRC
 
 ** ibuffer

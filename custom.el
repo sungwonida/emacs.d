@@ -75,6 +75,5 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(dired-directory ((t (:foreground "blue"))))
- '(font-lock-function-name-face ((t (:foreground "blue1" :height 1.0 :family "DejaVu Serif"))))
  '(nxml-element-local-name ((t (:foreground "blue"))))
  '(shm-current-face ((t (:background "#525252")))))
