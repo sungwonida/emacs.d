@@ -334,23 +334,32 @@
 
 ** Python
    #+BEGIN_SRC emacs-lisp
-     (when (executable-find "python3")
-       (setq python-shell-interpreter "python3"))
+   (when (executable-find "python3")
+    (setq python-shell-interpreter "python3"))
    #+END_SRC
+
+   #+BEGIN_SRC emacs-lisp
+   (req-package jedi
+    :config (add-hook 'python-mode-hook 'jedi:setup)
+            (setq jedi:use-shortcuts t)
+            (setq jedi:complete-on-dot t))
+   #+END_SRC
+   Don't forget to M-x jedi:install-server
+   Take a look at the [[http://tkf.github.io/emacs-jedi/latest/#jedi:install-server][documentation]].
 
 ** Octave
    #+BEGIN_SRC emacs-lisp
-     (req-package octave-mode
-     :init
-     (add-to-list 'auto-mode-alist '("\\.m\\'" . octave-mode)))
+   (req-package octave-mode
+    :init
+    (add-to-list 'auto-mode-alist '("\\.m\\'" . octave-mode)))
 
-     (defun my-octave-mode-hook ()
-     (define-key octave-mode-map (kbd "M-s M-l") 'octave-send-line)
-     (define-key octave-mode-map (kbd "M-s M-b") 'octave-send-block)
-     (define-key octave-mode-map (kbd "M-s M-f") 'octave-send-defun)
-     (define-key octave-mode-map (kbd "M-s M-a") 'octave-send-buffer)
-     (define-key octave-mode-map (kbd "M-s M-r") 'octave-send-region))
-     (add-hook 'octave-mode-hook 'my-octave-mode-hook)
+   (defun my-octave-mode-hook ()
+    (define-key octave-mode-map (kbd "M-s M-l") 'octave-send-line)
+    (define-key octave-mode-map (kbd "M-s M-b") 'octave-send-block)
+    (define-key octave-mode-map (kbd "M-s M-f") 'octave-send-defun)
+    (define-key octave-mode-map (kbd "M-s M-a") 'octave-send-buffer)
+    (define-key octave-mode-map (kbd "M-s M-r") 'octave-send-region))
+   (add-hook 'octave-mode-hook 'my-octave-mode-hook)
    #+END_SRC
 
 ** PlantUML
