@@ -455,16 +455,6 @@
          (add-hook 'ruby-mode-hook 'color-identifiers-mode)))
    #+END_SRC
 
-** Completion
-   #+BEGIN_SRC emacs-lisp
-     (req-package auto-complete-config
-       :ensure auto-complete
-       :init
-       (progn
-         (ac-config-default)
-         (setq ac-auto-start 3)))
-   #+END_SRC
-
 ** Grepping
    Except really I'm =ag=ging.
    #+BEGIN_SRC emacs-lisp
