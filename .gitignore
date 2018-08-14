@@ -16,3 +16,4 @@ eshell/
 bookmarks
 .DS_Store
 .python-environments/
+custom.el
