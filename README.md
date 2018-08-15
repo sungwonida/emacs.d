@@ -1,2 +1,2 @@
-# es
-"emacs settings"
+# emacs.d
+"emacs settings" by David Jung
