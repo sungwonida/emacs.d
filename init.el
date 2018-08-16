@@ -307,6 +307,10 @@
 (add-hook 'python-mode-hook 'my-python-mode-hook)
 (define-key lisp-mode-shared-map (kbd "M-m") 'helm-semantic-or-imenu)
 
+;;; smartparens
+(diminish 'smartparens-mode "()")
+(smartparens-global-mode t)
+
 ;; My swiss army knife (notes, todos, agenda, etc.)
 (setq notes-root-path "~/my_Swiss_army_Knife/")
 (defun notes ()

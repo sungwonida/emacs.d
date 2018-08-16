@@ -10,7 +10,7 @@
  '(ns-command-modifier (quote meta))
  '(package-selected-packages
    (quote
-    (virtualenvwrapper unicode-fonts tern-auto-complete smart-mode-line rainbow-mode rainbow-delimiters popwin plantuml-mode pallet nyan-mode markdown-mode magit jedi impatient-mode helm-ls-git helm-gtags helm-git-grep helm-flycheck helm-ag google-translate exec-path-from-shell edit-server diminish company color-identifiers-mode cider bind-key anzu)))
+    (smartparens virtualenvwrapper unicode-fonts tern-auto-complete smart-mode-line rainbow-mode rainbow-delimiters popwin plantuml-mode pallet nyan-mode markdown-mode magit jedi impatient-mode helm-ls-git helm-gtags helm-git-grep helm-flycheck helm-ag google-translate exec-path-from-shell edit-server diminish company color-identifiers-mode cider bind-key anzu)))
  '(tab-width 4))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.

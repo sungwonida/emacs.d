@@ -29,6 +29,7 @@
 (depends-on "server")
 (depends-on "simple-httpd")
 (depends-on "smart-mode-line")
+(depends-on "smartparens")
 (depends-on "spinner")
 (depends-on "tern")
 (depends-on "tern-auto-complete")
