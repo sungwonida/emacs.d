@@ -1,3 +1,10 @@
+
+;; Added by Package.el.  This must come before configurations of
+;; installed packages.  Don't delete this line.  If you don't want it,
+;; just comment it out by adding a semicolon to the start of the line.
+;; You may delete these explanatory comments.
+(package-initialize)
+
 (require 'cask "~/.cask/cask.el")
 (cask-initialize)
 (require 'pallet)
@@ -71,12 +78,16 @@
 ;; smart-mode-line
 (sml/setup)
 
+;; unicode
+(unicode-fonts-setup)
+
 ;; face
+:;; Mocano for Linux
 ;;; http://www.gringod.com/wp-upload/software/Fonts/Monaco_Linux.ttf
 ;;; Copy the downloaded font into ~/.fonts/
 ;;; Run sudo fc-cache -fv
-(add-to-list 'default-frame-alist '(font . "Monaco"))
-;;(add-to-list 'default-frame-alist '(line-spacing . 2))
+(add-to-list 'default-frame-alist '(font . "Monaco-10"))
+;; (add-to-list 'default-frame-alist '(line-spacing . 2))
 
 ;; gui forms
 (scroll-bar-mode -1)

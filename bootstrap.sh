@@ -15,14 +15,17 @@ if [ -z $cask ]; then
     echo "# Cask" >> ~/.bashrc
     echo "export PATH=\"$HOME/.cask/bin:\$PATH\"" >> ~/.bashrc
 fi
+# Cask bootstrapping is done
 
-# Investigate whether ~/.emacs.d/.cask/[VERSION]/bootstrap is
-# already been existing or not
-emacs_version=`emacs --version | head -n1 | cut -d' ' -f3`
-elpa="$HOME/.emacs.d/.cask/$emacs_version/elpa"
-if [ ! -d "$elpa" ]; then
-    # If not found, install the packages specified in Cask
-    # and their dependancies
-    echo "Installing packages & dependancies"
-    cask install
+# Install the packages and their dependancies
+echo "Installing packages & dependancies"
+cask install
+
+# Install the font if needed
+kernel=`uname -s`
+if [ "$kernel" == "Linux" ]; then
+    monaco=`fc-list -f '%{file}\n' | grep -i "monaco"`
+    if [ -z $monaco ]; then
+        ./local/install_fonts_linux.sh ./local/fonts
+    fi
 fi
