@@ -1,5 +1,5 @@
-(source melpa)
 (source gnu)
+(source melpa)
 
 (depends-on "anzu")
 (depends-on "bind-key")
@@ -33,3 +33,4 @@
 (depends-on "tern")
 (depends-on "tern-auto-complete")
 (depends-on "unicode-fonts")
+(depends-on "virtualenvwrapper")
