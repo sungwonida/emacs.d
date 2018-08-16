@@ -328,6 +328,7 @@
     (org-babel-load-file cb_functions_file))
 
 ;; Recent files
+(recentf-mode)
 (define-key global-map [(control x)(control r)]  'recentf-open-files)
 
 ;; eshell
