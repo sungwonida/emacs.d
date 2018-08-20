@@ -82,10 +82,13 @@
 (unicode-fonts-setup)
 
 ;; face
-:;; Mocano for Linux
-;;; http://www.gringod.com/wp-upload/software/Fonts/Monaco_Linux.ttf
-;;; Copy the downloaded font into ~/.fonts/
-;;; Run sudo fc-cache -fv
+;;; Monaco for Linux
+;;;; 1) http://www.gringod.com/wp-upload/software/Fonts/Monaco_Linux.ttf
+;;;; 2) Copy the downloaded font into ~/.fonts/
+;;;; 3) Run sudo fc-cache -fv
+;;; Monaco for Windows
+;;;; 1) http://www.gringod.com/wp-upload/software/Fonts/Monaco_5.1.ttf
+;;;; 2) Copy the downloaded font into %SystemRoot%/Fonts/
 (add-to-list 'default-frame-alist '(font . "Monaco-10"))
 ;; (add-to-list 'default-frame-alist '(line-spacing . 2))
 
