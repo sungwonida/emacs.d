@@ -249,9 +249,9 @@
 (set-face-attribute 'region nil :background "#aaff90")
 (add-hook 'prog-mode-hook '(lambda () (setq tab-width 4)))
 
-;;; EAssist
 (global-set-key [(meta return)] 'semantic-complete-analyze-inline)
-(global-ede-mode 1)
+(require 'eassist)
+;; (global-ede-mode 1)
 
 ;;; C
 (add-hook 'c-mode-common-hook
