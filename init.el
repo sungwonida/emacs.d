@@ -91,6 +91,8 @@
 ;;;; 2) Copy the downloaded font into %SystemRoot%/Fonts/
 (add-to-list 'default-frame-alist '(font . "Monaco-10"))
 ;; (add-to-list 'default-frame-alist '(line-spacing . 2))
+(set-language-environment '"Korean")
+(prefer-coding-system 'utf-8)
 
 ;; gui forms
 (scroll-bar-mode -1)
