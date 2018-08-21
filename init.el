@@ -78,7 +78,7 @@
 ;; smart-mode-line
 (sml/setup)
 
-;; font
+;; face
 ;;; Monaco for Linux
 ;;;; 1) http://www.gringod.com/wp-upload/software/Fonts/Monaco_Linux.ttf
 ;;;; 2) Copy the downloaded font into ~/.fonts/
@@ -86,11 +86,7 @@
 ;;; Monaco for Windows
 ;;;; 1) http://www.gringod.com/wp-upload/software/Fonts/Monaco_5.1.ttf
 ;;;; 2) Copy the downloaded font into %SystemRoot%/Fonts/
-(set-language-environment '"Korean")
-(prefer-coding-system 'utf-8)
-(cond ((string-equal system-type "windows-nt") (unicode-fonts-setup)))
 
-;; gui form
 (if (display-graphic-p)
     (progn
       (setq initial-frame-alist
@@ -108,6 +104,12 @@
               (height . 30)
               (font . "Monaco-10"))))
   (setq scroll-step 1))
+
+(set-language-environment '"Korean")
+(prefer-coding-system 'utf-8)
+(cond ((string-equal system-type "windows-nt") (unicode-fonts-setup)))
+(when (not (eq system-type 'cygwin))
+  (set-fontset-font "fontset-default" '(#x1100 . #xffdc) '("나눔고딕코딩" . "unicode-bmp")))
 
 ;; anzu
 (global-anzu-mode +1)
