@@ -26,6 +26,6 @@ kernel=`uname -s`
 if [ "$kernel" == "Linux" ]; then
     monaco=`fc-list -f '%{file}\n' | grep -i "monaco"`
     if [ -z $monaco ]; then
-        ./local/install_fonts_linux.sh ./local/fonts
+        ./local/install_fonts_linux.sh ./local/fonts/linux
     fi
 fi
