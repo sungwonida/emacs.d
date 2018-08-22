@@ -143,6 +143,7 @@
 ;; (bind-key "C-c ! h" 'helm-flycheck flycheck-mode-map)
 
 ;; magit
+(diminish 'magit-auto-revert-mode)
 (define-key global-map (kbd "C-x v s") 'magit-status)
 (define-key global-map (kbd "C-x v y") 'magit-show-refs-popup)
 (define-key global-map (kbd "C-x v l") 'magit-log-head)
