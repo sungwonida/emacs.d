@@ -89,21 +89,15 @@
 
 (if (display-graphic-p)
     (progn
-      (setq initial-frame-alist
-            '(
-              (scroll-bar-lines . 0)
-              (tool-bar-lines . 0)
-              (width . 164) ; chars
-              (height . 30) ; lines
-              (font . "Monaco-10")))
       (setq default-frame-alist
             '(
-              (scroll-bar-lines . 0)
-              (tool-bar-lines . 0)
-              (width . 164)
+              (width . 162)
               (height . 30)
-              (font . "Monaco-10"))))
-  (setq scroll-step 1))
+              (font . "Monaco-10")))
+      (tool-bar-mode -1)
+      (menu-bar-mode -1)
+      (scroll-bar-mode -1)
+      (setq scroll-step 1)))
 
 (set-language-environment '"Korean")
 (prefer-coding-system 'utf-8)
