@@ -63,12 +63,33 @@
 (bind-key* "C-c c" 'org-capture)
 (bind-key* "C-c l" 'org-store-link)
 (bind-key* "C-c a" 'org-agenda)
-(bind-key* "C-c b" 'org-iswitch)
+(bind-key* "C-c b" 'org-switchb)
 (setq org-image-actual-width nil)
 (setq org-html-inline-image-rules
       '(("file" . "\\.\\(jpeg\\|jpg\\|png\\|gif\\|svg\\|bmp\\)\\'")
         ("http" . "\\.\\(jpeg\\|jpg\\|png\\|gif\\|svg\\|bmp\\)\\'")
         ("https" . "\\.\\(jpeg\\|jpg\\|png\\|gif\\|svg\\|bmp\\)\\'")))
+
+;;; My swiss army knife (notes, todos, agenda, etc.)
+(setq org-root-path "~/my_Swiss_army_Knife/")
+(defun notes ()
+  "Switch to my notes dir."
+  (interactive)
+  (find-file org-root-path))
+(defun inbox ()
+  "Show my own inbox."
+  (interactive)
+  (find-file (concat org-root-path "inbox.org")))
+(defun voca ()
+  "Show my vocabulary tables."
+  (interactive)
+  (find-file (concat org-root-path "study/voca.org")))
+
+(require 'find-lisp)
+(setq org-agenda-files (find-lisp-find-files
+                        org-root-path
+                        "\\.org$"
+                        ))
 
 ;; nyan-mode
 (nyan-mode)
@@ -322,23 +343,8 @@
 (diminish 'smartparens-mode "()")
 (smartparens-global-mode t)
 
-;; My swiss army knife (notes, todos, agenda, etc.)
-(setq notes-root-path "~/my_Swiss_army_Knife/")
-(defun notes ()
-  "Switch to my notes dir."
-  (interactive)
-  (find-file notes-root-path))
-(defun inbox ()
-  "Show my own inbox."
-  (interactive)
-  (find-file (concat notes-root-path "inbox.org")))
-(defun voca ()
-  "Show my vocabulary tables."
-  (interactive)
-  (find-file (concat notes-root-path "study/voca.org")))
-
 ;; Nuts and Bolts for CB Projects
-(setq cb_functions_file (concat notes-root-path "development/cb_internal_functions.org"))
+(setq cb_functions_file (concat org-root-path "development/cb_internal_functions.org"))
 (if (file-exists-p cb_functions_file)
     (org-babel-load-file cb_functions_file))
 
