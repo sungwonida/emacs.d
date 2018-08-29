@@ -23,6 +23,7 @@
  '(global-auto-revert-mode t)
  '(indent-tabs-mode nil)
  '(ns-command-modifier (quote meta))
+ '(org-log-done (quote time))
  '(package-selected-packages
    (quote
     (elpy py-autopep8 smartparens unicode-fonts tern-auto-complete smart-mode-line rainbow-mode rainbow-delimiters popwin plantuml-mode pallet nyan-mode markdown-mode magit jedi impatient-mode helm-ls-git helm-gtags helm-git-grep helm-flycheck helm-ag google-translate exec-path-from-shell edit-server diminish company color-identifiers-mode cider bind-key anzu)))
