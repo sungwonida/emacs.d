@@ -135,11 +135,6 @@
             (tern-mode t)))
 (tern-ac-setup)
 
-;; jedi
-(add-hook 'python-mode-hook 'jedi:setup)
-(setq jedi:use-shortcuts t)
-(setq jedi:complete-on-dot t)
-
 ;; octave
 (defun my-octave-mode-hook ()
   (define-key octave-mode-map (kbd "M-s M-l") 'octave-send-line)
@@ -338,6 +333,18 @@
   (define-key python-mode-map (kbd "M-m") 'helm-semantic-or-imenu))
 (add-hook 'python-mode-hook 'my-python-mode-hook)
 (define-key lisp-mode-shared-map (kbd "M-m") 'helm-semantic-or-imenu)
+
+;;;; elpy
+(elpy-enable)
+
+;;;; jedi
+(add-hook 'python-mode-hook 'jedi:setup)
+(setq jedi:use-shortcuts t)
+(setq jedi:complete-on-dot t)
+
+;;;; py-autopep8
+(add-hook 'python-mode-hook 'py-autopep8-enable-on-save)
+(setq py-autopep8-options '("--max-line-length=80"))
 
 ;;; smartparens
 (diminish 'smartparens-mode "()")
