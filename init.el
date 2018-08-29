@@ -192,8 +192,8 @@
 ;; Google Translate
 (setq google-translate-default-source-language "en")
 (setq google-translate-default-target-language "ko")
-(define-key global-map [(control x) (g)] 'google-translate-at-point)
-(define-key global-map [(control x) (control g)] 'google-translate-query-translate)
+(bind-key* "C-x g" 'google-translate-at-point)
+(bind-key* "C-x C-g" 'google-translate-query-translate)
 
 ;; company
 (defun my-company-mode-hook ()
