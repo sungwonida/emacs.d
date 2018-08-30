@@ -208,8 +208,9 @@
 ;; Google Translate
 (setq google-translate-default-source-language "en")
 (setq google-translate-default-target-language "ko")
-(bind-key* "C-x g" 'google-translate-at-point)
-(bind-key* "C-x C-g" 'google-translate-query-translate)
+(bind-key* "C-M-g" 'google-translate-at-point)
+(bind-key* "M-g t" 'google-translate-query-translate)
+(bind-key* "M-g M-t" 'google-translate-query-translate)
 
 ;; company
 (defun my-company-mode-hook ()
