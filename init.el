@@ -47,17 +47,17 @@
 (add-hook 'c-mode-hook 'my-helm-mode-hook)
 (add-hook 'c++-mode-hook 'my-helm-mode-hook)
 (setq helm-split-window-in-side-p               t
-  helm-move-to-line-cycle-in-source         t
-  helm-ff-search-library-in-sexp            t
-  helm-scroll-amount                        8
-  helm-ff-file-name-history-use-recentf     t
-  helm-gtags-ignore-case                    t
-  helm-gtags-auto-update                    t
-  helm-gtags-use-input-at-cursor            t
-  helm-gtags-pulse-at-cursor                t
-  helm-gtags-prefix-key                     "\C-cg"
-  helm-gtags-suggested-key-mapping          t
-  )
+      helm-move-to-line-cycle-in-source         t
+      helm-ff-search-library-in-sexp            t
+      helm-scroll-amount                        8
+      helm-ff-file-name-history-use-recentf     t
+      helm-gtags-ignore-case                    t
+      helm-gtags-auto-update                    t
+      helm-gtags-use-input-at-cursor            t
+      helm-gtags-pulse-at-cursor                t
+      helm-gtags-prefix-key                     "\C-cg"
+      helm-gtags-suggested-key-mapping          t
+      )
 
 ;; org-mode
 (bind-key* "C-c c" 'org-capture)
@@ -86,10 +86,18 @@
   (find-file (concat org-root-path "study/voca.org")))
 
 (require 'find-lisp)
-(setq org-agenda-files (find-lisp-find-files
-                        org-root-path
-                        "\\.org$"
-                        ))
+(defun org-agenda-files-load-files ()
+  (interactive)
+  (setq org-agenda-files
+        (find-lisp-find-files
+         org-root-path
+         "\\.org$")))
+(add-hook 'after-init-hook 'org-agenda-files-load-files)
+
+(setq org-default-notes-file
+      (concat
+       org-root-path
+       "inbox.org"))
 
 ;; nyan-mode
 (nyan-mode)
