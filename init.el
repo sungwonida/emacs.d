@@ -224,8 +224,6 @@
 (defun my-company-mode-hook ()
   (company-mode t)
   (define-key company-mode-map [backtab] 'company-complete))
-(add-hook 'prog-mode-hook 'my-company-mode-hook)
-(add-hook 'eshell-mode-hook 'my-company-mode-hook)
 
 ;; quick insert-date
 (defun insert-date ()
@@ -279,6 +277,8 @@
 (add-hook 'dired-mode-hook 'my-dired-mode-hook)
 
 ;; Development
+(add-hook 'prog-mode-hook 'my-company-mode-hook)
+
 ;;; Font
 (setq font-lock-comment-face 'italic)
 (set-face-foreground 'italic "gray50")
@@ -290,18 +290,20 @@
 ;; (global-ede-mode 1)
 
 ;;; C
+(add-to-list 'auto-mode-alist '("\\.cpp\\'" . c++-mode))
 (add-hook 'c-mode-common-hook
           (lambda () (add-to-list 'local-write-file-hooks 'delete-trailing-whitespace)))
 (add-hook 'c-mode-hook
           (lambda () (add-to-list 'local-write-file-hooks 'delete-trailing-whitespace)))
 (add-hook 'c++-mode-hook
           (lambda () (add-to-list 'local-write-file-hooks 'delete-trailing-whitespace)))
+(add-hook 'c-or-c++-mode-hook
+          (lambda () (add-to-list 'local-write-file-hooks 'delete-trailing-whitespace)))
 
 (defun my-c-mode-common-hook ()
   (define-key c-mode-base-map (kbd "M-o") 'eassist-switch-h-cpp)
   (define-key c-mode-base-map (kbd "M-m") 'helm-semantic-or-imenu))
 (add-hook 'c-mode-common-hook 'my-c-mode-common-hook)
-
 (add-hook 'c-mode-common-hook
           (lambda()
             (hs-minor-mode t)
@@ -370,7 +372,7 @@
 
 ;; eshell
 (add-hook 'eshell-mode-hook
-          '(lambda () (define-key eshell-mode-map (kbd "C-c C-l") 'helm-eshell-history)))
+          '(lambda () (define-key eshell-mode-map (kbd "C-c C-l") 'helm-eshell-history 'my-company-mode-hook)))
 
 ;; redo
 (require 'redo+)
