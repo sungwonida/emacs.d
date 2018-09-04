@@ -216,9 +216,16 @@
 ;; Google Translate
 (setq google-translate-default-source-language "en")
 (setq google-translate-default-target-language "ko")
+(defun my-google-translate-query-translate-ko-to-en ()
+  (interactive)
+  (let ((google-translate-default-source-language "ko")
+        (google-translate-default-target-language "en"))
+    (google-translate-query-translate)))
 (bind-key* "C-M-g" 'google-translate-at-point)
 (bind-key* "M-g t" 'google-translate-query-translate)
 (bind-key* "M-g M-t" 'google-translate-query-translate)
+(bind-key* "M-g k t" 'my-google-translate-query-translate-ko-to-en)
+(bind-key* "M-g M-k M-t" 'my-google-translate-query-translate-ko-to-en)
 
 ;; company
 (defun my-company-mode-hook ()
@@ -291,14 +298,6 @@
 
 ;;; C
 (add-to-list 'auto-mode-alist '("\\.cpp\\'" . c++-mode))
-(add-hook 'c-mode-common-hook
-          (lambda () (add-to-list 'local-write-file-hooks 'delete-trailing-whitespace)))
-(add-hook 'c-mode-hook
-          (lambda () (add-to-list 'local-write-file-hooks 'delete-trailing-whitespace)))
-(add-hook 'c++-mode-hook
-          (lambda () (add-to-list 'local-write-file-hooks 'delete-trailing-whitespace)))
-(add-hook 'c-or-c++-mode-hook
-          (lambda () (add-to-list 'local-write-file-hooks 'delete-trailing-whitespace)))
 
 (defun my-c-mode-common-hook ()
   (define-key c-mode-base-map (kbd "M-o") 'eassist-switch-h-cpp)
@@ -335,7 +334,31 @@
 (defun jpk/c-mode-hook ()
   (cpp-highlight-if-0/1)
   (add-hook 'after-save-hook 'cpp-highlight-if-0/1 'append 'local))
-(add-hook 'c-mode-common-hook 'jpk/c-mode-hook)
+
+(add-hook 'c-mode-common-hook
+          (lambda () (add-to-list 'local-write-file-hooks 'delete-trailing-whitespace 'jpk/c-mode-hook)))
+(add-hook 'c-mode-hook
+          (lambda () (add-to-list 'local-write-file-hooks 'delete-trailing-whitespace 'jpk/c-mode-hook)))
+(add-hook 'c++-mode-hook
+          (lambda () (add-to-list 'local-write-file-hooks 'delete-trailing-whitespace 'jpk/c-mode-hook)))
+(add-hook 'c-or-c++-mode-hook
+          (lambda () (add-to-list 'local-write-file-hooks 'delete-trailing-whitespace 'jpk/c-mode-hook)))
+
+;; Another version of if-0/1 highlighting
+(defun my/cc-mode/highlight-if-0 ()
+  "highlight c/c++ #if 0 #endif macros"
+  (setq cpp-known-face 'default)
+  (setq cpp-unknown-face 'default)
+  (setq cpp-known-writable 't)
+  (setq cpp-unknown-writable 't)
+  (setq cpp-edit-list '(("0" '(foreground-color . "gray")  default both)
+                        ("1" default font-lock-comment-face both)))
+  (cpp-highlight-buffer t))
+
+(defun my/cc-mode/highlight-if-0-hook ()
+  (when (or (eq major-mode 'c++-mode) (eq major-mode 'c-mode))
+    (my/cc-mode/highlight-if-0)))
+;; (add-hook 'after-save-hook #'my/cc-mode/highlight-if-0-hook)
 
 ;;; Python
 (when (executable-find "python")
@@ -368,11 +391,13 @@
 
 ;; Recent files
 (recentf-mode)
-(define-key global-map [(control x)(control r)]  'recentf-open-files)
+(define-key global-map [(control x)(control r)] 'recentf-open-files)
 
 ;; eshell
 (add-hook 'eshell-mode-hook
-          '(lambda () (define-key eshell-mode-map (kbd "C-c C-l") 'helm-eshell-history 'my-company-mode-hook)))
+          (lambda ()
+            (define-key eshell-mode-map (kbd "C-c C-l") 'helm-eshell-history)
+            'my-company-mode-hook))
 
 ;; redo
 (require 'redo+)
