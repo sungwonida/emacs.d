@@ -88,16 +88,16 @@
 (require 'find-lisp)
 (defun org-agenda-files-load-files ()
   (interactive)
-  (setq org-agenda-files
-        (find-lisp-find-files
-         org-root-path
-         "\\.org$")))
+  (if (file-directory-p org-root-path)
+      (setq org-agenda-files
+            (find-lisp-find-files
+             org-root-path
+             "\\.org$"))
+    nil))
 (add-hook 'after-init-hook 'org-agenda-files-load-files)
 
 (setq org-default-notes-file
-      (concat
-       org-root-path
-       "inbox.org"))
+      (concat org-root-path "inbox.org"))
 
 ;; nyan-mode
 (nyan-mode)
