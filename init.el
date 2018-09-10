@@ -119,10 +119,11 @@
 (if (display-graphic-p)
     (progn
       (setq default-frame-alist
-            '(
-              (width . 162)
-              (height . 30)
-              (font . "Monaco-10")))
+      '((width . 162)
+        (height . 30)
+        (if (eq system-type 'darwin)
+            (font . "Monaco-11")
+          (font . "Monaco-10"))))
       (tool-bar-mode -1)
       (menu-bar-mode -1)
       (scroll-bar-mode -1)
@@ -133,6 +134,7 @@
 (cond ((string-equal system-type "windows-nt") (unicode-fonts-setup)))
 (when (not (eq system-type 'cygwin))
   (set-fontset-font "fontset-default" '(#x1100 . #xffdc) '("나눔고딕코딩" . "unicode-bmp")))
+(when (eq system-type 'darwin))
 
 ;; anzu
 (global-anzu-mode +1)
