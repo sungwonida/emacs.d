@@ -119,14 +119,15 @@
 (if (display-graphic-p)
     (progn
       (setq default-frame-alist
-            '(
-              (width . 162)
-              (height . 30)
-              (font . "Monaco-10")))
+            '((width . 162)
+              (height . 30)))
       (tool-bar-mode -1)
       (menu-bar-mode -1)
       (scroll-bar-mode -1)
-      (setq scroll-step 1)))
+      (setq scroll-step 1)
+      (if (eq system-type 'darwin)
+          (add-to-list 'default-frame-alist '(font . "Monaco-11"))
+        (add-to-list 'default-frame-alist '(font . "Monaco-10")))))
 
 (set-language-environment '"Korean")
 (prefer-coding-system 'utf-8)
