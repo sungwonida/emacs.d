@@ -119,15 +119,15 @@
 (if (display-graphic-p)
     (progn
       (setq default-frame-alist
-      '((width . 162)
-        (height . 30)
-        (if (eq system-type 'darwin)
-            (font . "Monaco-11")
-          (font . "Monaco-10"))))
+            '((width . 162)
+              (height . 30)))
       (tool-bar-mode -1)
       (menu-bar-mode -1)
       (scroll-bar-mode -1)
-      (setq scroll-step 1)))
+      (setq scroll-step 1)
+      (if (eq system-type 'darwin)
+          (add-to-list 'default-frame-alist '(font . "Monaco-11"))
+        (add-to-list 'default-frame-alist '(font . "Monaco-10")))))
 
 (set-language-environment '"Korean")
 (prefer-coding-system 'utf-8)
@@ -253,10 +253,10 @@
       (lambda (&optional arg) "Keyboard macro." (interactive "p") (kmacro-exec-ring-item (quote ([24 49 24 50 M-down] 0 "%d")) arg)))
 (fset 'spawn-window-up
       (lambda (&optional arg) "Keyboard macro." (interactive "p") (kmacro-exec-ring-item (quote ([24 49 24 50 M-up] 0 "%d")) arg)))
-(define-key global-map [(control right)]  'spawn-window-left)
-(define-key global-map [(control left)]  'spawn-window-right)
-(define-key global-map [(control down)]  'spawn-window-down)
-(define-key global-map [(control up)]  'spawn-window-up)
+(bind-key* "C-<right>" 'spawn-window-left)
+(bind-key* "C-<left>" 'spawn-window-right)
+(bind-key* "C-<down>" 'spawn-window-down)
+(bind-key* "C-<up>" 'spawn-window-up)
 
 ;; dired-mode
 (defun mydired-sort ()
@@ -371,6 +371,9 @@
 
 ;;;; elpy
 (elpy-enable)
+(eval-after-load "elpy"
+  '(cl-dolist (key '("C-<right>" "C-<left>" "C-<down>" "C-<up>"))
+     (define-key elpy-mode-map (kbd key) nil))) ; Isn't working!
 
 ;;;; jedi
 (add-hook 'python-mode-hook 'jedi:setup)
