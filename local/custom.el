@@ -24,6 +24,7 @@
  '(global-auto-revert-mode t)
  '(indent-tabs-mode nil)
  '(ns-command-modifier (quote meta))
+ '(org-agenda-start-on-weekday 0)
  '(org-log-done (quote time))
  '(package-selected-packages
    (quote
