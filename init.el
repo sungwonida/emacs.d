@@ -134,6 +134,7 @@
 (cond ((string-equal system-type "windows-nt") (unicode-fonts-setup)))
 (when (not (eq system-type 'cygwin))
   (set-fontset-font "fontset-default" '(#x1100 . #xffdc) '("나눔고딕코딩" . "unicode-bmp")))
+(when (eq system-type 'darwin))
 
 ;; anzu
 (global-anzu-mode +1)
