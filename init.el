@@ -405,7 +405,7 @@
 
 ;; redo
 (require 'redo+)
-(global-set-key [(control .)] 'redo)
+(global-set-key (kbd "C-.") 'redo)
 
 ;; tdd
 ;;; Turn on/off the mode manually because it runs recompile automatically
@@ -426,3 +426,38 @@
 
 ;; Replace the region with yank buffer
 (delete-selection-mode 1)
+
+;; rainbow-mode
+(require 'rainbow-mode)
+
+;; god-mode
+(require 'god-mode)
+(global-set-key (kbd "<escape>") 'god-mode-all)
+(add-to-list 'god-exempt-major-modes 'dired-mode)
+(setq god-exempt-predicates nil)
+
+(defun c/god-mode-update-cursor ()
+  (let ((limited-colors-p (> 257 (length (defined-colors)))))
+    (cond (god-local-mode (progn
+                            (set-face-background 'mode-line (if limited-colors-p "enabled" "#21abcd"))
+                            (set-face-background 'mode-line-inactive (if limited-colors-p "enabled" "#21abcd"))))
+          (t (progn
+               (set-face-background 'mode-line (if limited-colors-p "disabled" "#e9e2cb"))
+               (set-face-background 'mode-line-inactive (if limited-colors-p "disabled" "#e9e2cb")))))))
+
+(add-hook 'god-mode-enabled-hook 'c/god-mode-update-cursor)
+(add-hook 'god-mode-disabled-hook 'c/god-mode-update-cursor)
+
+(require 'god-mode-isearch)
+(define-key isearch-mode-map (kbd "<escape>") 'god-mode-isearch-activate)
+(define-key god-mode-isearch-map (kbd "<escape>") 'god-mode-isearch-disable)
+
+(define-key god-local-mode-map (kbd "i") 'god-mode-all)
+(define-key god-local-mode-map (kbd ".") 'repeat)
+
+(global-set-key (kbd "C-x C-1") 'delete-other-windows)
+(global-set-key (kbd "C-x C-2") 'split-window-below)
+(global-set-key (kbd "C-x C-3") 'split-window-right)
+(global-set-key (kbd "C-x C-0") 'delete-window)
+
+(god-mode)
