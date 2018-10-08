@@ -27,9 +27,11 @@
 
 ;; helm-ls-git-ls
 (define-key global-map (kbd "C-c h f") 'helm-ls-git-ls)
+(define-key global-map (kbd "C-c C-h C-f") 'helm-ls-git-ls)
 
 ;; helm-git-grep
 (define-key global-map (kbd "C-c h g") 'helm-git-grep-at-point)
+(define-key global-map (kbd "C-c C-h C-g") 'helm-git-grep-at-point)
 
 ;; helm-gtags
 (defun my-helm-mode-hook ()
@@ -170,9 +172,12 @@
 
 ;; magit
 (diminish 'magit-auto-revert-mode)
-(define-key global-map (kbd "C-x v s") 'magit-status)
-(define-key global-map (kbd "C-x v y") 'magit-show-refs-popup)
-(define-key global-map (kbd "C-x v l") 'magit-log-head)
+(define-key global-map (kbd "C-c v s") 'magit-status)
+(define-key global-map (kbd "C-c C-v C-s") 'magit-status)
+(define-key global-map (kbd "C-c v y") 'magit-show-refs-popup)
+(define-key global-map (kbd "C-c C-v C-y") 'magit-show-refs-popup)
+(define-key global-map (kbd "C-c v l") 'magit-log-head)
+(define-key global-map (kbd "C-c C-v C-l") 'magit-log-head)
 
 ;; exec-path-from-shell
 (when
