@@ -376,9 +376,11 @@
 
 ;;;; elpy
 (elpy-enable)
-(eval-after-load "elpy"
-  '(cl-dolist (key '("C-<right>" "C-<left>" "C-<down>" "C-<up>"))
-     (define-key elpy-mode-map (kbd key) nil))) ; Isn't working!
+(defun my-elpy-mode-hook ()
+  (cl-dolist (key '("C-<right>" "C-<left>" "C-<down>" "C-<up>" "M-<right>" "M-<left>" "M-<down>" "M-<up>"))
+    (define-key elpy-mode-map (kbd key) nil))
+  (print "applied my-elpy-mode-hook"))
+(add-hook 'elpy-mode-hook 'my-elpy-mode-hook)
 
 ;;;; jedi
 (add-hook 'python-mode-hook 'jedi:setup)
