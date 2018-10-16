@@ -21,7 +21,11 @@
 (helm-mode 1)
 (bind-key* "M-x" 'helm-M-x)
 (bind-key* "C-x C-f" 'helm-find-files)
-(define-key global-map (kbd "\C-x \C-b") 'helm-buffers-list)
+(bind-key* "C-x C-l" 'helm-locate)
+(bind-key* "C-x C-b" 'helm-mini) ;;helm-buffers-list
+(bind-key* "C-x r b" 'helm-filtered-bookmarks)
+(bind-key* "C-c C-r" 'helm-recentf)
+(bind-key* "M-y" 'helm-show-kill-ring)
 ;; (eval-after-load "helm"
 ;;   '(define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action)) ;; uncomment to use tab as auto-completion
 
@@ -31,7 +35,7 @@
 
 ;; helm-git-grep
 (define-key global-map (kbd "C-c h g") 'helm-git-grep-at-point)
-(define-key global-map (kbd "C-c C-h C-g") 'helm-git-grep-at-point)
+(define-key global-map (kbd "C-c C-h M-g") 'helm-git-grep-at-point)
 
 ;; helm-gtags
 (defun my-helm-mode-hook ()
@@ -49,6 +53,7 @@
 (add-hook 'c-mode-hook 'my-helm-mode-hook)
 (add-hook 'c++-mode-hook 'my-helm-mode-hook)
 (setq helm-split-window-in-side-p               t
+      helm-autoresize-mode                      t
       helm-move-to-line-cycle-in-source         t
       helm-ff-search-library-in-sexp            t
       helm-scroll-amount                        8
@@ -59,6 +64,7 @@
       helm-gtags-pulse-at-cursor                t
       helm-gtags-prefix-key                     "\C-cg"
       helm-gtags-suggested-key-mapping          t
+      helm-mode-fuzzy-match                     t
       )
 
 ;; org-mode
@@ -402,7 +408,6 @@
 
 ;; Recent files
 (recentf-mode)
-(define-key global-map [(control x)(control r)] 'recentf-open-files)
 
 ;; eshell
 (add-hook 'eshell-mode-hook
@@ -462,6 +467,9 @@
 (define-key god-local-mode-map (kbd "i") 'god-mode-all)
 (define-key god-local-mode-map (kbd ".") 'repeat)
 (define-key god-local-mode-map (kbd "S-<escape>") (kbd "C-g"))
+(define-key god-local-mode-map (kbd "q") 'quit-window)
+(bind-key* "C-x C-r C-b" 'helm-filtered-bookmarks)
+(bind-key* "C-x C-r C-m" 'bookmark-set)
 
 (global-set-key (kbd "C-x C-1") 'delete-other-windows)
 (global-set-key (kbd "C-x C-2") 'split-window-below)
