@@ -22,8 +22,8 @@
 (bind-key* "M-x" 'helm-M-x)
 (bind-key* "C-x C-f" 'helm-find-files)
 (define-key global-map (kbd "\C-x \C-b") 'helm-buffers-list)
-(eval-after-load "helm"
-  '(define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action))
+;; (eval-after-load "helm"
+;;   '(define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action)) ;; uncomment to use tab as auto-completion
 
 ;; helm-ls-git-ls
 (define-key global-map (kbd "C-c h f") 'helm-ls-git-ls)
@@ -85,7 +85,7 @@
 (defun voca ()
   "Show my vocabulary tables."
   (interactive)
-  (find-file (concat org-root-path "study/voca.org")))
+  (find-file (concat org-root-path "personal/voca.org")))
 
 (require 'find-lisp)
 (defun org-agenda-files-load-files ()
@@ -396,7 +396,7 @@
 (smartparens-global-mode t)
 
 ;; Nuts and Bolts for CB Projects
-(setq cb_functions_file (concat org-root-path "development/cb_internal_functions.org"))
+(setq cb_functions_file (concat org-root-path "business/canvasbio/cb_internal_functions.org"))
 (if (file-exists-p cb_functions_file)
     (org-babel-load-file cb_functions_file))
 
@@ -461,7 +461,7 @@
 
 (define-key god-local-mode-map (kbd "i") 'god-mode-all)
 (define-key god-local-mode-map (kbd ".") 'repeat)
-(define-key god-local-mode-map (kbd "S-<escape>") 'keyboard-quit)
+(define-key god-local-mode-map (kbd "S-<escape>") (kbd "C-g"))
 
 (global-set-key (kbd "C-x C-1") 'delete-other-windows)
 (global-set-key (kbd "C-x C-2") 'split-window-below)
