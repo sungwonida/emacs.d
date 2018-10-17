@@ -26,6 +26,8 @@
 (bind-key* "C-x r b" 'helm-filtered-bookmarks)
 (bind-key* "C-c C-r" 'helm-recentf)
 (bind-key* "M-y" 'helm-show-kill-ring)
+(bind-key* "M-s o" 'helm-occur)
+(bind-key* "M-g M-o M-k" 'helm-google-suggest)
 ;; (eval-after-load "helm"
 ;;   '(define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action)) ;; uncomment to use tab as auto-completion
 
@@ -64,8 +66,11 @@
       helm-gtags-pulse-at-cursor                t
       helm-gtags-prefix-key                     "\C-cg"
       helm-gtags-suggested-key-mapping          t
-      helm-mode-fuzzy-match                     t
       )
+(setq helm-show-completion-display-function #'helm-show-completion-default-display-function)
+
+(require 'helm-descbinds)
+(helm-descbinds-mode)
 
 ;; org-mode
 (bind-key* "C-c c" 'org-capture)
@@ -465,7 +470,6 @@
 (define-key god-mode-isearch-map (kbd "<escape>") 'god-mode-isearch-disable)
 
 (define-key god-local-mode-map (kbd "i") 'god-mode-all)
-(define-key god-local-mode-map (kbd ".") 'repeat)
 (define-key god-local-mode-map (kbd "S-<escape>") (kbd "C-g"))
 (define-key god-local-mode-map (kbd "q") 'quit-window)
 (bind-key* "C-x C-r C-b" 'helm-filtered-bookmarks)

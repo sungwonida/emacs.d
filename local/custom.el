@@ -28,7 +28,7 @@
  '(org-log-done (quote time))
  '(package-selected-packages
    (quote
-    (god-mode elpy py-autopep8 smartparens unicode-fonts tern-auto-complete smart-mode-line rainbow-mode rainbow-delimiters plantuml-mode pallet nyan-mode markdown-mode magit jedi impatient-mode helm-ls-git helm-gtags helm-git-grep helm-flycheck helm-ag google-translate exec-path-from-shell edit-server diminish company color-identifiers-mode cider bind-key anzu)))
+    (helm-descbinds god-mode elpy py-autopep8 smartparens unicode-fonts tern-auto-complete smart-mode-line rainbow-mode rainbow-delimiters plantuml-mode pallet nyan-mode markdown-mode magit jedi impatient-mode helm-ls-git helm-gtags helm-git-grep helm-flycheck helm-ag google-translate exec-path-from-shell edit-server diminish company color-identifiers-mode cider bind-key anzu)))
  '(show-paren-mode t)
  '(tab-width 4))
 (custom-set-faces
