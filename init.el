@@ -28,6 +28,8 @@
 (bind-key* "M-y" 'helm-show-kill-ring)
 (bind-key* "M-s o" 'helm-occur)
 (bind-key* "M-g M-o M-k" 'helm-google-suggest)
+(bind-key* "C-c h p" 'helm-browse-project)
+(bind-key* "C-c C-h C-p" 'helm-browse-project)
 ;; (eval-after-load "helm"
 ;;   '(define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action)) ;; uncomment to use tab as auto-completion
 
@@ -466,8 +468,8 @@
 (add-hook 'god-mode-disabled-hook 'c/god-mode-update-cursor)
 
 (require 'god-mode-isearch)
-(define-key isearch-mode-map (kbd "<escape>") 'god-mode-isearch-activate)
-(define-key god-mode-isearch-map (kbd "<escape>") 'god-mode-isearch-disable)
+(define-key isearch-mode-map (kbd "<tab>") 'god-mode-isearch-activate)
+(define-key god-mode-isearch-map (kbd "<tab>") 'god-mode-isearch-disable)
 
 (define-key god-local-mode-map (kbd "i") 'god-mode-all)
 (define-key god-local-mode-map (kbd "S-<escape>") (kbd "C-g"))
