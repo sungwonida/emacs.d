@@ -161,6 +161,7 @@
 (tern-ac-setup)
 
 ;; octave
+(add-to-list 'auto-mode-alist '("\\.m\\'" . octave-mode))
 (defun my-octave-mode-hook ()
   (define-key octave-mode-map (kbd "M-s M-l") 'octave-send-line)
   (define-key octave-mode-map (kbd "M-s M-b") 'octave-send-block)
@@ -380,8 +381,8 @@
 ;; (add-hook 'after-save-hook #'my/cc-mode/highlight-if-0-hook)
 
 ;;; Python
-(when (executable-find "python")
-  (setq python-shell-interpreter "python"))
+(when (executable-find "python3")
+  (setq python-shell-interpreter "python3"))
 (defun my-python-mode-hook ()
   (define-key python-mode-map (kbd "M-m") 'helm-semantic-or-imenu))
 (add-hook 'python-mode-hook 'my-python-mode-hook)
