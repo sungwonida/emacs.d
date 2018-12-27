@@ -381,8 +381,8 @@
 ;; (add-hook 'after-save-hook #'my/cc-mode/highlight-if-0-hook)
 
 ;;; Python
-(when (executable-find "python3")
-  (setq python-shell-interpreter "python3"))
+(when (executable-find "python")
+  (setq python-shell-interpreter "python"))
 (defun my-python-mode-hook ()
   (define-key python-mode-map (kbd "M-m") 'helm-semantic-or-imenu))
 (add-hook 'python-mode-hook 'my-python-mode-hook)
