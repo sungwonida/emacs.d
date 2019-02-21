@@ -249,9 +249,12 @@
 (bind-key* "M-g M-k M-t" 'my-google-translate-query-translate-ko-to-en)
 
 ;; company
-(defun my-company-mode-hook ()
-  (company-mode t)
-  (define-key company-mode-map [backtab] 'company-complete))
+(add-hook 'prog-mode-hook (lambda ()
+                            (company-mode t)
+                            (define-key company-mode-map [backtab] 'company-complete)
+                            (define-key company-active-map [tab] 'company-complete-selection)))
+(eval-after-load 'company
+  '(add-to-list 'company-backends 'company-irony))
 
 ;; quick insert-date
 (defun insert-date ()
@@ -305,7 +308,13 @@
 (add-hook 'dired-mode-hook 'my-dired-mode-hook)
 
 ;; Development
-(add-hook 'prog-mode-hook 'my-company-mode-hook)
+
+;;; irony
+(add-hook 'c++-mode-hook 'irony-mode)
+(add-hook 'c-mode-hook 'irony-mode)
+(add-hook 'objc-mode-hook 'irony-mode)
+
+(add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options)
 
 ;;; Font
 (setq font-lock-comment-face 'italic)
@@ -469,8 +478,10 @@
 (add-hook 'god-mode-disabled-hook 'c/god-mode-update-cursor)
 
 (require 'god-mode-isearch)
-(define-key isearch-mode-map (kbd "<tab>") 'god-mode-isearch-activate)
-(define-key god-mode-isearch-map (kbd "<tab>") 'god-mode-isearch-disable)
+(defun my-god-mode-hook ()
+  (define-key isearch-mode-map (kbd "<tab>") 'god-mode-isearch-activate)
+  (define-key god-mode-isearch-map (kbd "<tab>") 'god-mode-isearch-disable))
+(add-hook 'god-mode-enabled-hook 'my-god-mode-hook)
 
 (define-key god-local-mode-map (kbd "i") 'god-mode-all)
 (define-key god-local-mode-map (kbd "S-<escape>") (kbd "C-g"))
