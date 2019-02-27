@@ -51,11 +51,11 @@
   (define-key helm-gtags-mode-map (kbd "C-c C-,") 'helm-gtags-previous-history)
   (define-key helm-gtags-mode-map (kbd "C-c C-.") 'helm-gtags-next-history)
   (define-key helm-gtags-mode-map (kbd "C-c g u") 'helm-gtags-update-tags))
-(add-hook 'dired-mode-hook 'helm-gtags-mode)
-(add-hook 'eshell-mode-hook 'helm-gtags-mode)
-(add-hook 'c-mode-common-hook 'my-helm-mode-hook)
-(add-hook 'c-mode-hook 'my-helm-mode-hook)
-(add-hook 'c++-mode-hook 'my-helm-mode-hook)
+;; (add-hook 'dired-mode-hook 'helm-gtags-mode)
+;; (add-hook 'eshell-mode-hook 'helm-gtags-mode)
+;; (add-hook 'c-mode-common-hook 'my-helm-mode-hook)
+;; (add-hook 'c-mode-hook 'my-helm-mode-hook)
+;; (add-hook 'c++-mode-hook 'my-helm-mode-hook)
 (setq helm-split-window-in-side-p               t
       helm-autoresize-mode                      t
       helm-move-to-line-cycle-in-source         t
@@ -177,12 +177,42 @@
 (define-key global-map (kbd "C-c i j") 'semantic-ia-fast-jump)
 (define-key global-map (kbd "C-c i m") 'semantic-ia-complete-symbol-menu)
 
-;; flycheck - error
+;; rtags
+;; only run this if rtags is installed
+(when (require 'rtags nil :noerror)
+  ;; make sure you have company-mode installed
+  (require 'company)
+  (define-key c-mode-base-map (kbd "M-.")
+    (function rtags-find-symbol-at-point))
+  (define-key c-mode-base-map (kbd "M-,")
+    (function rtags-find-references-at-point))
+  ;; disable prelude's use of C-c r, as this is the rtags keyboard prefix
+  ;; (define-key prelude-mode-map (kbd "C-c r") nil)
+  ;; install standard rtags keybindings. Do M-. on the symbol below to
+  ;; jump to definition and see the keybindings.
+  (rtags-enable-standard-keybindings)
+  ;; comment this out if you don't have or don't use helm
+  (setq rtags-use-helm t)
+  ;; ;; company completion setup
+  ;; (setq rtags-autostart-diagnostics t)
+  ;; (rtags-diagnostics)
+  ;; (setq rtags-completions-enabled t)
+  ;; (push 'company-rtags company-backends)
+  ;; (global-company-mode)
+  ;; (define-key c-mode-base-map (kbd "<C-tab>") (function company-complete))
+  ;; ;; use rtags flycheck mode -- clang warnings shown inline
+  ;; (require 'flycheck-rtags)
+  ;; ;; c-mode-common-hook is also called by c++-mode
+  ;; (add-hook 'c-mode-common-hook #'setup-flycheck-rtags)
+  )
+
+;; flycheck
 ;; (add-hook 'prog-mode-hook 'flycheck-mode)
 ;; (define-key flycheck-mode-map (kbd "C-c f l") #'flycheck-list-errors)
 ;; (define-key flycheck-mode-map (kbd "C-c f p") #'flycheck-previous-error)
 ;; (define-key flycheck-mode-map (kbd "C-c f n") #'flycheck-next-error)
 ;; (bind-key "C-c ! h" 'helm-flycheck flycheck-mode-map)
+(add-hook 'after-init-hook #'global-flycheck-mode)
 
 ;; magit
 (diminish 'magit-auto-revert-mode)
@@ -249,10 +279,17 @@
 (bind-key* "M-g M-k M-t" 'my-google-translate-query-translate-ko-to-en)
 
 ;; company
+(require 'company)
 (add-hook 'prog-mode-hook (lambda ()
                             (company-mode t)
                             (define-key company-mode-map [backtab] 'company-complete)
                             (define-key company-active-map [tab] 'company-complete-selection)))
+(require 'company-irony-c-headers)
+;; Load with `irony-mode` as a grouped backend
+(eval-after-load 'company
+  '(add-to-list
+    'company-backends '(company-irony-c-headers company-irony)))
+
 (eval-after-load 'company
   '(add-to-list 'company-backends 'company-irony))
 
