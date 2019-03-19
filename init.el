@@ -180,6 +180,8 @@
 ;; rtags
 ;; only run this if rtags is installed
 (when (require 'rtags nil :noerror)
+  (setq rtags-install-path "~/.emacs.d/")
+
   ;; make sure you have company-mode installed
   (require 'company)
   (define-key c-mode-base-map (kbd "M-.")
@@ -204,6 +206,9 @@
   ;; (require 'flycheck-rtags)
   ;; ;; c-mode-common-hook is also called by c++-mode
   ;; (add-hook 'c-mode-common-hook #'setup-flycheck-rtags)
+
+  (add-hook 'c-mode-hook 'rtags-start-process-maybe)
+  (add-hook 'c++-mode-hook 'rtags-start-process-maybe)
   )
 
 ;; flycheck
@@ -532,3 +537,15 @@
 (global-set-key (kbd "C-x C-0") 'delete-window)
 
 (god-mode)
+
+;; conda
+(require 'conda)
+;; if you want interactive shell support, include:
+(conda-env-initialize-interactive-shells)
+;; if you want eshell support, include:
+(conda-env-initialize-eshell)
+;; if you want auto-activation (see below for details), include:
+(conda-env-autoactivate-mode t)
+;; If your Anaconda installation is anywhere other than the default
+(custom-set-variables
+ '(conda-anaconda-home "/home/david/miniconda3"))
