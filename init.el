@@ -183,7 +183,7 @@
   (setq rtags-install-path "~/.emacs.d/")
 
   ;; make sure you have company-mode installed
-  (require 'company)
+  ;; (require 'company)
   (define-key c-mode-base-map (kbd "M-.")
     (function rtags-find-symbol-at-point))
   (define-key c-mode-base-map (kbd "M-,")
@@ -294,9 +294,6 @@
 (eval-after-load 'company
   '(add-to-list
     'company-backends '(company-irony-c-headers company-irony)))
-
-(eval-after-load 'company
-  '(add-to-list 'company-backends 'company-irony))
 
 ;; quick insert-date
 (defun insert-date ()
