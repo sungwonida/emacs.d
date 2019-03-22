@@ -13,6 +13,7 @@
 (depends-on "company-irony-c-headers")
 (depends-on "conda")
 (depends-on "diminish")
+(depends-on "docker")
 (depends-on "elpy")
 (depends-on "exec-path-from-shell")
 (depends-on "find-file-in-project")

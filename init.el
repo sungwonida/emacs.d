@@ -135,14 +135,14 @@
     (progn
       (setq default-frame-alist
             '((width . 162)
-              (height . 30)))
+              (height . 40)))
       (tool-bar-mode -1)
       (menu-bar-mode -1)
       (scroll-bar-mode -1)
       (setq scroll-step 1)
       (if (eq system-type 'darwin)
           (add-to-list 'default-frame-alist '(font . "Monaco-11"))
-        (add-to-list 'default-frame-alist '(font . "Monaco-10")))))
+        (add-to-list 'default-frame-alist '(font . "Monaco-11")))))
 
 (set-language-environment '"Korean")
 (prefer-coding-system 'utf-8)
@@ -495,6 +495,9 @@
            (format "<!DOCTYPE html><html><title>Impatient Markdown</title><xmp theme=\"united\" style=\"display:none;\"> %s  </xmp><script src=\"http://strapdownjs.com/v/0.2/strapdown.js\"></script></html>" (buffer-substring-no-properties (point-min) (point-max))))
          (current-buffer)))
 
+;; Pandoc
+(setq markdown-command "/usr/bin/pandoc")
+
 ;; Replace the region with yank buffer
 (delete-selection-mode 1)
 
@@ -540,12 +543,15 @@
 
 ;; conda
 (require 'conda)
-;; if you want interactive shell support, include:
+;;; if you want interactive shell support, include:
 (conda-env-initialize-interactive-shells)
-;; if you want eshell support, include:
+;;; if you want eshell support, include:
 (conda-env-initialize-eshell)
-;; if you want auto-activation (see below for details), include:
+;;; if you want auto-activation (see below for details), include:
 (conda-env-autoactivate-mode t)
-;; If your Anaconda installation is anywhere other than the default
+;;; If your Anaconda installation is anywhere other than the default
 (custom-set-variables
  '(conda-anaconda-home "/home/david/miniconda3"))
+
+;; Docker
+(require 'docker)
