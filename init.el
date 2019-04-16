@@ -16,6 +16,7 @@
 (add-to-list 'load-path "~/.emacs.d/local/packages")
 (let ((default-directory "~/.emacs.d/local/packages"))
   (normal-top-level-add-subdirs-to-load-path))
+(setq default-directory "~/")
 
 ;; helm
 (helm-mode 1)
