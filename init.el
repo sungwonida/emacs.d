@@ -142,8 +142,8 @@
       (scroll-bar-mode -1)
       (setq scroll-step 1)
       (if (eq system-type 'darwin)
-          (add-to-list 'default-frame-alist '(font . "Monaco-11"))
-        (add-to-list 'default-frame-alist '(font . "Monaco-11")))))
+          (add-to-list 'default-frame-alist '(font . "Monaco-10"))
+        (add-to-list 'default-frame-alist '(font . "Monaco-10")))))
 
 (set-language-environment '"Korean")
 (prefer-coding-system 'utf-8)
@@ -172,6 +172,8 @@
 (add-hook 'octave-mode-hook 'my-octave-mode-hook)
 
 ;; plantuml
+;;; plantuml.jar can be downloaded from http://plantuml.com/en/download
+;;; Download the file and place it to
 (add-to-list 'auto-mode-alist '("\\.plantuml\\'" . plantuml-mode))
 
 ;; semantic
