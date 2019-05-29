@@ -212,6 +212,7 @@
 
   (add-hook 'c-mode-hook 'rtags-start-process-maybe)
   (add-hook 'c++-mode-hook 'rtags-start-process-maybe)
+  (setq rtags-verify-protocol-version nil)
   )
 
 ;; flycheck
