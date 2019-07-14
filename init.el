@@ -551,8 +551,14 @@
 ;;; if you want auto-activation (see below for details), include:
 (conda-env-autoactivate-mode t)
 ;;; If your Anaconda installation is anywhere other than the default
-(custom-set-variables
- '(conda-anaconda-home "/home/david/miniconda3"))
+(cond ((eq system-type 'gnu/linux)
+       (custom-set-variables
+        '(conda-anaconda-home "/home/david/miniconda3")
+        '(conda-env-home-directory "/home/david/miniconda3")))
+      ((eq system-type 'darwin)
+       (custom-set-variables
+        '(conda-anaconda-home "/Users/Kirin/miniconda3")
+        '(conda-env-home-directory "/Users/Kirin/miniconda3"))))
 
 ;; Docker
 (require 'docker)
