@@ -558,7 +558,11 @@
       ((eq system-type 'darwin)
        (custom-set-variables
         '(conda-anaconda-home "/Users/Kirin/miniconda3")
-        '(conda-env-home-directory "/Users/Kirin/miniconda3"))))
+        '(conda-env-home-directory "/Users/Kirin/miniconda3")))
+      ((eq system-type 'windows-nt)
+       (custom-set-variables
+        '(conda-anaconda-home "c:/Users/dit-698/Miniconda3")
+        '(conda-env-home-directory "c:/Users/dit-698/Miniconda3"))))
 
 ;; Docker
 (require 'docker)
