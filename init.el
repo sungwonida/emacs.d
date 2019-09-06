@@ -1,4 +1,3 @@
-
 ;; Added by Package.el.  This must come before configurations of
 ;; installed packages.  Don't delete this line.  If you don't want it,
 ;; just comment it out by adding a semicolon to the start of the line.
@@ -143,7 +142,10 @@
       (setq scroll-step 1)
       (if (eq system-type 'darwin)
           (add-to-list 'default-frame-alist '(font . "Monaco-10"))
-        (add-to-list 'default-frame-alist '(font . "Monaco-10")))))
+        (add-to-list 'default-frame-alist '(font . "Monaco-10")))
+      (if (eq system-type 'windows-nt)
+          (add-to-list 'default-frame-alist '(font . "Monaco-9"))
+        (add-to-list 'default-frame-alist '(font . "Monaco-9")))))
 
 (set-language-environment '"Korean")
 (prefer-coding-system 'utf-8)
@@ -180,40 +182,38 @@
 (define-key global-map (kbd "C-c i j") 'semantic-ia-fast-jump)
 (define-key global-map (kbd "C-c i m") 'semantic-ia-complete-symbol-menu)
 
-;; rtags
+;; rtags (Gradually substitute to lsp-mode + ccls)
 ;; only run this if rtags is installed
-(when (require 'rtags nil :noerror)
+(when (and (require 'rtags nil :noerror) (not (eq system-type 'windows-nt)))
   (setq rtags-install-path "~/.emacs.d/")
 
-  ;; make sure you have company-mode installed
-  ;; (require 'company)
   (define-key c-mode-base-map (kbd "M-.")
     (function rtags-find-symbol-at-point))
   (define-key c-mode-base-map (kbd "M-,")
     (function rtags-find-references-at-point))
-  ;; disable prelude's use of C-c r, as this is the rtags keyboard prefix
-  ;; (define-key prelude-mode-map (kbd "C-c r") nil)
   ;; install standard rtags keybindings. Do M-. on the symbol below to
   ;; jump to definition and see the keybindings.
   (rtags-enable-standard-keybindings)
   ;; comment this out if you don't have or don't use helm
   (setq rtags-use-helm t)
-  ;; ;; company completion setup
-  ;; (setq rtags-autostart-diagnostics t)
-  ;; (rtags-diagnostics)
-  ;; (setq rtags-completions-enabled t)
-  ;; (push 'company-rtags company-backends)
-  ;; (global-company-mode)
-  ;; (define-key c-mode-base-map (kbd "<C-tab>") (function company-complete))
-  ;; ;; use rtags flycheck mode -- clang warnings shown inline
-  ;; (require 'flycheck-rtags)
-  ;; ;; c-mode-common-hook is also called by c++-mode
-  ;; (add-hook 'c-mode-common-hook #'setup-flycheck-rtags)
 
   (add-hook 'c-mode-hook 'rtags-start-process-maybe)
   (add-hook 'c++-mode-hook 'rtags-start-process-maybe)
-  (setq rtags-verify-protocol-version nil)
-  )
+  (setq rtags-verify-protocol-version nil))
+
+;; lsp-mode + ccls (Use only for Windows right now)
+(when (eq system-type 'windows-nt)
+  (use-package lsp-mode :commands lsp)
+  (use-package lsp-ui :commands lsp-ui-mode)
+  (use-package company-lsp :commands company-lsp)
+  (use-package ccls
+    :hook ((c-mode c++-mode objc-mode) .
+           (lambda () (require 'ccls) (lsp))))
+  (if (eq system-type 'windows-nt)
+      (setq ccls-executable
+            "d:/Users/dit-698/Development/ccls/Release/Release/ccls.exe")
+    (setq ccls-args
+          '("--log-file=d:/users/dit-698/tmp/ccls.log")))) ;; may cause crash if the path doesn't exist)
 
 ;; flycheck
 ;; (add-hook 'prog-mode-hook 'flycheck-mode)
@@ -293,11 +293,6 @@
                             (company-mode t)
                             (define-key company-mode-map [backtab] 'company-complete)
                             (define-key company-active-map [tab] 'company-complete-selection)))
-(require 'company-irony-c-headers)
-;; Load with `irony-mode` as a grouped backend
-(eval-after-load 'company
-  '(add-to-list
-    'company-backends '(company-irony-c-headers company-irony)))
 
 ;; quick insert-date
 (defun insert-date ()
@@ -351,13 +346,6 @@
 (add-hook 'dired-mode-hook 'my-dired-mode-hook)
 
 ;; Development
-
-;;; irony
-(add-hook 'c++-mode-hook 'irony-mode)
-(add-hook 'c-mode-hook 'irony-mode)
-(add-hook 'objc-mode-hook 'irony-mode)
-
-(add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options)
 
 ;;; Font
 (setq font-lock-comment-face 'italic)
@@ -472,8 +460,7 @@
 ;; eshell
 (add-hook 'eshell-mode-hook
           (lambda ()
-            (define-key eshell-mode-map (kbd "C-c C-l") 'helm-eshell-history)
-            'my-company-mode-hook))
+            (define-key eshell-mode-map (kbd "C-c C-l") 'helm-eshell-history)))
 
 ;; redo
 (require 'redo+)
@@ -561,8 +548,8 @@
         '(conda-env-home-directory "/Users/Kirin/miniconda3")))
       ((eq system-type 'windows-nt)
        (custom-set-variables
-        '(conda-anaconda-home "c:/Users/dit-698/Miniconda3")
-        '(conda-env-home-directory "c:/Users/dit-698/Miniconda3"))))
+        '(conda-anaconda-home "d:/Users/dit-698/miniconda3")
+        '(conda-env-home-directory "d:/Users/dit-698/miniconda3"))))
 
 ;; Docker
 (require 'docker)

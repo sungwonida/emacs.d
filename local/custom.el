@@ -13,7 +13,8 @@
      (java-mode . "java")
      (awk-mode . "awk")
      (other . "gnu"))))
- '(conda-anaconda-home "/home/david/miniconda3")
+ '(conda-anaconda-home "d:/Users/dit-698/miniconda3")
+ '(conda-env-home-directory "d:/Users/dit-698/miniconda3")
  '(cua-enable-cua-keys nil)
  '(cua-mode t nil (cua-base))
  '(cua-rectangle-mark-key [C-M-return])
@@ -31,7 +32,7 @@
  '(org-log-done (quote time))
  '(package-selected-packages
    (quote
-    (ztree docker rtags conda cmake-mode flycheck flycheck-irony company-irony-c-headers company-irony irony helm-descbinds god-mode elpy py-autopep8 smartparens unicode-fonts tern-auto-complete smart-mode-line rainbow-mode rainbow-delimiters plantuml-mode pallet nyan-mode markdown-mode magit jedi impatient-mode helm-ls-git helm-gtags helm-git-grep helm-flycheck helm-ag google-translate exec-path-from-shell edit-server diminish company color-identifiers-mode cider bind-key anzu)))
+    (use-package company-lsp lsp-ui ccls lsp-mode ztree docker rtags conda cmake-mode flycheck flycheck-irony company-irony-c-headers company-irony irony helm-descbinds god-mode elpy py-autopep8 smartparens unicode-fonts tern-auto-complete smart-mode-line rainbow-mode rainbow-delimiters plantuml-mode pallet nyan-mode markdown-mode magit jedi impatient-mode helm-ls-git helm-gtags helm-git-grep helm-flycheck helm-ag google-translate exec-path-from-shell edit-server diminish company color-identifiers-mode cider bind-key anzu)))
  '(show-paren-mode t)
  '(tab-width 4))
 (custom-set-faces
