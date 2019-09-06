@@ -222,6 +222,7 @@
 ;; (define-key flycheck-mode-map (kbd "C-c f n") #'flycheck-next-error)
 ;; (bind-key "C-c ! h" 'helm-flycheck flycheck-mode-map)
 (add-hook 'after-init-hook #'global-flycheck-mode)
+(setq-default flycheck-disabled-checkers '(c/c++-clang c/c++-cppcheck c/c++-gcc))
 
 ;; magit
 (diminish 'magit-auto-revert-mode)
