@@ -17,6 +17,7 @@
   (normal-top-level-add-subdirs-to-load-path))
 (setq default-directory "~/")
 
+
 ;; helm
 (helm-mode 1)
 (bind-key* "M-x" 'helm-M-x)
@@ -33,13 +34,16 @@
 ;; (eval-after-load "helm"
 ;;   '(define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action)) ;; uncomment to use tab as auto-completion
 
+
 ;; helm-ls-git-ls
 (define-key global-map (kbd "C-c h f") 'helm-ls-git-ls)
 (define-key global-map (kbd "C-c C-h C-f") 'helm-ls-git-ls)
 
+
 ;; helm-git-grep
 (define-key global-map (kbd "C-c h g") 'helm-git-grep-at-point)
 (define-key global-map (kbd "C-c C-h M-g") 'helm-git-grep-at-point)
+
 
 ;; helm-gtags
 (defun my-helm-mode-hook ()
@@ -74,6 +78,7 @@
 (require 'helm-descbinds)
 (helm-descbinds-mode)
 
+
 ;; org-mode
 (bind-key* "C-c c" 'org-capture)
 (bind-key* "C-c l" 'org-store-link)
@@ -84,6 +89,7 @@
       '(("file" . "\\.\\(jpeg\\|jpg\\|png\\|gif\\|svg\\|bmp\\)\\'")
         ("http" . "\\.\\(jpeg\\|jpg\\|png\\|gif\\|svg\\|bmp\\)\\'")
         ("https" . "\\.\\(jpeg\\|jpg\\|png\\|gif\\|svg\\|bmp\\)\\'")))
+
 
 ;;; My swiss army knife (notes, todos, agenda, etc.)
 (setq org-root-path "~/my_Swiss_army_Knife/")
@@ -114,13 +120,16 @@
 (setq org-default-notes-file
       (concat org-root-path "inbox.org"))
 
+
 ;; nyan-mode
 (nyan-mode)
 (setq nyan-wavy-trail t)
 (nyan-start-animation)
 
+
 ;; smart-mode-line
 (sml/setup)
+
 
 ;; face
 ;;; Monaco for Linux
@@ -154,14 +163,17 @@
   (set-fontset-font "fontset-default" '(#x1100 . #xffdc) '("나눔고딕코딩" . "unicode-bmp")))
 (when (eq system-type 'darwin))
 
+
 ;; anzu
 (global-anzu-mode +1)
+
 
 ;; javascript
 (add-hook 'js-mode-hook
           (lambda ()
             (tern-mode t)))
 (tern-ac-setup)
+
 
 ;; octave
 (add-to-list 'auto-mode-alist '("\\.m\\'" . octave-mode))
@@ -173,14 +185,31 @@
   (define-key octave-mode-map (kbd "M-s M-r") 'octave-send-region))
 (add-hook 'octave-mode-hook 'my-octave-mode-hook)
 
+
 ;; plantuml
 ;;; plantuml.jar can be downloaded from http://plantuml.com/en/download
 ;;; Download the file and place it to
 (add-to-list 'auto-mode-alist '("\\.plantuml\\'" . plantuml-mode))
 
+
 ;; semantic
 (define-key global-map (kbd "C-c i j") 'semantic-ia-fast-jump)
 (define-key global-map (kbd "C-c i m") 'semantic-ia-complete-symbol-menu)
+
+
+;; flycheck
+;; (bind-key "C-c ! h" 'helm-flycheck flycheck-mode-map)
+(add-hook 'after-init-hook #'global-flycheck-mode)
+(setq-default flycheck-disabled-checkers '(c/c++-clang c/c++-cppcheck c/c++-gcc))
+
+
+;; company
+(require 'company)
+(add-hook 'prog-mode-hook (lambda ()
+                            (company-mode t)
+                            (define-key company-mode-map [backtab] 'company-complete)
+                            (define-key company-active-map [tab] 'company-complete-selection)))
+
 
 ;; rtags (Gradually substitute to lsp-mode + ccls)
 ;; only run this if rtags is installed
@@ -201,10 +230,15 @@
   (add-hook 'c++-mode-hook 'rtags-start-process-maybe)
   (setq rtags-verify-protocol-version nil))
 
+
 ;; lsp-mode + ccls (Use only for Windows right now)
+(defun my-lsp-ui-mode-hook ()
+  (define-key lsp-ui-mode-map [remap xref-find-definitions] #'lsp-ui-peek-find-definitions)
+  (define-key lsp-ui-mode-map [remap xref-find-references] #'lsp-ui-peek-find-references))
+
 (when (eq system-type 'windows-nt)
   (use-package lsp-mode :commands lsp)
-  (use-package lsp-ui :commands lsp-ui-mode)
+  (use-package lsp-ui :commands lsp-ui-mode :config (my-lsp-ui-mode-hook))
   (use-package company-lsp :commands company-lsp)
   (use-package ccls
     :hook ((c-mode c++-mode objc-mode) .
@@ -213,16 +247,9 @@
       (setq ccls-executable
             "d:/Users/dit-698/Development/ccls/Release/Release/ccls.exe")
     (setq ccls-args
-          '("--log-file=d:/users/dit-698/tmp/ccls.log")))) ;; may cause crash if the path doesn't exist)
+          '("--log-file=d:/users/dit-698/tmp/ccls.log"))) ;; may cause crash if the path doesn't exist)
+  )
 
-;; flycheck
-;; (add-hook 'prog-mode-hook 'flycheck-mode)
-;; (define-key flycheck-mode-map (kbd "C-c f l") #'flycheck-list-errors)
-;; (define-key flycheck-mode-map (kbd "C-c f p") #'flycheck-previous-error)
-;; (define-key flycheck-mode-map (kbd "C-c f n") #'flycheck-next-error)
-;; (bind-key "C-c ! h" 'helm-flycheck flycheck-mode-map)
-(add-hook 'after-init-hook #'global-flycheck-mode)
-(setq-default flycheck-disabled-checkers '(c/c++-clang c/c++-cppcheck c/c++-gcc))
 
 ;; magit
 (diminish 'magit-auto-revert-mode)
@@ -233,6 +260,7 @@
 (define-key global-map (kbd "C-c v l") 'magit-log-head)
 (define-key global-map (kbd "C-c C-v C-l") 'magit-log-head)
 
+
 ;; exec-path-from-shell
 (when
     (or
@@ -242,26 +270,32 @@
   (setq exec-path-from-shell-variables '("PATH"))
   (exec-path-from-shell-initialize))
 
+
 ;; files
 (setq backup-directory-alist
       `((".*" . ,temporary-file-directory)))
 (setq auto-save-file-name-transforms
       `((".*" ,temporary-file-directory t)))
 
+
 ;; yes-or-no
 (defalias 'yes-or-no-p 'y-or-n-p)
+
 
 ;; clipboard access in X Window
 ;; (setq x-select-enable-clipboard t)
 ;; (setq interprogram-paste-function 'x-selection-value)
+
 
 ;; C-SPC selection in Windows
 (cond
  ((string-equal system-type "windows-nt")
   (global-set-key [C-kanji] 'set-mark-command)))
 
+
 ;; startup page
 (setq inhibit-startup-message t)
+
 
 ;; Naver Dictionary
 (defun jm-ndic (word)
@@ -273,6 +307,7 @@
            (if (string= "" word) wd word))))
   (browse-url (concat "http://endic.naver.com/popManager.nhn?sLn=kr&m=search&searchOption=&query=" word)))
 (define-key global-map [(control x) (j)] 'jm-ndic)
+
 
 ;; Google Translate
 (setq google-translate-default-source-language "en")
@@ -288,12 +323,6 @@
 (bind-key* "M-g k t" 'my-google-translate-query-translate-ko-to-en)
 (bind-key* "M-g M-k M-t" 'my-google-translate-query-translate-ko-to-en)
 
-;; company
-(require 'company)
-(add-hook 'prog-mode-hook (lambda ()
-                            (company-mode t)
-                            (define-key company-mode-map [backtab] 'company-complete)
-                            (define-key company-active-map [tab] 'company-complete-selection)))
 
 ;; quick insert-date
 (defun insert-date ()
@@ -301,9 +330,11 @@
   (interactive)
   (insert (format-time-string "%Y-%m-%d %a %p %l:%M")))
 
+
 ;; Easier Transition between Windows
 ;;; M-up, M-down, M-left, and M-right keys.
 (windmove-default-keybindings 'meta)
+
 
 ;; spawning the windows
 (fset 'spawn-window-right
@@ -318,6 +349,7 @@
 (bind-key* "C-<left>" 'spawn-window-right)
 (bind-key* "C-<down>" 'spawn-window-down)
 (bind-key* "C-<up>" 'spawn-window-up)
+
 
 ;; dired-mode
 (defun mydired-sort ()
@@ -346,8 +378,8 @@
   (define-key dired-mode-map [backspace] 'dired-up-directory))
 (add-hook 'dired-mode-hook 'my-dired-mode-hook)
 
-;; Development
 
+;; Development
 ;;; Font
 (setq font-lock-comment-face 'italic)
 (set-face-foreground 'italic "gray50")
@@ -356,6 +388,7 @@
 
 (require 'eassist)
 ;; (global-ede-mode 1)
+
 
 ;;; C
 (add-to-list 'auto-mode-alist '("\\.cpp\\'" . c++-mode))
@@ -405,6 +438,7 @@
 (add-hook 'c-or-c++-mode-hook
           (lambda () (add-to-list 'local-write-file-hooks 'delete-trailing-whitespace 'jpk/c-mode-hook)))
 
+
 ;; Another version of if-0/1 highlighting
 (defun my/cc-mode/highlight-if-0 ()
   "highlight c/c++ #if 0 #endif macros"
@@ -421,6 +455,7 @@
     (my/cc-mode/highlight-if-0)))
 ;; (add-hook 'after-save-hook #'my/cc-mode/highlight-if-0-hook)
 
+
 ;;; Python
 (when (executable-find "python")
   (setq python-shell-interpreter "python"))
@@ -428,6 +463,7 @@
   (define-key python-mode-map (kbd "M-m") 'helm-semantic-or-imenu))
 (add-hook 'python-mode-hook 'my-python-mode-hook)
 (define-key lisp-mode-shared-map (kbd "M-m") 'helm-semantic-or-imenu)
+
 
 ;;;; elpy
 (elpy-enable)
@@ -437,40 +473,49 @@
   (print "applied my-elpy-mode-hook"))
 (add-hook 'elpy-mode-hook 'my-elpy-mode-hook)
 
+
 ;;;; jedi
 (add-hook 'python-mode-hook 'jedi:setup)
 (setq jedi:use-shortcuts t)
 (setq jedi:complete-on-dot t)
 
+
 ;;;; py-autopep8
 (add-hook 'python-mode-hook 'py-autopep8-enable-on-save)
 (setq py-autopep8-options '("--max-line-length=80"))
 
+
 ;;; smartparens
 (diminish 'smartparens-mode "()")
 (smartparens-global-mode t)
+
 
 ;; Nuts and Bolts for CB Projects
 (setq cb_functions_file (concat org-root-path "business/canvasbio/cb_internal_functions.org"))
 (if (file-exists-p cb_functions_file)
     (org-babel-load-file cb_functions_file))
 
+
 ;; Recent files
 (recentf-mode)
+
 
 ;; eshell
 (add-hook 'eshell-mode-hook
           (lambda ()
             (define-key eshell-mode-map (kbd "C-c C-l") 'helm-eshell-history)))
 
+
 ;; redo
 (require 'redo+)
 (global-set-key (kbd "C-.") 'redo)
+
 
 ;; tdd
 ;;; Turn on/off the mode manually because it runs recompile automatically
 ;;; after saving any buffer no matters it's prog-mode or not.
 (require 'tdd)
+
 
 ;; Publishing the live buffer
 ;;; http://stackoverflow.com/questions/36183071/how-can-i-real-time-preview-markdown-in-emacs]]
@@ -484,14 +529,18 @@
            (format "<!DOCTYPE html><html><title>Impatient Markdown</title><xmp theme=\"united\" style=\"display:none;\"> %s  </xmp><script src=\"http://strapdownjs.com/v/0.2/strapdown.js\"></script></html>" (buffer-substring-no-properties (point-min) (point-max))))
          (current-buffer)))
 
+
 ;; Pandoc
 (setq markdown-command "/usr/bin/pandoc")
+
 
 ;; Replace the region with yank buffer
 (delete-selection-mode 1)
 
+
 ;; rainbow-mode
 (require 'rainbow-mode)
+
 
 ;; god-mode
 (require 'god-mode)
@@ -530,6 +579,7 @@
 
 (god-mode)
 
+
 ;; conda
 (require 'conda)
 ;;; if you want interactive shell support, include:
@@ -551,6 +601,7 @@
        (custom-set-variables
         '(conda-anaconda-home "d:/Users/dit-698/miniconda3")
         '(conda-env-home-directory "d:/Users/dit-698/miniconda3"))))
+
 
 ;; Docker
 (require 'docker)
