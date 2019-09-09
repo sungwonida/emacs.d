@@ -139,7 +139,6 @@
 ;;; Monaco for Windows
 ;;;; 1) http://www.gringod.com/wp-upload/software/Fonts/Monaco_5.1.ttf
 ;;;; 2) Copy the downloaded font into %SystemRoot%/Fonts/
-
 (if (display-graphic-p)
     (progn
       (setq default-frame-alist
@@ -283,7 +282,7 @@
 (defalias 'yes-or-no-p 'y-or-n-p)
 
 
-;; clipboard access in X Window
+;; ;; clipboard access in X Window
 ;; (setq x-select-enable-clipboard t)
 ;; (setq interprogram-paste-function 'x-selection-value)
 
@@ -440,21 +439,21 @@
           (lambda () (add-to-list 'local-write-file-hooks 'delete-trailing-whitespace 'jpk/c-mode-hook)))
 
 
-;; Another version of if-0/1 highlighting
-(defun my/cc-mode/highlight-if-0 ()
-  "highlight c/c++ #if 0 #endif macros"
-  (setq cpp-known-face 'default)
-  (setq cpp-unknown-face 'default)
-  (setq cpp-known-writable 't)
-  (setq cpp-unknown-writable 't)
-  (setq cpp-edit-list '(("0" '(foreground-color . "gray")  default both)
-                        ("1" default font-lock-comment-face both)))
-  (cpp-highlight-buffer t))
+;; ;; Another version of if-0/1 highlighting
+;; (defun my/cc-mode/highlight-if-0 ()
+;;   "highlight c/c++ #if 0 #endif macros"
+;;   (setq cpp-known-face 'default)
+;;   (setq cpp-unknown-face 'default)
+;;   (setq cpp-known-writable 't)
+;;   (setq cpp-unknown-writable 't)
+;;   (setq cpp-edit-list '(("0" '(foreground-color . "gray")  default both)
+;;                         ("1" default font-lock-comment-face both)))
+;;   (cpp-highlight-buffer t))
 
-(defun my/cc-mode/highlight-if-0-hook ()
-  (when (or (eq major-mode 'c++-mode) (eq major-mode 'c-mode))
-    (my/cc-mode/highlight-if-0)))
-;; (add-hook 'after-save-hook #'my/cc-mode/highlight-if-0-hook)
+;; (defun my/cc-mode/highlight-if-0-hook ()
+;;   (when (or (eq major-mode 'c++-mode) (eq major-mode 'c-mode))
+;;     (my/cc-mode/highlight-if-0)))
+;; ;; (add-hook 'after-save-hook #'my/cc-mode/highlight-if-0-hook)
 
 
 ;;; Python
@@ -589,20 +588,20 @@
 (conda-env-initialize-eshell)
 ;;; if you want auto-activation (see below for details), include:
 (conda-env-autoactivate-mode t)
-;;; If your Anaconda installation is anywhere other than the default
-(cond ((eq system-type 'gnu/linux)
-       (custom-set-variables
-        '(conda-anaconda-home "/home/david/miniconda3")
-        '(conda-env-home-directory "/home/david/miniconda3")))
-      ((eq system-type 'darwin)
-       (custom-set-variables
-        '(conda-anaconda-home "/Users/Kirin/miniconda3")
-        '(conda-env-home-directory "/Users/Kirin/miniconda3")))
-      ((eq system-type 'windows-nt)
-       (custom-set-variables
-        '(conda-anaconda-home "d:/Users/dit-698/miniconda3")
-        '(conda-env-home-directory "d:/Users/dit-698/miniconda3"))))
-
+;;; If your Anaconda installation is in elsewhere other than the default
+(setq conda-anaconda-home (concat (getenv "HOME") "miniconda3"))
+;; Remove code below after the testing
+;; (cond ((eq system-type 'gnu/linux)
+;;        (custom-set-variables
+;;         '(conda-anaconda-home (concat (getenv "HOME") "miniconda3")))) ;; need test
+;;       ((eq system-type 'darwin)
+;;        (custom-set-variables
+;;         '(conda-anaconda-home (concat (getenv "HOME") "miniconda3")))) ;; need test
+;;       ((eq system-type 'windows-nt)
+;;        (custom-set-variables
+;;         '(conda-anaconda-home (concat (getenv "HOME") "miniconda3")))
+;;         ;; '(conda-env-home-directory (concat (getenv "HOME") "miniconda3"))
+;;         ))
 
 ;; Docker
 (require 'docker)
