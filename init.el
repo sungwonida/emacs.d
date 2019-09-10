@@ -232,7 +232,6 @@
 
 ;; lsp-mode + ccls (Use only for Windows right now)
 (defun my-lsp-ui-mode-hook ()
-  (lsp-ui-sideline-mode 0)
   (define-key lsp-ui-mode-map [remap xref-find-definitions] #'lsp-ui-peek-find-definitions)
   (define-key lsp-ui-mode-map [remap xref-find-references] #'lsp-ui-peek-find-references))
 
