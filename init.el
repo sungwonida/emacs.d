@@ -121,8 +121,16 @@
       (concat org-root-path "inbox.org"))
 
 
+;; atom-one-dark-theme
+(load-theme 'atom-one-dark t)
+
+
 ;; smart-mode-line
-(sml/setup)
+(use-package smart-mode-line
+  :config
+  (setq sml/no-confirm-load-theme t)
+  (setq sml/theme 'respectful)
+  (sml/setup))
 
 
 ;; face
@@ -374,11 +382,9 @@
 
 
 ;; Development
-;;; Font
-(setq font-lock-comment-face 'italic)
-(set-face-foreground 'italic "gray50")
-(set-face-attribute 'region nil :background "#aaff90")
 (add-hook 'prog-mode-hook '(lambda () (setq tab-width 4)))
+(add-hook 'prog-mode-hook 'hl-line-mode)
+
 
 (require 'eassist)
 ;; (global-ede-mode 1)

@@ -3,6 +3,7 @@
 
 (depends-on "anzu")
 (depends-on "async")
+(depends-on "atom-one-dark-theme")
 (depends-on "bind-key")
 (depends-on "cask")
 (depends-on "ccls")
