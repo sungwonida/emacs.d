@@ -121,12 +121,6 @@
       (concat org-root-path "inbox.org"))
 
 
-;; nyan-mode
-(nyan-mode)
-(setq nyan-wavy-trail t)
-(nyan-start-animation)
-
-
 ;; smart-mode-line
 (sml/setup)
 
@@ -239,6 +233,7 @@
   (use-package lsp-mode :commands lsp)
   (use-package lsp-ui :commands lsp-ui-mode :config (my-lsp-ui-mode-hook))
   (use-package company-lsp :commands company-lsp)
+  (use-package helm-lsp :commands helm-lsp-workspace-symbol)
   (use-package ccls
     :hook ((c-mode c++-mode objc-mode) .
            (lambda () (require 'ccls) (lsp))))
