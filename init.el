@@ -150,12 +150,13 @@
       (menu-bar-mode -1)
       (scroll-bar-mode -1)
       (setq scroll-step 1)
-      (if (eq system-type 'darwin)
-          (add-to-list 'default-frame-alist '(font . "Monaco-10"))
+      (cond
+       ((eq system-type 'gnu/linux)
+        (add-to-list 'default-frame-alist '(font . "Monaco-9")))
+       ((eq system-type 'darwin)
         (add-to-list 'default-frame-alist '(font . "Monaco-10")))
-      (if (eq system-type 'windows-nt)
-          (add-to-list 'default-frame-alist '(font . "Monaco-9"))
-        (add-to-list 'default-frame-alist '(font . "Monaco-9")))))
+       ((eq system-type 'windows-nt)
+        (add-to-list 'default-frame-alist '(font . "Monaco-9"))))))
 
 (set-language-environment '"Korean")
 (prefer-coding-system 'utf-8)
@@ -577,19 +578,12 @@
 ;;; if you want auto-activation (see below for details), include:
 (conda-env-autoactivate-mode t)
 ;;; If your Anaconda installation is in elsewhere other than the default
-(setq conda-anaconda-home (concat (getenv "HOME") "miniconda3"))
-;; Remove code below after the testing
-;; (cond ((eq system-type 'gnu/linux)
-;;        (custom-set-variables
-;;         '(conda-anaconda-home (concat (getenv "HOME") "miniconda3")))) ;; need test
-;;       ((eq system-type 'darwin)
-;;        (custom-set-variables
-;;         '(conda-anaconda-home (concat (getenv "HOME") "miniconda3")))) ;; need test
-;;       ((eq system-type 'windows-nt)
-;;        (custom-set-variables
-;;         '(conda-anaconda-home (concat (getenv "HOME") "miniconda3")))
-;;         ;; '(conda-env-home-directory (concat (getenv "HOME") "miniconda3"))
-;;         ))
+(setq conda-anaconda-home
+      (concat
+       (file-name-as-directory (getenv "HOME"))
+       "miniconda3"))
+(setq conda-env-home-directory conda-anaconda-home)
+
 
 ;; Docker
 (require 'docker)
