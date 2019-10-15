@@ -213,45 +213,23 @@
                             (define-key company-active-map [tab] 'company-complete-selection)))
 
 
-;; rtags (Gradually substitute to lsp-mode + ccls)
-;; only run this if rtags is installed
-(when (and (require 'rtags nil :noerror) (not (eq system-type 'windows-nt)))
-  (setq rtags-install-path "~/.emacs.d/")
-
-  (define-key c-mode-base-map (kbd "M-.")
-    (function rtags-find-symbol-at-point))
-  (define-key c-mode-base-map (kbd "M-,")
-    (function rtags-find-references-at-point))
-  ;; install standard rtags keybindings. Do M-. on the symbol below to
-  ;; jump to definition and see the keybindings.
-  (rtags-enable-standard-keybindings)
-  ;; comment this out if you don't have or don't use helm
-  (setq rtags-use-helm t)
-
-  (add-hook 'c-mode-hook 'rtags-start-process-maybe)
-  (add-hook 'c++-mode-hook 'rtags-start-process-maybe)
-  (setq rtags-verify-protocol-version nil))
-
-
-;; lsp-mode + ccls (Use only for Windows right now)
+;; lsp-mode
 (defun my-lsp-ui-mode-hook ()
   (define-key lsp-ui-mode-map [remap xref-find-definitions] #'lsp-ui-peek-find-definitions)
   (define-key lsp-ui-mode-map [remap xref-find-references] #'lsp-ui-peek-find-references))
 
-(when (eq system-type 'windows-nt)
-  (use-package lsp-mode :commands lsp)
-  (use-package lsp-ui :commands lsp-ui-mode :config (my-lsp-ui-mode-hook))
-  (use-package company-lsp :commands company-lsp)
-  (use-package helm-lsp :commands helm-lsp-workspace-symbol)
-  (use-package ccls
-    :hook ((c-mode c++-mode objc-mode) .
-           (lambda () (require 'ccls) (lsp))))
-  (if (eq system-type 'windows-nt)
-      (setq ccls-executable
-            "d:/Users/dit-698/Development/ccls/Release/Release/ccls.exe")
-    (setq ccls-args
-          '("--log-file=d:/users/dit-698/tmp/ccls.log"))) ;; may cause crash if the path doesn't exist)
-  )
+(use-package lsp-mode
+  :commands lsp
+  :config
+  ;; '-background-index' requires clangd v8+
+  (setq lsp-clients-clangd-args '("-j=4" "-background-index" "-log=error"))
+  :hook ((c-mode . lsp)
+         (c++-mode . lsp)
+         (objc-mode . lsp)))
+
+(use-package lsp-ui :commands lsp-ui-mode :config (my-lsp-ui-mode-hook))
+(use-package company-lsp :commands company-lsp)
+(use-package helm-lsp :commands helm-lsp-workspace-symbol)
 
 
 ;; magit
