@@ -60,7 +60,7 @@
 ;; (add-hook 'c-mode-common-hook 'my-helm-mode-hook)
 ;; (add-hook 'c-mode-hook 'my-helm-mode-hook)
 ;; (add-hook 'c++-mode-hook 'my-helm-mode-hook)
-(setq helm-split-window-in-side-p               t
+(setq helm-split-window-in-side-p               nil
       helm-autoresize-mode                      t
       helm-move-to-line-cycle-in-source         t
       helm-ff-search-library-in-sexp            t
