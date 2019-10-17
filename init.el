@@ -195,8 +195,14 @@
 
 
 ;; semantic
+(add-to-list 'semantic-default-submodes 'global-semantic-stickyfunc-mode)
+(semantic-mode 1)
 (define-key global-map (kbd "C-c i j") 'semantic-ia-fast-jump)
 (define-key global-map (kbd "C-c i m") 'semantic-ia-complete-symbol-menu)
+
+
+;; stickyfunc-enhance
+(use-package stickyfunc-enhance)
 
 
 ;; flycheck
@@ -226,7 +232,6 @@
   :hook ((c-mode . lsp)
          (c++-mode . lsp)
          (objc-mode . lsp)))
-
 (use-package lsp-ui :commands lsp-ui-mode :config (my-lsp-ui-mode-hook))
 (use-package company-lsp :commands company-lsp)
 (use-package helm-lsp :commands helm-lsp-workspace-symbol)

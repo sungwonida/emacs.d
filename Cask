@@ -1,6 +1,7 @@
 (source gnu)
 (source melpa)
 
+(depends-on "ag")
 (depends-on "anzu")
 (depends-on "async")
 (depends-on "atom-one-dark-theme")
@@ -36,6 +37,7 @@
 (depends-on "helm-gtags")
 (depends-on "helm-ls-git")
 (depends-on "helm-lsp")
+(depends-on "helm-projectile")
 (depends-on "impatient-mode")
 (depends-on "irony")
 (depends-on "ivy")
@@ -59,6 +61,7 @@
 (depends-on "smart-mode-line")
 (depends-on "smartparens")
 (depends-on "spinner")
+(depends-on "stickyfunc-enhance")
 (depends-on "tablist")
 (depends-on "tern")
 (depends-on "tern-auto-complete")
