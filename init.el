@@ -29,8 +29,6 @@
 (bind-key* "M-y" 'helm-show-kill-ring)
 (bind-key* "M-s o" 'helm-occur)
 (bind-key* "M-g M-o M-k" 'helm-google-suggest)
-(bind-key* "C-c h p" 'helm-browse-project)
-(bind-key* "C-c C-h C-p" 'helm-browse-project)
 (setq helm-split-window-in-side-p               t
       helm-autoresize-mode                      t
       helm-move-to-line-cycle-in-source         t
@@ -50,11 +48,13 @@
 
 ;; helm-git-grep
 (define-key global-map (kbd "C-c h g") 'helm-git-grep-at-point)
-(define-key global-map (kbd "C-c C-h C-g") 'helm-git-grep-at-point)
+(define-key global-map (kbd "C-c C-h g") 'helm-git-grep-at-point)
 
 
 ;; helm-projectile
 (projectile-global-mode)
+(bind-key* "C-c h p" 'helm-projectile)
+(bind-key* "C-c C-h C-p" 'helm-projectile)
 (setq helm-ag-insert-at-point 'symbol)
 (define-key projectile-mode-map (kbd "C-c h a") 'helm-projectile-ag)
 (define-key projectile-mode-map (kbd "C-c C-h C-a") 'helm-projectile-ag)
