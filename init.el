@@ -353,7 +353,7 @@
 
 ;; Development
 (add-hook 'prog-mode-hook '(lambda () (setq tab-width 4)))
-(add-hook 'prog-mode-hook 'hl-line-mode)
+(global-hl-line-mode 1)
 
 
 (require 'eassist)
@@ -522,7 +522,13 @@
 (defun my-god-mode-hook ()
   (define-key isearch-mode-map (kbd "<tab>") 'god-mode-isearch-activate)
   (define-key god-mode-isearch-map (kbd "<tab>") 'god-mode-isearch-disable))
+(defun c/god-mode-update-cursor ()
+  (let ((limited-colors-p (> 257 (length (defined-colors)))))
+	(cond (god-local-mode (set-face-background 'hl-line "#000000"))
+		  (t (set-face-background 'hl-line "#2C323C")))))
 (add-hook 'god-mode-enabled-hook 'my-god-mode-hook)
+(add-hook 'god-mode-enabled-hook 'c/god-mode-update-cursor)
+(add-hook 'god-mode-disabled-hook 'c/god-mode-update-cursor)
 
 (define-key god-local-mode-map (kbd "i") 'god-mode-all)
 (define-key god-local-mode-map (kbd "S-<escape>") (kbd "C-g"))
