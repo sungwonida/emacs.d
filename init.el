@@ -31,6 +31,14 @@
 (bind-key* "M-g M-o M-k" 'helm-google-suggest)
 (bind-key* "C-c h p" 'helm-browse-project)
 (bind-key* "C-c C-h C-p" 'helm-browse-project)
+(setq helm-split-window-in-side-p               t
+      helm-autoresize-mode                      t
+      helm-move-to-line-cycle-in-source         t
+      helm-ff-search-library-in-sexp            t
+      helm-scroll-amount                        8
+      helm-ff-file-name-history-use-recentf     t
+      )
+(setq helm-show-completion-display-function #'helm-show-completion-default-display-function)
 ;; (eval-after-load "helm"
 ;;   '(define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action)) ;; uncomment to use tab as auto-completion
 
@@ -42,39 +50,17 @@
 
 ;; helm-git-grep
 (define-key global-map (kbd "C-c h g") 'helm-git-grep-at-point)
-(define-key global-map (kbd "C-c C-h M-g") 'helm-git-grep-at-point)
+(define-key global-map (kbd "C-c C-h C-g") 'helm-git-grep-at-point)
 
 
-;; helm-gtags
-(defun my-helm-mode-hook ()
-  (helm-gtags-mode 1)
-  (define-key helm-gtags-mode-map (kbd "C-c g a") 'helm-gtags-tags-in-this-function)
-  (define-key helm-gtags-mode-map (kbd "M-s") 'helm-gtags-select)
-  (define-key helm-gtags-mode-map (kbd "M-.") 'helm-gtags-dwim)
-  (define-key helm-gtags-mode-map (kbd "M-,") 'helm-gtags-find-rtag) ;helm-gtags-pop-stack
-  (define-key helm-gtags-mode-map (kbd "C-c C-,") 'helm-gtags-previous-history)
-  (define-key helm-gtags-mode-map (kbd "C-c C-.") 'helm-gtags-next-history)
-  (define-key helm-gtags-mode-map (kbd "C-c g u") 'helm-gtags-update-tags))
-;; (add-hook 'dired-mode-hook 'helm-gtags-mode)
-;; (add-hook 'eshell-mode-hook 'helm-gtags-mode)
-;; (add-hook 'c-mode-common-hook 'my-helm-mode-hook)
-;; (add-hook 'c-mode-hook 'my-helm-mode-hook)
-;; (add-hook 'c++-mode-hook 'my-helm-mode-hook)
-(setq helm-split-window-in-side-p               nil
-      helm-autoresize-mode                      t
-      helm-move-to-line-cycle-in-source         t
-      helm-ff-search-library-in-sexp            t
-      helm-scroll-amount                        8
-      helm-ff-file-name-history-use-recentf     t
-      helm-gtags-ignore-case                    t
-      helm-gtags-auto-update                    t
-      helm-gtags-use-input-at-cursor            t
-      helm-gtags-pulse-at-cursor                t
-      helm-gtags-prefix-key                     "\C-cg"
-      helm-gtags-suggested-key-mapping          t
-      )
-(setq helm-show-completion-display-function #'helm-show-completion-default-display-function)
+;; helm-projectile
+(projectile-global-mode)
+(setq helm-ag-insert-at-point 'symbol)
+(define-key projectile-mode-map (kbd "C-c h a") 'helm-projectile-ag)
+(define-key projectile-mode-map (kbd "C-c C-h C-a") 'helm-projectile-ag)
 
+
+;; helm-descbinds
 (require 'helm-descbinds)
 (helm-descbinds-mode)
 
