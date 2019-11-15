@@ -68,4 +68,5 @@
 (depends-on "use-package")
 (depends-on "with-editor")
 (depends-on "yasnippet")
+(depends-on "yasnippet-snippets")
 (depends-on "ztree")

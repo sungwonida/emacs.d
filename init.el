@@ -218,7 +218,8 @@
   (setq lsp-clients-clangd-args '("-j=4" "-background-index" "-log=error"))
   :hook ((c-mode . lsp)
          (c++-mode . lsp)
-         (objc-mode . lsp)))
+         (objc-mode . lsp)
+         (python-mode . lsp)))
 (use-package lsp-ui :commands lsp-ui-mode :config (my-lsp-ui-mode-hook))
 (use-package company-lsp :commands company-lsp)
 (use-package helm-lsp :commands helm-lsp-workspace-symbol)
@@ -357,8 +358,14 @@
 (global-hl-line-mode 1)
 
 
-(require 'eassist)
+(use-package eassist)
 ;; (global-ede-mode 1)
+
+
+;;; yasnippet
+(use-package yasnippet
+  :init (add-hook 'prog-mode-hook #'yas-minor-mode)
+  :config (yas-reload-all))
 
 
 ;;; C
