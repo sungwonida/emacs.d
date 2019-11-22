@@ -407,14 +407,14 @@
   (cpp-highlight-if-0/1)
   (add-hook 'after-save-hook 'cpp-highlight-if-0/1 'append 'local))
 
-(add-hook 'c-mode-common-hook
-          (lambda () (add-to-list 'local-write-file-hooks 'delete-trailing-whitespace 'jpk/c-mode-hook)))
-(add-hook 'c-mode-hook
-          (lambda () (add-to-list 'local-write-file-hooks 'delete-trailing-whitespace 'jpk/c-mode-hook)))
-(add-hook 'c++-mode-hook
-          (lambda () (add-to-list 'local-write-file-hooks 'delete-trailing-whitespace 'jpk/c-mode-hook)))
-(add-hook 'c-or-c++-mode-hook
-          (lambda () (add-to-list 'local-write-file-hooks 'delete-trailing-whitespace 'jpk/c-mode-hook)))
+(defun prog-common-hook ()
+  (add-to-list 'local-write-file-hooks 'delete-trailing-whitespace)
+  (add-to-list 'local-write-file-hooks 'jpk/c-mode-hook))
+
+(add-hook 'c-mode-common-hook 'prog-common-hook)
+(add-hook 'c-mode-hook 'prog-common-hook)
+(add-hook 'c++-mode-hook 'prog-common-hook)
+(add-hook 'c-or-c++-mode-hook 'prog-common-hook)
 
 
 ;; ;; Another version of if-0/1 highlighting
