@@ -409,7 +409,8 @@
 
 (defun prog-common-hook ()
   (add-to-list 'local-write-file-hooks 'delete-trailing-whitespace)
-  (add-to-list 'local-write-file-hooks 'jpk/c-mode-hook))
+  ;; (add-to-list 'local-write-file-hooks 'jpk/c-mode-hook)
+  )
 
 (add-hook 'c-mode-common-hook 'prog-common-hook)
 (add-hook 'c-mode-hook 'prog-common-hook)
