@@ -46,6 +46,7 @@
 (depends-on "magit")
 (depends-on "markdown-mode")
 (depends-on "org")
+(depends-on "org-gcal")
 (depends-on "package-build")
 (depends-on "pallet")
 (depends-on "plantuml-mode")

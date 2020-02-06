@@ -78,7 +78,7 @@
 
 
 ;;; My swiss army knife (notes, todos, agenda, etc.)
-(setq org-root-path "~/my_Swiss_army_Knife/")
+(setq org-root-path "~/Dropbox/org/")
 (defun notes ()
   "Switch to my notes dir."
   (interactive)
@@ -105,6 +105,17 @@
 
 (setq org-default-notes-file
       (concat org-root-path "inbox.org"))
+
+;; org-gcal
+;; IMPORTANT: Replace client-id and client-secret strings to file paths and read them
+(use-package org-gcal
+  :ensure t
+  :config(setq org-gcal-client-id ""
+               org-gcal-client-secret ""
+               org-gcal-file-alist '(("sungwonida@gmail.com" .
+                                      (concat org-root-path "agenda.org")))))
+(add-hook 'org-agenda-mode-hook (lambda () (org-gcal-sync)))
+(add-hook 'org-capture-after-finalize-hook (lambda () (org-gcal-sync)))
 
 
 ;; atom-one-dark-theme
