@@ -550,7 +550,7 @@
 (global-set-key (kbd "C-x C-3") 'split-window-right)
 (global-set-key (kbd "C-x C-0") 'delete-window)
 
-(god-mode)
+;; (god-mode)
 
 
 ;; conda
