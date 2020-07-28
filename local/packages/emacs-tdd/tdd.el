@@ -197,7 +197,8 @@ of that compilation command."
 (defun tdd-compilation-finish (buf msg)
   "Function run from `compilation-finish-functions'."
   (setq tdd-compilation-in-progress nil)
-  (if (string-match "exited abnormally" msg)
+  (if (or (string-match "exited abnormally" msg)
+          (string-match "aborted" msg))
       (tdd-failure)
     (tdd-success)))
 

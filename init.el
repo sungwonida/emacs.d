@@ -503,7 +503,11 @@
 ;;; Turn on/off the mode manually because it runs recompile automatically
 ;;; after saving any buffer no matters it's prog-mode or not.
 (require 'tdd)
-(custom-set-variables '(tdd-test-function (smart-compile)))
+;; (custom-set-variables '(tdd-test-function (smart-compile)))
+
+(defun selective-tdd-after-save ()
+  (when (derived-mode-p 'c-mode 'c++-mode) (tdd-after-save)))
+(add-hook 'after-save-hook 'selective-tdd-after-save)
 
 
 ;; Publishing the live buffer
