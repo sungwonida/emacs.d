@@ -113,12 +113,13 @@
   :config(setq org-gcal-client-id ""
                org-gcal-client-secret ""
                org-gcal-file-alist '(("sungwonida@gmail.com" .
-                                      (concat org-root-path "agenda.org")))))
+                                      "~/Dropbox/org/agenda.org"))))
+                                      ;; (concat org-root-path "agenda.org")))))
 (add-hook 'org-agenda-mode-hook (lambda () (org-gcal-sync)))
 (add-hook 'org-capture-after-finalize-hook (lambda () (org-gcal-sync)))
 
 
-;; atom-one-dark-theme
+;; theme settings
 (load-theme 'atom-one-dark t)
 
 
@@ -316,7 +317,7 @@
   (insert (format-time-string "%Y-%m-%d %a %p %l:%M")))
 
 
-;; Easier Transition between Windows
+;; easier transition between windows
 ;;; M-up, M-down, M-left, and M-right keys.
 (windmove-default-keybindings 'meta)
 
@@ -393,7 +394,7 @@
             (local-set-key (kbd "C-c <down>") 'hs-hide-all)
             (local-set-key (kbd "C-c <up>") 'hs-show-all)))
 
-(defun cpp-highlight-if-0/1 ()
+(defun highlight-if-0/1 ()
   "Modify the face of text in between #if 0 ... #endif."
   (interactive)
   (setq cpp-known-face 'default)
@@ -414,19 +415,16 @@
            both nil)))
   (cpp-highlight-buffer t))
 
-(defun jpk/c-mode-hook ()
-  (cpp-highlight-if-0/1)
-  (add-hook 'after-save-hook 'cpp-highlight-if-0/1 'append 'local))
+(defun c-cpp-highlight-if-0/1 ()
+  (when (derived-mode-p 'c-mode 'c++-mode)
+    (highlight-if-0/1)))
 
-(defun prog-common-hook ()
-  (add-to-list 'local-write-file-hooks 'delete-trailing-whitespace)
-  ;; (add-to-list 'local-write-file-hooks 'jpk/c-mode-hook)
-  )
-
-(add-hook 'c-mode-common-hook 'prog-common-hook)
-(add-hook 'c-mode-hook 'prog-common-hook)
-(add-hook 'c++-mode-hook 'prog-common-hook)
-(add-hook 'c-or-c++-mode-hook 'prog-common-hook)
+(defun prog-delete-trailing-whitespace ()
+  (interactive)
+  (when (derived-mode-p 'prog-mode 'emacs-lisp-mode)
+    (delete-trailing-whitespace)))
+(add-hook 'before-save-hook 'prog-delete-trailing-whitespace)
+(add-hook 'before-save-hook 'c-cpp-highlight-if-0/1)
 
 
 ;; ;; Another version of if-0/1 highlighting
@@ -505,6 +503,7 @@
 ;;; Turn on/off the mode manually because it runs recompile automatically
 ;;; after saving any buffer no matters it's prog-mode or not.
 (require 'tdd)
+(custom-set-variables '(tdd-test-function (smart-compile)))
 
 
 ;; Publishing the live buffer

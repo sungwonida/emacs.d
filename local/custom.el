@@ -41,7 +41,7 @@
      nil "")))
  '(package-selected-packages
    (quote
-    (org-gcal yasnippet-snippets stickyfunc-enhance ag helm-projectile atom-one-dark-theme helm-lsp use-package company-lsp lsp-ui lsp-mode ztree docker conda cmake-mode flycheck flycheck-irony company-irony-c-headers company-irony irony helm-descbinds god-mode elpy py-autopep8 smartparens unicode-fonts tern-auto-complete smart-mode-line rainbow-mode rainbow-delimiters plantuml-mode pallet markdown-mode magit jedi impatient-mode helm-ls-git helm-gtags helm-git-grep helm-flycheck helm-ag google-translate exec-path-from-shell edit-server diminish company color-identifiers-mode cider bind-key anzu)))
+    (smart-compile org-gcal yasnippet-snippets stickyfunc-enhance ag helm-projectile atom-one-dark-theme helm-lsp use-package company-lsp lsp-ui lsp-mode ztree docker conda cmake-mode flycheck flycheck-irony company-irony-c-headers company-irony irony helm-descbinds god-mode elpy py-autopep8 smartparens unicode-fonts tern-auto-complete smart-mode-line rainbow-mode rainbow-delimiters plantuml-mode pallet markdown-mode magit jedi impatient-mode helm-ls-git helm-gtags helm-git-grep helm-flycheck helm-ag google-translate exec-path-from-shell edit-server diminish company color-identifiers-mode cider bind-key anzu)))
  '(show-paren-mode t)
  '(tab-width 4))
 (custom-set-faces
