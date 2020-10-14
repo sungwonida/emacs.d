@@ -69,6 +69,7 @@
 (depends-on "smart-mode-line")
 (depends-on "smartparens")
 (depends-on "spinner")
+(depends-on "srefactor")
 (depends-on "stickyfunc-enhance")
 (depends-on "tablist")
 (depends-on "tern")

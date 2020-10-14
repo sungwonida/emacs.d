@@ -386,13 +386,6 @@
 (defun my-c-mode-common-hook ()
   (define-key c-mode-base-map (kbd "M-o") 'eassist-switch-h-cpp)
   (define-key c-mode-base-map (kbd "M-m") 'helm-semantic-or-imenu))
-(add-hook 'c-mode-common-hook 'my-c-mode-common-hook)
-(add-hook 'c-mode-common-hook
-          (lambda()
-            (hs-minor-mode t)
-            (local-set-key (kbd "C-c u") 'hs-toggle-hiding)
-            (local-set-key (kbd "C-c <down>") 'hs-hide-all)
-            (local-set-key (kbd "C-c <up>") 'hs-show-all)))
 
 (defun highlight-if-0/1 ()
   "Modify the face of text in between #if 0 ... #endif."
@@ -423,8 +416,17 @@
   (interactive)
   (when (derived-mode-p 'prog-mode 'emacs-lisp-mode)
     (delete-trailing-whitespace)))
-(add-hook 'before-save-hook 'prog-delete-trailing-whitespace)
+
+(add-hook 'c-mode-common-hook 'my-c-mode-common-hook)
+(add-hook 'c-mode-common-hook
+          (lambda()
+            (hs-minor-mode t)
+            (local-set-key (kbd "C-c u") 'hs-toggle-hiding)
+            (local-set-key (kbd "C-c <down>") 'hs-hide-all)
+            (local-set-key (kbd "C-c <up>") 'hs-show-all)))
+(add-hook 'c-mode-common-hook 'c-cpp-highlight-if-0/1)
 (add-hook 'before-save-hook 'c-cpp-highlight-if-0/1)
+(add-hook 'before-save-hook 'prog-delete-trailing-whitespace)
 
 
 ;; ;; Another version of if-0/1 highlighting
@@ -506,8 +508,21 @@
 ;; (custom-set-variables '(tdd-test-function (smart-compile)))
 
 (defun selective-tdd-after-save ()
-  (when (derived-mode-p 'c-mode 'c++-mode) (tdd-after-save)))
+  (when (derived-mode-p 'c-mode 'c++-mode 'cmake-mode) (tdd-after-save)))
 (add-hook 'after-save-hook 'selective-tdd-after-save)
+
+(global-set-key [f12] 'tdd-mode)
+
+
+;; Semantic Refactor
+(require 'srefactor)
+(semantic-mode 1) ;; OPTIONAL: ADD IT ONLY IF YOU USE C/C++.
+(define-key c-mode-map (kbd "M-s M-RET") 'srefactor-refactor-at-point)
+(define-key c++-mode-map (kbd "M-s M-RET") 'srefactor-refactor-at-point)
+;; (global-set-key (kbd "M-RET o") 'srefactor-lisp-one-line)
+;; (global-set-key (kbd "M-RET m") 'srefactor-lisp-format-sexp)
+;; (global-set-key (kbd "M-RET d") 'srefactor-lisp-format-defun)
+;; (global-set-key (kbd "M-RET b") 'srefactor-lisp-format-buffer)
 
 
 ;; Publishing the live buffer
