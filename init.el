@@ -76,22 +76,6 @@
         ("http" . "\\.\\(jpeg\\|jpg\\|png\\|gif\\|svg\\|bmp\\)\\'")
         ("https" . "\\.\\(jpeg\\|jpg\\|png\\|gif\\|svg\\|bmp\\)\\'")))
 
-
-;;; My swiss army knife (notes, todos, agenda, etc.)
-(setq org-root-path "~/Dropbox/org/")
-(defun notes ()
-  "Switch to my notes dir."
-  (interactive)
-  (find-file org-root-path))
-(defun inbox ()
-  "Show my own inbox."
-  (interactive)
-  (find-file (concat org-root-path "inbox.org")))
-(defun voca ()
-  "Show my vocabulary tables."
-  (interactive)
-  (find-file (concat org-root-path "personal/voca.org")))
-
 (require 'find-lisp)
 (defun org-agenda-files-load-files ()
   (interactive)
@@ -103,20 +87,55 @@
     nil))
 (add-hook 'after-init-hook 'org-agenda-files-load-files)
 
-(setq org-default-notes-file
-      (concat org-root-path "inbox.org"))
+(defun org-templates-load-templates ()
+  (interactive)
+  (setq org-capture-templates
+         '(("t" "Todo" entry (file+headline "~/org/gtd.org" "Tasks")
+            "* TODO %?\n  %i\n  %a")
+           ("j" "Journal" entry (file+datetree "~/org/journal.org")
+            "* %?\nEntered on %U\n  %i\n  %a")
+           ("e" "Event" entry (file "~/org/agenda.org")
+            "* %?\n  %i\n  %a")))
+   (add-to-list 'org-structure-template-alist
+                (list "p" (concat ":PROPERTIES:\n"
+                                  "?\n"
+                                  ":END:")))
+   (add-to-list 'org-structure-template-alist
+                (list "eh" (concat ":EXPORT_FILE_NAME: ?\n"
+                                   ":EXPORT_TITLE:\n"
+                                   ":EXPORT_OPTIONS: toc:nil html-postamble:nil num:nil"))))
+(add-hook 'after-init-hook 'org-templates-load-templates)
 
-;; org-gcal
-;; IMPORTANT: Replace client-id and client-secret strings to file paths and read them
+(defun custom/org-todo-state-change-hook ()
+  "Perform todo-state specific tasks"
+  ;; (message "state is %s (DONE? %s)" (org-get-todo-state) (string= (org-get-todo-state) "DONE"))
+  (if (string= (org-get-todo-state) "DONE") (org-archive-subtree)))
+(add-hook 'org-after-todo-state-change-hook 'custom/org-todo-state-change-hook)
+
+;;; org-gcal
+;;;; IMPORTANT: Replace client-id and client-secret strings to file paths and read them
 (use-package org-gcal
   :ensure t
   :config(setq org-gcal-client-id ""
                org-gcal-client-secret ""
-               org-gcal-file-alist '(("sungwonida@gmail.com" .
-                                      "~/Dropbox/org/agenda.org"))))
-                                      ;; (concat org-root-path "agenda.org")))))
+               org-gcal-file-alist '(("" .
+                                      "~/org/event.org"))))
 (add-hook 'org-agenda-mode-hook (lambda () (org-gcal-sync)))
 (add-hook 'org-capture-after-finalize-hook (lambda () (org-gcal-sync)))
+
+;;; My swiss army knife (notes, todos, agenda, etc.)
+(setq org-root-path "~/org/")
+(defun note ()
+  "Show my notes"
+  (interactive)
+  (find-file (concat org-root-path "note.org")))
+(defun voca ()
+  "Show my vocabulary tables."
+  (interactive)
+  (find-file (concat org-root-path "learning/voca.org")))
+
+(setq org-default-notes-file
+      (concat org-root-path "note.org"))
 
 
 ;; theme settings
