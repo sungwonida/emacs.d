@@ -94,8 +94,8 @@
             "* TODO %?\n  %i\n  %a")
            ("j" "Journal" entry (file+datetree "~/org/journal.org")
             "* %?\nEntered on %U\n  %i\n  %a")
-           ("e" "Event" entry (file "~/org/agenda.org")
-            "* %?\n  %i\n  %a")))
+           ("e" "Event" entry (file "~/org/event.org")
+            "* %?\n  %U\n  %i\n  %a")))
    (add-to-list 'org-structure-template-alist
                 (list "p" (concat ":PROPERTIES:\n"
                                   "?\n"
@@ -109,7 +109,8 @@
 (defun custom/org-todo-state-change-hook ()
   "Perform todo-state specific tasks"
   ;; (message "state is %s (DONE? %s)" (org-get-todo-state) (string= (org-get-todo-state) "DONE"))
-  (if (string= (org-get-todo-state) "DONE") (org-archive-subtree)))
+  (if (string= (org-get-todo-state) "DONE") (;; org-archive-subtree
+                                             )))
 (add-hook 'org-after-todo-state-change-hook 'custom/org-todo-state-change-hook)
 
 ;;; org-gcal
@@ -118,8 +119,7 @@
   :ensure t
   :config(setq org-gcal-client-id ""
                org-gcal-client-secret ""
-               org-gcal-file-alist '(("" .
-                                      "~/org/event.org"))))
+               org-gcal-file-alist '(("sungwonida@gmail.com" . "~/org/event.org"))))
 (add-hook 'org-agenda-mode-hook (lambda () (org-gcal-sync)))
 (add-hook 'org-capture-after-finalize-hook (lambda () (org-gcal-sync)))
 
