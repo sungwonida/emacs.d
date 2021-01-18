@@ -106,12 +106,11 @@
                                    ":EXPORT_OPTIONS: toc:nil html-postamble:nil num:nil"))))
 (add-hook 'after-init-hook 'org-templates-load-templates)
 
-(defun custom/org-todo-state-change-hook ()
-  "Perform todo-state specific tasks"
-  ;; (message "state is %s (DONE? %s)" (org-get-todo-state) (string= (org-get-todo-state) "DONE"))
-  (if (string= (org-get-todo-state) "DONE") (;; org-archive-subtree
-                                             )))
-(add-hook 'org-after-todo-state-change-hook 'custom/org-todo-state-change-hook)
+;; (defun custom/org-todo-state-change-hook ()
+;;   "Perform todo-state specific tasks"
+;;   ;; (message "state is %s (DONE? %s)" (org-get-todo-state) (string= (org-get-todo-state) "DONE"))
+;;   (if (string= (org-get-todo-state) "DONE") (org-archive-subtree)))
+;; (add-hook 'org-after-todo-state-change-hook 'custom/org-todo-state-change-hook)
 
 ;;; org-gcal
 ;;;; IMPORTANT: Replace client-id and client-secret strings to file paths and read them
@@ -129,10 +128,14 @@
   "Show my notes"
   (interactive)
   (find-file (concat org-root-path "note.org")))
-(defun voca ()
-  "Show my vocabulary tables."
+(defun dict ()
+  "Show my dictionary."
   (interactive)
-  (find-file (concat org-root-path "learning/voca.org")))
+  (find-file (concat org-root-path "dict.org")))
+(defun scratch ()
+  "Show my scratch pad."
+  (interactive)
+  (find-file (concat org-root-path "scratch.org")))
 
 (setq org-default-notes-file
       (concat org-root-path "note.org"))
