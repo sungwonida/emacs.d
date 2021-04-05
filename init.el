@@ -2,6 +2,9 @@
 ;; installed packages.  Don't delete this line.  If you don't want it,
 ;; just comment it out by adding a semicolon to the start of the line.
 ;; You may delete these explanatory comments.
+(setq warning-suppress-log-types '((package reinitialization)))
+(setq byte-compile-warnings '(cl-functions))
+
 (package-initialize)
 
 (require 'cask "~/.cask/cask.el")
@@ -212,6 +215,13 @@
 ;;; plantuml.jar can be downloaded from http://plantuml.com/en/download
 ;;; Download the file and place it to
 (add-to-list 'auto-mode-alist '("\\.plantuml\\'" . plantuml-mode))
+(setq plantuml-jar-path "/home/david/Tools/plantuml/plantuml.jar")
+(setq plantuml-default-exec-mode 'jar)
+(setq plantuml-output-type "png")
+
+(setq org-plantuml-jar-path (expand-file-name "/home/david/Tools/plantuml/plantuml.jar"))
+(add-to-list 'org-src-lang-modes '("plantuml" . plantuml))
+(org-babel-do-load-languages 'org-babel-load-languages '((plantuml . t)))
 
 
 ;; semantic
