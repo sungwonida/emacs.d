@@ -145,7 +145,8 @@
 
 
 ;; theme settings
-(load-theme 'atom-one-dark t)
+;; (load-theme 'atom-one-dark t)
+(load-theme 'github-modern t)
 
 
 ;; smart-mode-line
@@ -399,7 +400,7 @@
 
 ;; Development
 (add-hook 'prog-mode-hook '(lambda () (setq tab-width 4)))
-(global-hl-line-mode 1)
+;; (global-hl-line-mode 1)
 
 
 (use-package eassist)
