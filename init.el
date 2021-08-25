@@ -633,3 +633,14 @@
 
 ;; Docker
 (require 'docker)
+
+
+;; highlight-symbol
+(require 'highlight-symbol)
+(add-hook 'prog-mode-hook (lambda () (highlight-symbol-mode)))
+(setq highlight-symbol-on-navigation-p t)
+(global-set-key [f4] 'highlight-symbol)
+(global-set-key [f3] 'highlight-symbol-next)
+(global-set-key [(shift f3)] 'highlight-symbol-prev)
+(global-set-key [(shift f4)] 'highlight-symbol-remove-all)
+(global-set-key [(shift meta f3)] 'highlight-symbol-query-replace)
