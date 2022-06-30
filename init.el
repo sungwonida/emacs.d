@@ -145,16 +145,15 @@
 
 
 ;; theme settings
-;; (load-theme 'atom-one-dark t)
-(load-theme 'github-modern t)
+(load-theme 'vscode-dark-plus t)
 
 
 ;; smart-mode-line
-(use-package smart-mode-line
-  :config
-  (setq sml/no-confirm-load-theme t)
-  (setq sml/theme 'respectful)
-  (sml/setup))
+;; (use-package smart-mode-line
+;;   :config
+;;   (setq sml/no-confirm-load-theme t)
+;;   (setq sml/theme 'respectful)
+;;   (sml/setup))
 
 
 ;; face

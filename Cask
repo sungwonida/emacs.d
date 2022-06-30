@@ -131,6 +131,7 @@
 (depends-on "ucs-utils" "0.8.2")
 (depends-on "unicode-fonts")
 (depends-on "use-package")
+(depends-on "vscode-dark-plus-theme")
 (depends-on "with-editor")
 (depends-on "yasnippet")
 (depends-on "yasnippet-snippets")
