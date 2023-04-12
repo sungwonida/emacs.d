@@ -12,8 +12,6 @@
      (java-mode . "java")
      (awk-mode . "awk")
      (other . "gnu")))
- '(conda-anaconda-home "d:/Users/dit-698/miniconda3")
- '(conda-env-home-directory "d:/Users/dit-698/miniconda3")
  '(cua-enable-cua-keys nil)
  '(cua-mode t nil (cua-base))
  '(cua-rectangle-mark-key [C-M-return])
