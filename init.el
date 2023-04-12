@@ -518,12 +518,6 @@
 (smartparens-global-mode t)
 
 
-;; Nuts and Bolts for CB Projects
-(setq cb_functions_file (concat org-root-path "business/canvasbio/cb_internal_functions.org"))
-(if (file-exists-p cb_functions_file)
-    (org-babel-load-file cb_functions_file))
-
-
 ;; Recent files
 (recentf-mode)
 
@@ -582,42 +576,6 @@
 
 ;; Replace the region with yank buffer
 (delete-selection-mode 1)
-
-
-;; rainbow-mode
-(require 'rainbow-mode)
-
-
-;; god-mode
-(require 'god-mode)
-(global-set-key (kbd "<escape>") 'god-mode-all)
-(add-to-list 'god-exempt-major-modes 'dired-mode)
-(setq god-exempt-predicates nil)
-
-(require 'god-mode-isearch)
-(defun my-god-mode-hook ()
-  (define-key isearch-mode-map (kbd "<tab>") 'god-mode-isearch-activate)
-  (define-key god-mode-isearch-map (kbd "<tab>") 'god-mode-isearch-disable))
-(defun c/god-mode-update-cursor ()
-  (let ((limited-colors-p (> 257 (length (defined-colors)))))
-	(cond (god-local-mode (set-face-background 'hl-line "#000000"))
-		  (t (set-face-background 'hl-line "#2C323C")))))
-(add-hook 'god-mode-enabled-hook 'my-god-mode-hook)
-(add-hook 'god-mode-enabled-hook 'c/god-mode-update-cursor)
-(add-hook 'god-mode-disabled-hook 'c/god-mode-update-cursor)
-
-(define-key god-local-mode-map (kbd "i") 'god-mode-all)
-(define-key god-local-mode-map (kbd "S-<escape>") (kbd "C-g"))
-(define-key god-local-mode-map (kbd "q") 'quit-window)
-(bind-key* "C-x C-r C-b" 'helm-filtered-bookmarks)
-(bind-key* "C-x C-r C-m" 'bookmark-set)
-
-(global-set-key (kbd "C-x C-1") 'delete-other-windows)
-(global-set-key (kbd "C-x C-2") 'split-window-below)
-(global-set-key (kbd "C-x C-3") 'split-window-right)
-(global-set-key (kbd "C-x C-0") 'delete-window)
-
-;; (god-mode)
 
 
 ;; conda
