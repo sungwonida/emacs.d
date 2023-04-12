@@ -93,7 +93,7 @@
 (defun org-templates-load-templates ()
   (interactive)
   (setq org-capture-templates
-         '(("t" "Todo" entry (file+headline "~/org/gtd.org" "Tasks")
+         '(("t" "Todo" entry (file "~/org/gtd.org")
             "* TODO %?\n  %i\n  %a")
            ("j" "Journal" entry (file+datetree "~/org/journal.org")
             "* %?\nEntered on %U\n  %i\n  %a")
@@ -131,6 +131,10 @@
   "Show my notes"
   (interactive)
   (find-file (concat org-root-path "note.org")))
+(defun gtd ()
+  "Show my todos"
+  (interactive)
+  (find-file (concat org-root-path "gtd.org")))
 (defun dict ()
   "Show my dictionary."
   (interactive)
