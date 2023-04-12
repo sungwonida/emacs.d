@@ -406,6 +406,10 @@
 ;; (global-hl-line-mode 1)
 
 
+;;; CMake
+(setq cmake-tab-width 4)
+
+
 (use-package eassist)
 ;; (global-ede-mode 1)
 
