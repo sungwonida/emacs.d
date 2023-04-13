@@ -571,7 +571,8 @@
 
 
 ;; Pandoc
-(setq markdown-command "/usr/bin/pandoc")
+(if (or (eq system-type 'gnu/linux) (eq system-type 'darwin))
+    (setq markdown-command "pandoc"))
 
 
 ;; Replace the region with yank buffer
