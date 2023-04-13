@@ -180,7 +180,7 @@
       (setq scroll-step 1)
       (cond
        ((eq system-type 'gnu/linux)
-        (add-to-list 'default-frame-alist '(font . "Monaco-9")))
+        (add-to-list 'default-frame-alist '(font . "Monaco-10")))
        ((eq system-type 'darwin)
         (add-to-list 'default-frame-alist '(font . "Monaco-10")))
        ((eq system-type 'windows-nt)
