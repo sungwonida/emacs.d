@@ -150,6 +150,7 @@
 
 ;; theme settings
 (load-theme 'vscode-dark-plus t)
+(set-mouse-color "white")
 
 
 ;; smart-mode-line
