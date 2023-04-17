@@ -1,12 +1,14 @@
 # Description
-David Jung's Emacs Confiuration
+David Jung's Emacs Confiuration.
+
+The main change from the last version.  
+- Introduced straight.el and use-package combo.
 
 # Tested
 Ubuntu 20.04 (Focal Fossa)  
-Ubuntu 18.04 (Bionic Beaver)  
-Ubuntu 16.04 (Xenial Xerus)  
-macOS 11.7 (Big Sur)  
-macOS 10.13 (High Sierra)  
-Windows 11 64-bit  
-Windows 10 64-bit  
-Windows 7 32-bit  
+
+# TODOs
+1. Load eassist (Fix '(void-function do)')
+2. Bring up some customizations in custom.el to init.el
+3. Fix eshell-mode-hook to work
+4. Fix realtime-Markdown-preview to work
