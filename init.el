@@ -549,6 +549,6 @@
   (highlight-symbol-on-navigation-p t))
 
 ;; Saving Emacs Sessions
-(desktop-save-mode 1)
+;; (desktop-save-mode 1)
 
 ;;; init.el ends here
