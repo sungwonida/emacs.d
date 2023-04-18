@@ -60,6 +60,9 @@
 (use-package helm-git-grep
   :bind ("C-c h g" . helm-git-grep-at-point))
 
+;; helm-ag
+(use-package helm-ag)
+
 ;; helm-projectile
 (use-package helm-projectile
   :config
