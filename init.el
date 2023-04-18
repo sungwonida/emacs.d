@@ -3,7 +3,7 @@
 (load custom-file)
 
 ;; Path for the local packages
-(setq local-packages-path "~/.emacs.d/local/packages")
+(setq local-packages-path (expand-file-name "local/packages" user-emacs-directory))
 (add-to-list 'load-path local-packages-path)
 (let ((default-directory local-packages-path))
   (normal-top-level-add-subdirs-to-load-path))
@@ -117,26 +117,26 @@
      nil "")))
 
 ;; My swiss army knife (notes, todos, agenda, etc.)
-(setq org-root-path (concat (file-name-as-directory (getenv "HOME")) (file-name-as-directory "org")))
+(setq org-root-path (concat (file-name-as-directory (getenv "HOME")) "org"))
 (defun note ()
   "Show my Notes"
   (interactive)
-  (find-file (concat org-root-path "note.org")))
+  (find-file (expand-file-name "note.org" org-root-path)))
 (defun gtd ()
   "Show my TODOs"
   (interactive)
-  (find-file (concat org-root-path "gtd.org")))
+  (find-file (expand-file-name "gtd.org" org-root-path)))
 (defun dict ()
   "Show my Dictionary."
   (interactive)
-  (find-file (concat org-root-path "dict.org")))
+  (find-file (expand-file-name "dict.org" org-root-path)))
 (defun scratch ()
   "Show my Scratch Pad."
   (interactive)
-  (find-file (concat org-root-path "scratch.org")))
+  (find-file (expand-file-name "scratch.org" org-root-path)))
 
 (setq org-default-notes-file
-      (concat org-root-path "note.org"))
+      (expand-file-name "note.org" org-root-path))
 
 ;; theme
 (use-package vscode-dark-plus-theme
