@@ -6,6 +6,7 @@ The main change from the last version.
 
 # Tested
 Ubuntu 20.04 (Focal Fossa)  
+macOS 11.7 (Big Sur)  
 
 # TODOs
 1. Fix eshell-mode-hook to work
