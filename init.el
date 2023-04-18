@@ -33,6 +33,7 @@
 (use-package helm
   :config
   (helm-mode)
+  (setq helm-split-window-in-side-p t)
   :bind
   ("M-x" . helm-M-x)
   ("C-x C-f" . helm-find-files)
@@ -44,8 +45,7 @@
   ("M-s o" . helm-occur)
   ("M-g M-o M-k" . helm-google-suggest)
   :custom
-  (helm-split-window-in-side-p t)
-  (helm-autoresize-mode	t)
+  (helm-autoresize-mode t)
   (helm-move-to-line-cycle-in-source t)
   (helm-ff-search-library-in-sexp t)
   (helm-scroll-amount 8)
@@ -183,7 +183,7 @@
 
 ;; ediff
 (use-package ediff
-  :custom (setq ediff-split-window-function 'split-window-horizontally))
+  :custom (ediff-split-window-function 'split-window-horizontally))
 
 ;; tern
 (use-package tern
@@ -237,7 +237,7 @@
    (python-mode . lsp))
   :custom
   ;; '-background-index' requires clangd v8+
-  (setq lsp-clients-clangd-args '("-j=4" "-background-index" "-log=error")))
+  (lsp-clients-clangd-args '("-j=4" "-background-index" "-log=error")))
 
 (use-package lsp-ui
   :commands
@@ -248,7 +248,7 @@
     (define-key lsp-ui-mode-map [remap xref-find-references] #'lsp-ui-peek-find-references))
   (my-lsp-ui-mode-hook)
   :custom
-  (setq lsp-ui-sideline-enable nil))
+  (lsp-ui-sideline-enable nil))
 
 (use-package company-lsp
   :commands company-lsp)
