@@ -1,5 +1,5 @@
 ;; Customization
-(setq custom-file (expand-file-name "local/custom.el" user-emacs-directory))
+(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
 (load custom-file)
 
 ;; Path for the local packages
@@ -108,7 +108,13 @@
   (org-html-inline-image-rules
    '(("file" . "\\.\\(jpeg\\|jpg\\|png\\|gif\\|svg\\|bmp\\)\\'")
      ("http" . "\\.\\(jpeg\\|jpg\\|png\\|gif\\|svg\\|bmp\\)\\'")
-     ("https" . "\\.\\(jpeg\\|jpg\\|png\\|gif\\|svg\\|bmp\\)\\'"))))
+     ("https" . "\\.\\(jpeg\\|jpg\\|png\\|gif\\|svg\\|bmp\\)\\'")))
+  (org-agenda-start-on-weekday 0)
+  (org-log-done 'time)
+  (org-stuck-projects
+   '("+LEVEL=2/-DONE"
+     ("TODO" "STARTED" "CANCELED")
+     nil "")))
 
 ;; My swiss army knife (notes, todos, agenda, etc.)
 (setq org-root-path (concat (file-name-as-directory (getenv "HOME")) (file-name-as-directory "org")))
@@ -172,6 +178,10 @@
 (use-package anzu
   :config (global-anzu-mode +1))
 
+;; ediff
+(use-package ediff
+  :custom (setq ediff-split-window-function 'split-window-horizontally))
+
 ;; tern
 (use-package tern
   :hook (js-mode . (lambda () (tern-mode t))))
@@ -233,7 +243,9 @@
   (defun my-lsp-ui-mode-hook ()
     (define-key lsp-ui-mode-map [remap xref-find-definitions] #'lsp-ui-peek-find-definitions)
     (define-key lsp-ui-mode-map [remap xref-find-references] #'lsp-ui-peek-find-references))
-  (my-lsp-ui-mode-hook))
+  (my-lsp-ui-mode-hook)
+  :custom
+  (setq lsp-ui-sideline-enable nil))
 
 (use-package company-lsp
   :commands company-lsp)
@@ -365,13 +377,6 @@
 
 ;; C
 (add-to-list 'auto-mode-alist '("\\.cpp\\'" . c++-mode))
-(setq c-basic-offset 4)
-(setq c-default-style
-	  '((c-mode . "k&r")
-		(c++-mode . "k&r")
-		(java-mode . "java")
-		(awk-mode . "awk")
-		(other . "gnu")))
 
 (defun my-c-mode-common-hook ()
   (hs-minor-mode t)
