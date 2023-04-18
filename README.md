@@ -8,7 +8,5 @@ The main change from the last version.
 Ubuntu 20.04 (Focal Fossa)  
 
 # TODOs
-1. Load eassist (Fix '(void-function do)')
-2. Bring up some customizations in custom.el to init.el
-3. Fix eshell-mode-hook to work
-4. Fix realtime-Markdown-preview to work
+1. Fix eshell-mode-hook to work
+2. Fix realtime-Markdown-preview to work
