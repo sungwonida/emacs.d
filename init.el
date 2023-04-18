@@ -383,7 +383,7 @@
 
 (defun my-c-mode-common-hook ()
   (hs-minor-mode t)
-  (define-key c-mode-base-map (kbd "M-o") 'eassist-switch-h-cpp)
+  (define-key c-mode-base-map (kbd "M-o") 'ff-get-other-file)
   (define-key c-mode-base-map (kbd "M-m") 'helm-semantic-or-imenu)
   (local-set-key (kbd "C-c u") 'hs-toggle-hiding)
   (local-set-key (kbd "C-c <down>") 'hs-hide-all)
