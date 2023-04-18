@@ -551,4 +551,7 @@
 ;; Saving Emacs Sessions
 ;; (desktop-save-mode 1)
 
+;; cmake-mode
+(use-package cmake-mode)
+
 ;;; init.el ends here
