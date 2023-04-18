@@ -546,3 +546,5 @@
 
 ;; Saving Emacs Sessions
 (desktop-save-mode 1)
+
+;;; init.el ends here
