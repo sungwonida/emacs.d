@@ -1,3 +1,7 @@
+;; Customization
+(setq custom-file (expand-file-name "local/custom.el" user-emacs-directory))
+(load custom-file)
+
 ;; Path for the local packages
 (setq local-packages-path "~/.emacs.d/local/packages")
 (add-to-list 'load-path local-packages-path)
