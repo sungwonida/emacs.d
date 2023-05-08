@@ -565,4 +565,7 @@
 ;; winner-mode
 (winner-mode)
 
+;; vterm
+(use-package vterm)
+
 ;;; init.el ends here
