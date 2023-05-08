@@ -34,7 +34,6 @@
 (use-package helm
   :config
   (helm-mode)
-  (setq helm-split-window-in-side-p t)
   :bind
   ("M-x" . helm-M-x)
   ("C-x C-f" . helm-find-files)
