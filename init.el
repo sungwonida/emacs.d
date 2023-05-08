@@ -549,4 +549,11 @@
 ;; cmake-mode
 (use-package cmake-mode)
 
+;; docker
+(use-package docker
+  :bind ("C-c d" . docker))
+
+;; docker-tramp
+(use-package docker-tramp)
+
 ;;; init.el ends here
