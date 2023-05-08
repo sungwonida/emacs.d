@@ -461,11 +461,6 @@
            (file-readable-p file))
           ((file-readable-p file)))))
 
-;; eshell
-(add-hook 'eshell-mode-hook
-		  '(lambda ()
-			 (define-key eshell-mode-map (kbd "C-c C-l") 'helm-eshell-historyoctave-send-line)))
-
 ;; redo
 (use-package redo+
   :bind ("C-." . redo))
@@ -567,5 +562,10 @@
 
 ;; vterm
 (use-package vterm)
+
+;; eshell
+(use-package eshell
+  :hook (eshell-mode . (lambda ()
+    		             (define-key eshell-mode-map (kbd "C-c C-h") 'helm-eshell-history))))
 
 ;;; init.el ends here
