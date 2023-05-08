@@ -214,44 +214,21 @@
 (use-package stickyfunc-enhance
   :config (add-to-list 'semantic-default-submodes 'global-semantic-stickyfunc-mode))
 
+;; eglot
+(use-package eglot
+  :hook (prog-mode . eglot-ensure))
+
 ;; company
 (use-package company
-  :hook (prog-mode . (lambda ()
-                       (company-mode t)
-                       (define-key company-mode-map [backtab] 'company-complete)
-                       (define-key company-active-map [tab] 'company-complete-selection))))
+  :after eglot
+  :hook (eglot-managed-mode . (lambda ()
+                                (company-mode t)
+                                (define-key company-mode-map [backtab] 'company-complete)
+                                (define-key company-active-map [tab] 'company-complete-selection))))
 
-;; lsp-mode
-(use-package lsp-mode
-  :commands
-  lsp
-  :hook
-  ((c-mode . lsp)
-   (c++-mode . lsp)
-   (objc-mode . lsp)
-   (python-mode . lsp))
-  :custom
-  ;; '-background-index' requires clangd v8+
-  (lsp-clients-clangd-args '("-j=4" "-background-index" "-log=error")))
-
-(use-package lsp-ui
-  :commands
-  lsp-ui-mode
-  :config
-  (defun my-lsp-ui-mode-hook ()
-    (define-key lsp-ui-mode-map [remap xref-find-definitions] #'lsp-ui-peek-find-definitions)
-    (define-key lsp-ui-mode-map [remap xref-find-references] #'lsp-ui-peek-find-references))
-  (my-lsp-ui-mode-hook)
-  :custom
-  (lsp-ui-sideline-enable nil))
-
-(use-package company-lsp
-  :commands company-lsp)
-
-(use-package helm-lsp
-  :commands helm-lsp-workspace-symbol)
-
-(add-hook 'lsp-mode-hook #'lsp-headerline-breadcrumb-mode)
+;; company-box
+(use-package company-box
+  :hook (company-mode . company-box-mode))
 
 ;; magit
 (use-package magit
