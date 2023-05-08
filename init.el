@@ -559,4 +559,7 @@
 ;; tramp
 (setq tramp-verbose 1)
 
+;; markdown
+(use-package markdown-mode)
+
 ;;; init.el ends here
