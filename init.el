@@ -24,6 +24,7 @@
 
 ;; Install use-package
 (straight-use-package 'use-package)
+(setq use-package-always-ensure t)
 
 ;; Configure use-package to use straight.el by default
 (use-package straight
@@ -78,7 +79,7 @@
   :config (helm-descbinds-mode))
 
 ;; diminish
-(use-package diminish :ensure t)
+(use-package diminish)
 
 ;; org-mode
 (use-package org-mode
