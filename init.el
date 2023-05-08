@@ -515,7 +515,7 @@
 ;; Replace the region with yank buffer
 (delete-selection-mode 1)
 
-;; Anaconda
+;; conda
 (use-package conda
   :config
   (conda-env-initialize-interactive-shells)
