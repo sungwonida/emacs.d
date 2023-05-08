@@ -562,4 +562,7 @@
 ;; markdown
 (use-package markdown-mode)
 
+;; winner-mode
+(winner-mode)
+
 ;;; init.el ends here
