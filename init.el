@@ -205,10 +205,7 @@
 (use-package semantic
   :config
   (semantic-mode 1)
-  (global-semantic-idle-summary-mode 1)
-  :bind
-  ("C-c i j" . semantic-ia-fast-jump)
-  ("C-c i m" . semantic-ia-complete-symbol-menu))
+  (global-semantic-idle-summary-mode 1))
 
 ;; stickyfunc-enhance
 (use-package stickyfunc-enhance
