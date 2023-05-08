@@ -556,4 +556,7 @@
 ;; docker-tramp
 (use-package docker-tramp)
 
+;; tramp
+(setq tramp-verbose 1)
+
 ;;; init.el ends here
