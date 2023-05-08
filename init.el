@@ -61,15 +61,10 @@
   :bind ("C-c h g" . helm-git-grep-at-point))
 
 ;; helm-ag
-(use-package helm-ag)
-
-;; helm-projectile
-(use-package helm-projectile
-  :config
-  (projectile-global-mode)
+(use-package helm-ag
   :bind
-  ("C-c h p" . helm-projectile)
-  (:map projectile-mode-map ("C-c h a" . helm-projectile-ag))
+  ("C-c p a" . helm-ag)
+  ("C-c p r" . helm-ag-project-root)
   :custom
   (helm-ag-insert-at-point 'symbol))
 
