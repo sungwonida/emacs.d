@@ -535,7 +535,8 @@
 (winner-mode)
 
 ;; vterm
-(use-package vterm)
+(use-package vterm
+  :bind (:map vterm-mode-map ("C-y" . vterm-yank)))
 
 ;; eshell
 (use-package eshell
