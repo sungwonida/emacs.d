@@ -490,12 +490,12 @@
   (conda-env-initialize-interactive-shells)
   (conda-env-initialize-eshell)
   (conda-env-autoactivate-mode t)
-  :custom
-  (let (setq conda-anaconda-home
-			 (concat
-			  (file-name-as-directory (getenv "HOME"))
-			  "miniconda3"))
-	(conda-env-home-directory conda-anaconda-home)))
+  (custom-set-variables
+   '(conda-anaconda-home (concat (file-name-as-directory (getenv "HOME")) "miniconda3")))
+  :hook
+  (find-file . (lambda ()
+                 (when (bound-and-true-p conda-project-env-path)
+                   (conda-env-activate-for-buffer)))))
 
 ;; highlight-symbol
 (use-package highlight-symbol
