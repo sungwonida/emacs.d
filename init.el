@@ -536,7 +536,11 @@
 
 ;; vterm
 (use-package vterm
-  :bind (:map vterm-mode-map ("C-y" . vterm-yank)))
+  :bind
+  (:map vterm-mode-map ("C-v" . vterm-yank))
+  (:map vterm-mode-map ("C-k" . vterm-send-C-k))
+  (:map vterm-mode-map ("C-y" . vterm-send-C-y))
+  (:map vterm-mode-map ("C-g" . vterm-send-C-g)))
 
 ;; eshell
 (use-package eshell
