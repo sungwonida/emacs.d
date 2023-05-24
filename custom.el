@@ -7,8 +7,8 @@
  '(ac-auto-start nil)
  '(c-basic-offset 4)
  '(c-default-style
-   '((c-mode . "k&r")
-     (c++-mode . "k&r")
+   '((c-mode . "gnu")
+     (c++-mode . "gnu")
      (java-mode . "java")
      (awk-mode . "awk")
      (other . "gnu")))
