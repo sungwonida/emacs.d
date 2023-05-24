@@ -215,6 +215,19 @@
 (use-package eglot
   :hook (prog-mode . eglot-ensure))
 
+(with-eval-after-load 'eglot
+  (add-to-list 'eglot-server-programs
+               '((c-mode c++-mode)
+                 . ("clangd"
+                    "-j=8"
+                    "--log=error"
+                    "--background-index"
+                    "--clang-tidy"
+                    "--completion-style=detailed"
+                    "--pch-storage=memory"
+                    "--header-insertion=never"
+                    "--header-insertion-decorators=0"))))
+
 ;; company
 (use-package company
   :after eglot
