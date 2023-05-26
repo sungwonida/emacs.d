@@ -240,6 +240,11 @@
 (use-package company-box
   :hook (company-mode . company-box-mode))
 
+;; eldoc-box
+(use-package eldoc-box
+  :after eglot
+  :hook (eglot-managed-mode . eldoc-box-hover-mode))
+
 ;; magit
 (use-package magit
   :diminish
