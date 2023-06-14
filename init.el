@@ -408,6 +408,7 @@
 (defun my-python-mode-hook ()
   (define-key python-mode-map (kbd "M-m") 'helm-semantic-or-imenu))
 (add-hook 'python-mode-hook 'my-python-mode-hook)
+(add-hook 'python-mode-hook (lambda () (setq forward-sexp-function nil)))
 (define-key lisp-mode-shared-map (kbd "M-m") 'helm-semantic-or-imenu)
 
 ;; elpy
