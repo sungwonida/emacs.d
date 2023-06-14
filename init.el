@@ -243,7 +243,9 @@
 ;; eldoc-box
 (use-package eldoc-box
   :after eglot
-  :hook (eglot-managed-mode . eldoc-box-hover-mode))
+  :bind
+  (:map eglot-mode-map ("C-c e h" . eldoc-box-help-at-point))
+  (:map eglot-mode-map ("C-c e q" . eldoc-box-quit-frame)))
 
 ;; magit
 (use-package magit
