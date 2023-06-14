@@ -58,7 +58,7 @@
 
 ;; helm-git-grep
 (use-package helm-git-grep
-  :bind ("C-c h g" . helm-git-grep-at-point))
+  :bind ("C-c g g" . helm-git-grep-at-point))
 
 ;; helm-ag
 (use-package helm-ag
