@@ -571,5 +571,10 @@
 ;; cuda-mode
 (use-package cuda-mode)
 
+;; astyle
+(use-package astyle
+  :when (executable-find "astyle")
+  :hook (c-mode-common . astyle-on-save-mode))
+
 
 ;;; init.el ends here
