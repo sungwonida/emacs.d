@@ -568,4 +568,8 @@
   :hook (eshell-mode . (lambda ()
     		             (define-key eshell-mode-map (kbd "C-c C-h") 'helm-eshell-history))))
 
+;; cuda-mode
+(use-package cuda-mode)
+
+
 ;;; init.el ends here
