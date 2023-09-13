@@ -52,10 +52,6 @@
   (helm-ff-file-name-history-use-recentf t)
   (helm-show-completion-display-function #'helm-show-completion-default-display-function))
 
-;; helm-ls-git
-(use-package helm-ls-git
-  :bind ("C-c h f" . helm-ls-git-ls))
-
 ;; helm-git-grep
 (use-package helm-git-grep
   :bind ("C-c g g" . helm-git-grep-at-point))
