@@ -163,7 +163,7 @@
   (add-to-list 'default-frame-alist '(font . "Monaco-10"))
   (set-fontset-font t 'hangul (font-spec :name "NanumGothicCoding")))
  ((eq system-type 'darwin)
-  (add-to-list 'default-frame-alist '(font . "Monaco-10")))
+  (add-to-list 'default-frame-alist '(font . "Monaco-11")))
  ((eq system-type 'windows-nt)
   (add-to-list 'default-frame-alist '(font . "Monaco-9"))
   (unicode-fonts-setup)))
