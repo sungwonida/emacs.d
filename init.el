@@ -462,14 +462,14 @@
 ;; tdd
 ;;		Turn on/off the mode manually because it runs recompile automatically
 ;;		after saving any buffer no matters it's prog-mode or not.
-(use-package tdd
-  :straight nil
-  :load-path local-packages-path
-  :init (defun selective-tdd-after-save ()
-		  (when (derived-mode-p 'c-mode 'c++-mode 'cmake-mode) (tdd-after-save)))
-  :config (custom-set-variables '(tdd-test-function (smart-compile)))
-  :hook (after-save . selective-tdd-after-save)
-  :bind ([f12] . tdd-mode))
+;; (use-package tdd
+;;   :straight nil
+;;   :load-path local-packages-path
+;;   :init (defun selective-tdd-after-save ()
+;; 		  (when (derived-mode-p 'c-mode 'c++-mode 'cmake-mode) (tdd-after-save)))
+;;   :config (custom-set-variables '(tdd-test-function (smart-compile)))
+;;   :hook (after-save . selective-tdd-after-save)
+;;   :bind ([f12] . tdd-mode))
 
 ;; Semantic Refactor
 (use-package srefactor
