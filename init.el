@@ -569,5 +569,24 @@
   :when (executable-find "astyle")
   :hook (c-mode-common . astyle-on-save-mode))
 
+;; quelpa
+(use-package quelpa-use-package)
+
+;; topsy
+(use-package topsy
+  :after quelpa-use-package
+  :quelpa (topsy :fetcher github :repo "alphapapa/topsy.el")
+  :hook
+  (prog-mode . topsy-mode)
+  (magit-section-mode . topsy-mode))
+
+;; mini-frame
+(use-package mini-frame
+  :custom
+  (mini-frame-show-parameters
+   '((top . 10)
+     (width . 0.7)
+     (left . 0.5))))
+
 
 ;;; init.el ends here
