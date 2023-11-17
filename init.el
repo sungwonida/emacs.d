@@ -539,9 +539,6 @@
 (use-package docker
   :bind ("C-c d c" . docker-containers))
 
-;; docker-tramp
-(use-package docker-tramp)
-
 ;; tramp
 (setq tramp-verbose 1)
 
