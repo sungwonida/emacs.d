@@ -197,16 +197,6 @@
   :hook
   (octave-mode . my-octave-mode-hook))
 
-;; semantic
-(use-package semantic
-  :config
-  (semantic-mode 1)
-  (global-semantic-idle-summary-mode 1))
-
-;; stickyfunc-enhance
-(use-package stickyfunc-enhance
-  :config (add-to-list 'semantic-default-submodes 'global-semantic-stickyfunc-mode))
-
 ;; eglot
 (use-package eglot
   :hook (prog-mode . eglot-ensure))
