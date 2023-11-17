@@ -149,10 +149,10 @@
 (if (display-graphic-p)
     (progn
       (setq default-frame-alist
-            '((width . 240)
-              (height . 60)))
+            '((width . 180)
+              (height . 50)))
       (tool-bar-mode -1)
-      ;; (menu-bar-mode -1)
+      (menu-bar-mode -1)
       (scroll-bar-mode -1)
       (setq scroll-step 1)))
 
