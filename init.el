@@ -237,6 +237,11 @@
 (use-package magit
   :diminish
   magit-auto-revert-mode
+  :config
+  (setq magit-refresh-verbose t)
+  (setq magit-refresh-status-buffer nil)
+  (setq auto-revert-buffer-list-filter
+        'magit-auto-revert-repository-buffer-p)
   :bind
   ("C-c v s" . magit-status)
   ("C-c v y" . magit-show-refs-popup)
