@@ -207,41 +207,90 @@
   :hook
   (octave-mode . my-octave-mode-hook))
 
-;; eglot
-(use-package eglot
-  :hook (prog-mode . eglot-ensure))
+;; lsp-mode
+(use-package lsp-mode
+  :ensure t
+  :hook ((python-mode . lsp)
+         (c++-mode . lsp)
+         (c-mode . lsp))
+  :commands lsp
+  :config
+  (setq lsp-enable-snippet nil
+        lsp-prefer-capf t
+        lsp-headerline-breadcrumb-enable t)
+  (setq lsp-pylsp-plugins-flake8-enabled t
+        lsp-pylsp-plugins-flake8-max-line-length 79
+        lsp-pylsp-plugins-pylint-enabled t
+        lsp-pylsp-plugins-pylint-args ["--disable=C0111"] ; Example argument
+        lsp-pylsp-plugins-black-enabled t
+        lsp-pylsp-plugins-jedi-completion-enabled t
+        lsp-pylsp-plugins-jedi-definition-enabled t
+        lsp-pylsp-plugins-jedi-hover-enabled t
+        lsp-pylsp-plugins-jedi-references-enabled t
+        lsp-pylsp-plugins-jedi-signature-help-enabled t
+        lsp-pylsp-plugins-jedi-symbols-enabled t))
 
-(with-eval-after-load 'eglot
-  (add-to-list 'eglot-server-programs
-               '((c-mode c++-mode)
-                 . ("clangd"
-                    "-j=8"
-                    "--log=error"
-                    "--background-index"
-                    "--clang-tidy"
-                    "--completion-style=detailed"
-                    "--pch-storage=memory"
-                    "--header-insertion=never"
-                    "--header-insertion-decorators=0"))))
+;; lsp-ui
+(use-package lsp-ui
+  :ensure t
+  :commands lsp-ui-mode
+  :config
+  (defun my-lsp-ui-mode-hook ()
+    (define-key lsp-ui-mode-map [remap xref-find-definitions] #'lsp-ui-peek-find-definitions)
+    (define-key lsp-ui-mode-map [remap xref-find-references] #'lsp-ui-peek-find-references))
+  (my-lsp-ui-mode-hook)
+  :custom
+  (setq lsp-ui-doc-enable t
+        lsp-ui-doc-use-childframe t
+        lsp-ui-doc-position 'at-point
+        lsp-ui-doc-include-signature t
+        lsp-ui-sideline-enable t
+        lsp-ui-sideline-show-hover t
+        lsp-ui-sideline-show-code-actions t
+        lsp-ui-sideline-show-diagnostics t))
 
 ;; company
 (use-package company
-  :after eglot
-  :hook (eglot-managed-mode . (lambda ()
-                                (company-mode t)
-                                (define-key company-mode-map [backtab] 'company-complete)
-                                (define-key company-active-map [tab] 'company-complete-selection))))
+  :ensure t
+  :hook
+  (after-init . global-company-mode)
+  (prog-mode . (lambda ()
+                 (company-mode t)
+                 (define-key company-mode-map [backtab] 'company-complete)
+                 (define-key company-active-map [tab] 'company-complete-selection)))
+  :config
+  (setq company-idle-delay 0
+        company-minimum-prefix-length 1
+        company-selection-wrap-around t
+        company-show-numbers t
+        company-tooltip-align-annotations t
+        company-backends '(company-capf)))
+
+;; flycheck
+(use-package flycheck
+  :ensure t
+  :hook (after-init . global-flycheck-mode))
+
+(use-package company-lsp
+  :commands company-lsp)
+
+(use-package helm-lsp
+  :commands helm-lsp-workspace-symbol)
+
+(use-package which-key
+  :ensure t
+  :config
+  (which-key-mode))
+
+(use-package general
+  :ensure t
+  :config
+  (general-define-key
+   "C-c l" '(:keymap lsp-command-map :which-key "LSP")))
 
 ;; company-box
 (use-package company-box
   :hook (company-mode . company-box-mode))
-
-;; eldoc-box
-(use-package eldoc-box
-  :after eglot
-  :bind
-  (:map eglot-mode-map ("C-c e h" . eldoc-box-help-at-point))
-  (:map eglot-mode-map ("C-c e q" . eldoc-box-quit-frame)))
 
 ;; magit
 (use-package magit
@@ -425,19 +474,6 @@
   (elpy-enable)
   :hook
   (elpy-mode . my-elpy-mode-hook))
-
-;; jedi
-(use-package jedi
-  :config
-  (jedi:setup)
-  :custom
-  (jedi:use-shortcuts t)
-  (jedi:complete-on-dot t))
-
-;; py-autopep8
-(use-package py-autopep8
-  :hook (python-mode . py-autopep8-mode)
-  :custom (py-autopep8-options '("--max-line-length=119")))
 
 ;; smartparens
 (use-package smartparens
