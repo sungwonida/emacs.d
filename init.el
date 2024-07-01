@@ -158,15 +158,13 @@
 ;;  Monaco for Windows
 ;;      1) http://www.gringod.com/wp-upload/software/Fonts/Monaco_5.1.ttf
 ;;      2) Copy the downloaded font into %SystemRoot%/Fonts/
-(if (display-graphic-p)
-    (progn
-      (setq default-frame-alist
+(setq default-frame-alist
             '((width . 180)
               (height . 50)))
       (tool-bar-mode -1)
       (menu-bar-mode -1)
       (scroll-bar-mode -1)
-      (setq scroll-step 1)))
+      (setq scroll-step 1)
 
 (set-language-environment '"Korean")
 (prefer-coding-system 'utf-8)
@@ -175,7 +173,7 @@
   (add-to-list 'default-frame-alist '(font . "Monaco-10"))
   (set-fontset-font t 'hangul (font-spec :name "NanumGothicCoding")))
  ((eq system-type 'darwin)
-  (add-to-list 'default-frame-alist '(font . "Monaco-11")))
+  (add-to-list 'default-frame-alist '(font . "Monaco-12")))
  ((eq system-type 'windows-nt)
   (add-to-list 'default-frame-alist '(font . "Monaco-9"))
   (unicode-fonts-setup)))
