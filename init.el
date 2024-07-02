@@ -623,7 +623,6 @@
   :after quelpa-use-package
   :quelpa (topsy :fetcher github :repo "alphapapa/topsy.el")
   :hook
-  (prog-mode . topsy-mode)
   (magit-section-mode . topsy-mode))
 
 ;; mini-frame
