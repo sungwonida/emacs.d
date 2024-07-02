@@ -94,7 +94,7 @@
   (org-templates-load-templates)
   :bind
   ("C-c c" . org-capture)
-  ("C-c l" . org-store-link)
+  ;; ("C-c l" . org-store-link)  # TODO: Resolve the conflict
   ("C-c a" . org-agenda)
   ("C-c b" . org-switchb)
   :custom
