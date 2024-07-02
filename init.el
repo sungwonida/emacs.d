@@ -298,6 +298,28 @@
 (use-package company-box
   :hook (company-mode . company-box-mode))
 
+(use-package treemacs
+  :ensure t
+  :defer t
+  :config
+  (setq treemacs-is-never-other-window t))
+
+(use-package lsp-treemacs
+  :ensure t
+  :after (lsp-mode treemacs)
+  :commands lsp-treemacs-errors-list
+  :config
+  (setq lsp-treemacs-sync-mode 1)
+  (global-set-key (kbd "M-9") 'treemacs)
+  (global-set-key (kbd "C-x t t") 'treemacs)
+  (global-set-key (kbd "C-x t b") 'treemacs-bookmark)
+  (global-set-key (kbd "C-x t C-t") 'treemacs-find-file)
+  (global-set-key (kbd "C-x t 1") 'treemacs-delete-other-windows)
+  (global-set-key (kbd "C-c l e") 'lsp-treemacs-errors-list)
+  (global-set-key (kbd "C-c l s") 'lsp-treemacs-symbols)
+  (global-set-key (kbd "C-c l c") 'lsp-treemacs-call-hierarchy)
+  (global-set-key (kbd "C-c l r") 'lsp-treemacs-references))
+
 ;; magit
 (use-package magit
   :diminish
