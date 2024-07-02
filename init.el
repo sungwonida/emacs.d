@@ -183,7 +183,9 @@
 
 ;; anzu
 (use-package anzu
-  :config (global-anzu-mode +1))
+  :config
+  (global-anzu-mode +1)
+  (setq anzu-search-threshold nil))
 
 ;; ediff
 (use-package ediff
