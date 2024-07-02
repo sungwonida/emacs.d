@@ -478,18 +478,6 @@
 (add-hook 'python-mode-hook (lambda () (setq forward-sexp-function nil)))
 (define-key lisp-mode-shared-map (kbd "M-m") 'helm-semantic-or-imenu)
 
-;; elpy
-(use-package elpy
-  :init
-  (defun my-elpy-mode-hook ()
-	(cl-dolist (key '("C-<right>" "C-<left>" "C-<down>" "C-<up>" "M-<right>" "M-<left>" "M-<down>" "M-<up>"))
-      (define-key elpy-mode-map (kbd key) nil))
-	(print "applied my-elpy-mode-hook"))
-  :config
-  (elpy-enable)
-  :hook
-  (elpy-mode . my-elpy-mode-hook))
-
 ;; smartparens
 (use-package smartparens
   :config
