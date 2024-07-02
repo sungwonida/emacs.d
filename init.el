@@ -585,6 +585,8 @@
 
 ;; tramp
 (setq tramp-verbose 1)
+;; use the customizations in ~/.ssh/config
+(customize-set-variable 'tramp-use-ssh-controlmaster-options "~/.ssh/config")
 
 ;; markdown
 (use-package markdown-mode)
