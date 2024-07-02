@@ -200,6 +200,7 @@
   :config (tern-ac-setup))
 
 ;; octave
+;;  Need a language server
 (use-package octave
   :config
   (add-to-list 'auto-mode-alist '("\\.m\\'" . octave-mode))
