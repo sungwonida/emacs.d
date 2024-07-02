@@ -420,6 +420,15 @@
   :init (add-hook 'prog-mode-hook #'yas-minor-mode)
   :config (yas-reload-all))
 
+;; Projectile
+(use-package projectile
+  :ensure t
+  :init
+  (projectile-mode +1)
+  :bind (:map projectile-mode-map
+              ("s-p" . projectile-command-map)
+              ("C-c p" . projectile-command-map)))
+
 ;; CMake
 (setq cmake-tab-width 4)
 
