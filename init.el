@@ -178,6 +178,9 @@
   (add-to-list 'default-frame-alist '(font . "Monaco-9"))
   (unicode-fonts-setup)))
 
+(use-package all-the-icons
+  :if (display-graphic-p))
+
 ;; anzu
 (use-package anzu
   :config (global-anzu-mode +1))
