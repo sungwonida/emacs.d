@@ -655,5 +655,31 @@
      (width . 0.7)
      (left . 0.5))))
 
+;; Smooth mouse-wheel scrolling
+(defun enable-smooth-mouse-wheel-scrolling ()
+  "Enable smooth mouse-wheel scrolling."
+  (interactive)
+  (setq pixel-scroll-precision-mode 1) ;; scroll one line at a time (less "jumpy" than defaults)
+  (setq mouse-wheel-scroll-amount '(3 ((shift) . 1))) ;; one line at a time
+  (setq mouse-wheel-progressive-speed nil) ;; don't accelerate scrolling
+  (setq mouse-wheel-follow-mouse 't) ;; scroll window under mouse
+  (setq scroll-step 1)) ;; keyboard scroll one line at a time
+
+(defun disable-smooth-mouse-wheel-scrolling ()
+  "Disable smooth mouse-wheel scrolling."
+  (interactive)
+  (setq pixel-scroll-precision-mode nil)
+  (setq mouse-wheel-scroll-amount '(1
+                                    ((shift)
+                                     . hscroll)
+                                    ((meta))
+                                    ((control meta)
+                                     . global-text-scale)
+                                    ((control)
+                                     . text-scale)))
+  (setq mouse-wheel-progressive-speed t)
+  (setq mouse-wheel-follow-mouse t)
+  (setq scroll-step 0))
+
 
 ;;; init.el ends here
