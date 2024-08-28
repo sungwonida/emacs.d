@@ -58,9 +58,6 @@
 
 ;; helm-ag
 (use-package helm-ag
-  :bind
-  ("C-c p a" . helm-ag)
-  ("C-c p r" . helm-ag-project-root)
   :custom
   (helm-ag-insert-at-point 'symbol))
 
@@ -449,7 +446,9 @@
   (projectile-mode +1)
   :bind (:map projectile-mode-map
               ("s-p" . projectile-command-map)
-              ("C-c p" . projectile-command-map)))
+              ("C-c p" . projectile-command-map)
+              ("C-c p s s " . helm-ag)
+              ("C-c p s r " . helm-ag-project-root)))
 
 ;; CMake
 (setq cmake-tab-width 4)
