@@ -52,6 +52,56 @@
   (helm-ff-file-name-history-use-recentf t)
   (helm-show-completion-display-function #'helm-show-completion-default-display-function))
 
+;; Make the helm child frame be located in the center
+(defun my-helm-display-frame-center (buffer &optional resume)
+  "Display `helm-buffer' in a separate frame centered in the parent frame."
+  (if (not (display-graphic-p))
+      ;; Fallback to default when frames are not usable.
+      (helm-default-display-buffer buffer)
+    (setq helm--buffer-in-new-frame-p t)
+    (let* ((parent (selected-frame))
+           (frame-pos (frame-position parent))
+           (parent-left (car frame-pos))
+           (parent-top (cdr frame-pos))
+           ;; Calculate width and height for the new frame.
+           (width (* (/ (frame-width parent) 3) 2))
+           (height (/ (frame-height parent) 3))
+           tab-bar-mode
+           ;; Define default-frame-alist for the new Helm frame.
+           (default-frame-alist
+            `((parent . ,parent)
+              (width . ,width)
+              (height . ,height)
+              (undecorated . ,helm-use-undecorated-frame-option)
+              (left-fringe . 0)
+              (right-fringe . 0)
+              (tool-bar-lines . 0)
+              (line-spacing . 0)
+              (desktop-dont-save . t)
+              (no-special-glyphs . t)
+              (inhibit-double-buffering . t)
+              ;; Center the new frame relative to the parent.
+              (left . ,(+ parent-left (/ (* (frame-char-width parent)
+                                            (- (frame-width parent) width)) 2)))
+              (top . ,(+ parent-top (/ (* (frame-char-height parent)
+                                          (- (frame-height parent) height)) 2)))
+              ;; Frame title and other properties.
+              (title . "Helm")
+              (vertical-scroll-bars . nil)
+              (menu-bar-lines . 0)
+              (fullscreen . nil)
+              ;; Ensure visibility.
+              (visible . t))))
+      ;; ;; Set internal border color to match the default face foreground.
+      ;; (set-face-background 'internal-border
+      ;;                      (face-foreground 'default nil 'default))
+      ;; Display the Helm buffer in a popup frame.
+      ;; Use `helm-display-buffer-popup-frame` correctly.
+      (helm-display-buffer-popup-frame buffer default-frame-alist))))
+
+;; Set this function as the display function for Helm buffers.
+(setq helm-display-function 'my-helm-display-frame-center)
+
 ;; helm-git-grep
 (use-package helm-git-grep
   :bind ("C-c g g" . helm-git-grep-at-point))
