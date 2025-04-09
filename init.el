@@ -680,5 +680,8 @@
   (setq mouse-wheel-follow-mouse t)
   (setq scroll-step 0))
 
+;; ztree
+(use-package ztree)
+
 
 ;;; init.el ends here
