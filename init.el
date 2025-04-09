@@ -683,5 +683,8 @@
 ;; ztree
 (use-package ztree)
 
+;; large-file-warning-threshold
+(setq large-file-warning-threshold nil)
+
 
 ;;; init.el ends here
