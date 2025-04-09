@@ -118,67 +118,7 @@
 ;; diminish
 (use-package diminish)
 
-;; org-mode
-(use-package org-mode
-  :config
-  (defun org-templates-load-templates ()
-    (interactive)
-    (setq org-capture-templates
-          '(("t" "Todo" entry (file "~/org/gtd.org")
-             "* TODO %?\n  %i\n  %a")
-            ("j" "Journal" entry (file+datetree "~/org/journal.org")
-             "* %?\nEntered on %U\n  %i\n  %a")
-            ("e" "Event" entry (file "~/org/event.org")
-             "* %?\n  %U\n  %i\n  %a")))
-    (add-to-list 'org-structure-template-alist
-                 (list "p" (concat ":PROPERTIES:\n"
-                                   "?\n"
-                                   ":END:")))
-    (add-to-list 'org-structure-template-alist
-                 (list "eh" (concat ":EXPORT_FILE_NAME: ?\n"
-                                    ":EXPORT_TITLE:\n"
-                                    ":EXPORT_OPTIONS: toc:nil html-postamble:nil num:nil"))))
-  (org-templates-load-templates)
-  :bind
-  ("C-c c" . org-capture)
-  ;; ("C-c l" . org-store-link)  # TODO: Resolve the conflict
-  ("C-c a" . org-agenda)
-  ("C-c b" . org-switchb)
-  :custom
-  (org-image-actual-width nil)
-  (org-html-inline-image-rules
-   '(("file" . "\\.\\(jpeg\\|jpg\\|png\\|gif\\|svg\\|bmp\\)\\'")
-     ("http" . "\\.\\(jpeg\\|jpg\\|png\\|gif\\|svg\\|bmp\\)\\'")
-     ("https" . "\\.\\(jpeg\\|jpg\\|png\\|gif\\|svg\\|bmp\\)\\'")))
-  (org-agenda-start-on-weekday 0)
-  (org-log-done 'time)
-  (org-stuck-projects
-   '("+LEVEL=2/-DONE"
-     ("TODO" "STARTED" "CANCELED")
-     nil "")))
-
-;; My swiss army knife (notes, todos, agenda, etc.)
-(setq org-root-path (concat (file-name-as-directory (getenv "HOME")) "org"))
-(defun note ()
-  "Show my Notes"
-  (interactive)
-  (find-file (expand-file-name "note.org" org-root-path)))
-(defun gtd ()
-  "Show my TODOs"
-  (interactive)
-  (find-file (expand-file-name "gtd.org" org-root-path)))
-(defun dict ()
-  "Show my Dictionary."
-  (interactive)
-  (find-file (expand-file-name "dict.org" org-root-path)))
-(defun scratch ()
-  "Show my Scratch Pad."
-  (interactive)
-  (find-file (expand-file-name "scratch.org" org-root-path)))
-
-(setq org-default-notes-file
-      (expand-file-name "note.org" org-root-path))
-
+;; theme
 (use-package doom-themes
   :ensure t
   :config
