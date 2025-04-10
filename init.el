@@ -251,6 +251,9 @@
                  (company-mode t)
                  (define-key company-mode-map [backtab] 'company-complete)
                  (define-key company-active-map [tab] 'company-complete-selection)))
+  (python-mode-hook . (lambda ()
+                        (when (file-remote-p default-directory)
+                          (company-mode -1))))
   :config
   (setq company-idle-delay 0
         company-minimum-prefix-length 1
