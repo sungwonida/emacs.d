@@ -210,7 +210,8 @@
   :config
   (setq lsp-enable-snippet nil
         lsp-prefer-capf t
-        lsp-headerline-breadcrumb-enable t)
+        lsp-headerline-breadcrumb-enable t
+        lsp-log-io t)
   (setq lsp-pylsp-plugins-flake8-enabled t
         lsp-pylsp-plugins-flake8-max-line-length 79
         lsp-pylsp-plugins-pylint-enabled t
@@ -221,7 +222,12 @@
         lsp-pylsp-plugins-jedi-hover-enabled t
         lsp-pylsp-plugins-jedi-references-enabled t
         lsp-pylsp-plugins-jedi-signature-help-enabled t
-        lsp-pylsp-plugins-jedi-symbols-enabled t))
+        lsp-pylsp-plugins-jedi-symbols-enabled t)
+  (let* ((home-dir (file-name-as-directory (getenv "HOME")))
+         (log-root-path (concat home-dir ".pylsp"))
+         (log-path (concat (file-name-as-directory log-root-path)
+                           "pylsp-" (format-time-string "%Y%m%d") ".log")))
+    (setq lsp-pylsp-server-command (list "pylsp" "-vvv" "--log-file" log-path))))
 
 ;; lsp-ui
 (use-package lsp-ui
