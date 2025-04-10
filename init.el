@@ -679,5 +679,14 @@
 ;; large-file-warning-threshold
 (setq large-file-warning-threshold nil)
 
+;; ellama
+(use-package ellama
+  :init
+  (setopt ellama-language "English")
+  (require 'llm-ollama)
+  (setopt ellama-provider
+		  (make-llm-ollama
+		   :chat-model "codellama" :embedding-model "codellama")))
+
 
 ;;; init.el ends here
