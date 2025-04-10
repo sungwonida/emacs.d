@@ -258,7 +258,7 @@
   (setq company-idle-delay 0
         company-minimum-prefix-length 1
         company-selection-wrap-around t
-        company-show-numbers t
+        company-show-quick-access t
         company-tooltip-align-annotations t
         company-backends '(company-capf)))
 
