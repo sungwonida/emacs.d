@@ -23,12 +23,12 @@
   (load bootstrap-file nil 'nomessage))
 
 ;; Install use-package
+(straight-use-package 'bind-key)  ; Required for use-package
 (straight-use-package 'use-package)
 (setq use-package-always-ensure t)
 
-;; Configure use-package to use straight.el by default
-(use-package straight
-  :custom (straight-use-package-by-default t))
+;; Configure straight.el (without use-package)
+(setq straight-use-package-by-default t)  ; Replace the use-package call
 
 ;; helm
 (use-package helm
