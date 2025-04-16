@@ -84,7 +84,7 @@
               (left . ,(+ parent-left (/ (* (frame-char-width parent)
                                             (- (frame-width parent) width)) 2)))
               (top . ,(+ parent-top (/ (* (frame-char-height parent)
-                                          (- (frame-height parent) height)) 2)))
+                                          (- (frame-height parent) height)) 1)))
               ;; Frame title and other properties.
               (title . "Helm")
               (vertical-scroll-bars . nil)
