@@ -157,7 +157,7 @@
 (prefer-coding-system 'utf-8)
 (cond
  ((eq system-type 'gnu/linux)
-  (add-to-list 'default-frame-alist '(font . "Monaco-14"))
+  (add-to-list 'default-frame-alist '(font . "Monaco-10"))
   (set-fontset-font t 'hangul (font-spec :name "NanumGothicCoding")))
  ((eq system-type 'darwin)
   (add-to-list 'default-frame-alist '(font . "Monaco-12")))
