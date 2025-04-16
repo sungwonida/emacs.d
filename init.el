@@ -203,31 +203,28 @@
 ;; lsp-mode
 (use-package lsp-mode
   :ensure t
-  :hook ((python-mode . lsp)
-         (c++-mode . lsp)
-         (c-mode . lsp))
-  :commands lsp
+  :hook ((python-mode . lsp-deferred)
+         (c++-mode . lsp-deferred)
+         (c-mode . lsp-deferred))
+  :commands (lsp lsp-deferred)
   :config
   (setq lsp-enable-snippet nil
         lsp-prefer-capf t
         lsp-headerline-breadcrumb-enable t
-        lsp-log-io t)
-  (setq lsp-pylsp-plugins-flake8-enabled t
-        lsp-pylsp-plugins-flake8-max-line-length 79
-        lsp-pylsp-plugins-pylint-enabled t
-        lsp-pylsp-plugins-pylint-args ["--disable=C0111"] ; Example argument
-        lsp-pylsp-plugins-black-enabled t
-        lsp-pylsp-plugins-jedi-completion-enabled t
-        lsp-pylsp-plugins-jedi-definition-enabled t
-        lsp-pylsp-plugins-jedi-hover-enabled t
-        lsp-pylsp-plugins-jedi-references-enabled t
-        lsp-pylsp-plugins-jedi-signature-help-enabled t
-        lsp-pylsp-plugins-jedi-symbols-enabled t)
+        lsp-log-io nil  ; Disable heavy IO logging
+        lsp-enable-symbol-highlighting nil
+        lsp-enable-file-watchers nil
+        gc-cons-threshold (* 100 1024 1024)  ; 100MB GC threshold
+        read-process-output-max (* 3 1024 1024)  ; 3MB output buffer)
+        lsp-pylsp-plugins-flake8-ignore ["E501"])
+  (setq lsp-pylsp-plugins-pylint-enabled t
+        lsp-pylsp-plugins-pylint-args ["--disable=C0103,C0301"]
+        lsp-pylsp-plugins-black-enabled t)
   (let* ((home-dir (file-name-as-directory (getenv "HOME")))
          (log-root-path (concat home-dir ".pylsp"))
          (log-path (concat (file-name-as-directory log-root-path)
                            "pylsp-" (format-time-string "%Y%m%d") ".log")))
-    (setq lsp-pylsp-server-command (list "pylsp" "-vvv" "--log-file" log-path))))
+    (setq lsp-pylsp-server-command (list "pylsp" "-vvv" "--log-file" log-path))))  ; Remove "-vvv" after the stabilization
 
 ;; lsp-ui
 (use-package lsp-ui
@@ -240,13 +237,13 @@
   (my-lsp-ui-mode-hook)
   :custom
   (setq lsp-ui-doc-enable t
-        lsp-ui-doc-use-childframe t
+        lsp-ui-doc-use-childframe nil  ; Disable heavy rendering
         lsp-ui-doc-position 'at-point
         lsp-ui-doc-include-signature t
         lsp-ui-sideline-enable t
         lsp-ui-sideline-show-hover t
         lsp-ui-sideline-show-code-actions t
-        lsp-ui-sideline-show-diagnostics t))
+        lsp-ui-sideline-show-diagnostics nil))  ; Disable constant analysis
 
 ;; company
 (use-package company
