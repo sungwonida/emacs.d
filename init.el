@@ -691,5 +691,8 @@
 		  (make-llm-ollama
 		   :chat-model "codellama" :embedding-model "codellama")))
 
+;; kill-this-buffer
+(bind-key* (kbd "C-S-k") 'kill-this-buffer)
+
 
 ;;; init.el ends here
