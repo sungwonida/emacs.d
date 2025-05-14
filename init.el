@@ -710,6 +710,15 @@
 		   :chat-model "codellama" :embedding-model "codellama")))
 
 ;; gptel
+(defun my-ollama-model-list ()
+  "Return a list of available Ollama model names as strings."
+  (let* ((output (shell-command-to-string "ollama list"))
+         (lines (split-string output "\n" t))
+         (data-lines (cdr lines))) ;; Skip the header line
+    (mapcar (lambda (line)
+              (car (split-string line))) ;; Take the first column (model name)
+            data-lines)))
+
 (use-package gptel
   :ensure t
   :config
@@ -720,7 +729,7 @@
         (gptel-make-ollama "Ollama"
           :host "localhost:11434"
           :stream t
-          :models '("qwen3:14b-q4_K_M"))))
+          :models (my-ollama-model-list))))
 
 (defun excluded-file-p (file patterns)
   "Return non-nil if FILE matches any regex in PATTERNS."
