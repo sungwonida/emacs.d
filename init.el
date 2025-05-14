@@ -709,6 +709,35 @@
 		  (make-llm-ollama
 		   :chat-model "codellama" :embedding-model "codellama")))
 
+;; gptel
+(use-package gptel
+  :ensure t
+  :config
+  ;; Set your preferred model here
+  (setq gptel-model "qwen3:14b-q4_K_M")
+  ;; Register and set Ollama as the default backend
+  (setq gptel-backend
+        (gptel-make-ollama "Ollama"
+          :host "localhost:11434"
+          :stream t
+          :models '("qwen3:14b-q4_K_M"))))
+
+(defun excluded-file-p (file patterns)
+  "Return non-nil if FILE matches any regex in PATTERNS."
+  (seq-some (lambda (pattern)
+              (string-match-p pattern file))
+            patterns))
+
+(defun gptel-context-add-directory-recursively-with-filter (root-dir filter-exclude)
+  ;; TODO: Write a function description
+  (let* ((all-files (directory-files-recursively root-dir ""))
+         (filtered-files
+          (seq-remove (lambda (file)
+                        (excluded-file-p file filter-exclude))
+                      all-files)))
+    (dolist (file filtered-files)
+      (gptel-add-file file))))
+
 ;; kill-this-buffer
 (bind-key* (kbd "C-S-k") 'kill-this-buffer)
 
