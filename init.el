@@ -554,10 +554,28 @@
 (use-package simple-httpd)
 (use-package impatient-mode)
 ;;		4) M-x imp-set-user-filter
-(defun markdown-html (buffer)
-  (princ (with-current-buffer buffer
-           (format "<!DOCTYPE html><html><title>Impatient Markdown</title><xmp theme=\"united\" style=\"display:none;\"> %s  </xmp><script src=\"http://strapdownjs.com/v/0.2/strapdown.js\"></script></html>" (buffer-substring-no-properties (point-min) (point-max))))
-         (current-buffer)))
+(defun markdown-filter (buffer)
+  "Render Markdown BUFFER to HTML for impatient-mode."
+  (princ
+   (with-temp-buffer
+     (let ((tmp (generate-new-buffer-name "*markdown-html*")))
+       (with-current-buffer buffer
+         (markdown tmp)) ; Convert to HTML using markdown-mode
+       (set-buffer tmp)
+       (format "<!DOCTYPE html>
+<html>
+<head>
+<title>Markdown Preview</title>
+<link rel=\"stylesheet\" href=\"https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/3.0.1/github-markdown.min.css\"/>
+</head>
+<body>
+<article class=\"markdown-body\" style=\"box-sizing: border-box;min-width: 200px;max-width: 980px;margin: 0 auto;padding: 45px;\">
+%s
+</article>
+</body>
+</html>"
+               (buffer-string))))
+   (current-buffer)))
 
 ;; Replace the region with yank buffer
 (delete-selection-mode 1)
