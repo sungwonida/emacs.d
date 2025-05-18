@@ -105,6 +105,8 @@
            (getenv "WSLENV")))
   (setq helm-display-function 'my-helm-display-frame-center))
 
+(setq helm-buffer-max-length 60)
+
 ;; helm-git-grep
 (use-package helm-git-grep
   :bind ("C-c g g" . helm-git-grep-at-point))
