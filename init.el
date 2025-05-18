@@ -99,8 +99,11 @@
       ;; Use `helm-display-buffer-popup-frame` correctly.
       (helm-display-buffer-popup-frame buffer default-frame-alist))))
 
-;; Set this function as the display function for Helm buffers.
-(setq helm-display-function 'my-helm-display-frame-center)
+;; Set the custom function as the display function for Helm buffers.
+;; For WSL, avoid applying the custom function because it frequently creaks.
+(when (not (and (eq system-type 'gnu/linux)
+           (getenv "WSLENV")))
+  (setq helm-display-function 'my-helm-display-frame-center))
 
 ;; helm-git-grep
 (use-package helm-git-grep
