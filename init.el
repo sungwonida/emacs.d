@@ -50,7 +50,8 @@
   (helm-ff-search-library-in-sexp t)
   (helm-scroll-amount 8)
   (helm-ff-file-name-history-use-recentf t)
-  (helm-show-completion-display-function #'helm-show-completion-default-display-function))
+  (helm-show-completion-display-function #'helm-show-completion-default-display-function)
+  (helm-buffer-max-length 60))
 
 ;; Make the helm child frame be located in the center
 (defun my-helm-display-frame-center (buffer &optional resume)
@@ -104,8 +105,6 @@
 (when (not (and (eq system-type 'gnu/linux)
            (getenv "WSLENV")))
   (setq helm-display-function 'my-helm-display-frame-center))
-
-(setq helm-buffer-max-length 60)
 
 ;; helm-git-grep
 (use-package helm-git-grep
