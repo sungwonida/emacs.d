@@ -100,11 +100,23 @@
       ;; Use `helm-display-buffer-popup-frame` correctly.
       (helm-display-buffer-popup-frame buffer default-frame-alist))))
 
+(defun my-helm-display-bottom (buffer &optional _resume)
+  "Display Helm BUFFER at the bottom of the frame."
+  (let ((display-buffer-alist
+         '(("\\`\\*helm.*?\\*\\'"
+            (display-buffer-in-side-window)
+            (inhibit-same-window . t)
+            (window-height . 0.4)
+            (side . bottom)))))
+    (display-buffer buffer)))
+
 ;; Set the custom function as the display function for Helm buffers.
 ;; For WSL, avoid applying the custom function because it frequently creaks.
-(when (not (and (eq system-type 'gnu/linux)
-           (getenv "WSLENV")))
-  (setq helm-display-function 'my-helm-display-frame-center))
+(cond ((and (eq system-type 'gnu/linux)
+            (getenv "WSLENV"))
+       (setq helm-display-function #'my-helm-display-bottom))
+      (t
+       (setq helm-display-function #'my-helm-display-frame-center)))
 
 ;; helm-git-grep
 (use-package helm-git-grep
