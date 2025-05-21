@@ -760,7 +760,8 @@ body { max-width: 900px; margin: auto; padding: 2em; }
         (gptel-make-ollama "Ollama"
           :host "localhost:11434"
           :stream t
-          :models (my-ollama-model-list))))
+          :models (my-ollama-model-list)))
+  (setq gptel-default-mode 'org-mode))
 
 (defun excluded-file-p (file patterns)
   "Return non-nil if FILE matches any regex in PATTERNS."
