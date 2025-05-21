@@ -779,6 +779,28 @@ body { max-width: 900px; margin: auto; padding: 2em; }
     (dolist (file filtered-files)
       (gptel-add-file file))))
 
+(defun process-files-with-regex-filters (directory &optional include-patterns exclude-patterns processor-fn)
+  "Process files in DIRECTORY that match INCLUDE-PATTERNS and don't match EXCLUDE-PATTERNS.
+INCLUDE-PATTERNS is a list of regex patterns to include files (all files if nil).
+EXCLUDE-PATTERNS is a list of regex patterns to exclude files (none excluded if nil).
+PROCESSOR-FN is a function that takes a file path as argument (defaults to `gptel-add-file')."
+  (let* ((processor (or processor-fn #'gptel-add-file))
+         (all-files (directory-files-recursively directory ""))
+         (filtered-files
+          (seq-filter
+           (lambda (file)
+             (and
+              ;; Include file if no include patterns or if it matches any include pattern
+              (or (null include-patterns)
+                  (seq-some (lambda (pattern) (string-match-p pattern file)) include-patterns))
+              ;; Include file if no exclude patterns or if it doesn't match any exclude pattern
+              (or (null exclude-patterns)
+                  (not (seq-some (lambda (pattern) (string-match-p pattern file)) exclude-patterns)))))
+           all-files)))
+    (dolist (file filtered-files)
+      (funcall processor file))
+    filtered-files))
+
 ;; kill-this-buffer
 (bind-key* (kbd "C-S-k") 'kill-this-buffer)
 
