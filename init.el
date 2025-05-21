@@ -813,5 +813,18 @@ PROCESSOR-FN is a function that takes a file path as argument (defaults to `gpte
          ("C-h F"   . helpful-function)
          ("C-c C-d" . helpful-at-point)))
 
+;; command-log-mode
+(use-package command-log-mode
+  :config
+  (global-command-log-mode)
+  (add-hook 'emacs-startup-hook #'clm/open-command-log-buffer)
+  ;; Hide the *command-log* window shortly after it's shown
+  (run-with-timer
+   0.1 nil
+   (lambda ()
+     (let ((win (get-buffer-window " *command-log*")))
+       (when (window-live-p win)
+         (delete-window win))))))
+
 
 ;;; init.el ends here
