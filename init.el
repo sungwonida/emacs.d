@@ -594,21 +594,21 @@
    (current-buffer)))
 
 (defun org-html-filter (buffer)
-  "Render Org BUFFER to HTML for impatient-mode."
-  (princ
+  "Render Org BUFFER to HTML for impatient-mode with buffer cleanup."
+  (princ ; Return the HTML string to impatient-mode
    (with-temp-buffer
-     (let ((tmp (generate-new-buffer-name "*org-html*")))
+     (let ((tmp (get-buffer-create "*org-html*"))) ; Reuse single buffer
        (with-current-buffer buffer
-         (org-export-to-buffer 'html tmp nil nil t t))
-       (set-buffer tmp)
-       ;; Optionally, inject custom CSS here
-       (format "<!DOCTYPE html>
+         (save-selected-window ; Prevent window switching
+           (org-export-to-buffer 'html tmp nil nil t t)))
+       (with-current-buffer tmp
+         (prog1 ; Return HTML while cleaning up
+             (format "<!DOCTYPE html>
 <html>
 <head>
 <title>Org Presentation</title>
 <link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/npm/water.css@2/out/water.min.css\">
 <style>
-/* Add your org-mode specific tweaks here */
 body { max-width: 900px; margin: auto; padding: 2em; }
 </style>
 </head>
@@ -616,8 +616,8 @@ body { max-width: 900px; margin: auto; padding: 2em; }
 %s
 </body>
 </html>"
-               (buffer-string))))
-   (current-buffer)))
+                     (buffer-string))
+           (kill-buffer tmp))))))) ; Clean up immediately
 
 ;; Replace the region with yank buffer
 (delete-selection-mode 1)
