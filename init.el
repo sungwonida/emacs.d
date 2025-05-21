@@ -804,5 +804,14 @@ PROCESSOR-FN is a function that takes a file path as argument (defaults to `gpte
 ;; kill-this-buffer
 (bind-key* (kbd "C-S-k") 'kill-this-buffer)
 
+;; helpful
+(use-package helpful
+  :bind (("C-h f"   . helpful-callable)
+         ("C-h v"   . helpful-variable)
+         ("C-h k"   . helpful-key)
+         ("C-h x"   . helpful-command)
+         ("C-h F"   . helpful-function)
+         ("C-c C-d" . helpful-at-point)))
+
 
 ;;; init.el ends here
