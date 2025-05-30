@@ -432,8 +432,18 @@
      		      (setq dired-omit-extensions '("~"))
                       )))
 
+(defun my-dired-toggle-human-readable ()
+  "Toggle human-readable file sizes in current Dired buffer."
+  (interactive)
+  (setq-local dired-actual-switches
+              (if (string-match "h" dired-actual-switches)
+                  (replace-regexp-in-string "h" "" dired-actual-switches)
+                (concat dired-actual-switches "h")))
+  (dired-sort-other dired-actual-switches))
+
 (defun my-dired-mode-hook ()
-  (define-key dired-mode-map [backspace] 'dired-up-directory))
+  (define-key dired-mode-map [backspace] 'dired-up-directory)
+  (define-key dired-mode-map "#" 'my-dired-toggle-human-readable))
 (add-hook 'dired-mode-hook 'my-dired-mode-hook)
 
 ;; Development generic
