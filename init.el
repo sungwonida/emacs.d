@@ -847,5 +847,16 @@ PROCESSOR-FN is a function that takes a file path as argument (defaults to `gpte
        (when (window-live-p win)
          (delete-window win))))))
 
+;; indent-bars
+(use-package indent-bars
+  :custom
+  (indent-bars-no-descend-lists t)
+  (indent-bars-treesit-support t)
+  (indent-bars-treesit-ignore-blank-lines-types '("module"))
+  (indent-bars-treesit-scope '((python function_definition class_definition
+                                      for_statement if_statement with_statement
+                                      while_statement)))
+  :hook ((python-mode python-base-mode) . indent-bars-mode))
+
 
 ;;; init.el ends here
