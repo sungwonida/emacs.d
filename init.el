@@ -10,7 +10,18 @@
 
 (let ((macro-file (expand-file-name "macros/macros.el" user-emacs-directory)))
   (when (file-exists-p macro-file)
-    (load-file macro-file)))
+    (load-file macro-file)
+    ;; Check if the function exists (not variable)
+    (when (fboundp 'copy-scenario-from-data-center)
+      ;; Get the function definition to use as macro
+      (let ((macro-def (symbol-function 'copy-scenario-from-data-center)))
+        ;; Add your macro to the head of the macro ring
+        (push macro-def kmacro-ring)
+        ;; Trim the macro ring to its max size
+        (when (> (length kmacro-ring) kmacro-ring-max)
+          (setq kmacro-ring (butlast kmacro-ring (- (length kmacro-ring) kmacro-ring-max))))
+        ;; Set the last-kbd-macro to your newly added macro
+        (setq last-kbd-macro macro-def)))))
 
 ;; Install straight.el
 (defvar bootstrap-version)
