@@ -8,6 +8,10 @@
 (let ((default-directory local-packages-path))
   (normal-top-level-add-subdirs-to-load-path))
 
+(let ((macro-file (expand-file-name "macros/macros.el" user-emacs-directory)))
+  (when (file-exists-p macro-file)
+    (load-file macro-file)))
+
 ;; Install straight.el
 (defvar bootstrap-version)
 (let ((bootstrap-file
