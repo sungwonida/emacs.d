@@ -25,6 +25,7 @@
  '(dynamic-completion-mode t)
  '(global-auto-revert-mode t)
  '(indent-tabs-mode nil)
+ '(ns-alternate-modifier 'super)
  '(ns-command-modifier 'meta)
  '(show-paren-mode t)
  '(tab-width 4))
