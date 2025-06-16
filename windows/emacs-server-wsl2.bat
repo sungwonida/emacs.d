@@ -1,0 +1,1 @@
+wsl -e bash -lic "emacs --daemon &"

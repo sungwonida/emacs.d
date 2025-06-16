@@ -1,0 +1,1 @@
+wsl -e bash -lic "dbus-launch emacs &"

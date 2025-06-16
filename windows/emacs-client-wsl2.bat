@@ -1,0 +1,1 @@
+wsl -e bash -lic "emacsclient -c -a \"\" &"
