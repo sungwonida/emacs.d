@@ -1,24 +1,47 @@
 # Description
-David Jung's Emacs Confiuration.
 
-The main change from the last version.  
-- Introduced straight.el and use-package combo.
+David Jung's Emacs configuration.
 
-# Tested
-WSL 2 + Ubuntu 20.04 (Focal Fossa) + X Server (Xming, VcXsrv, GWSL, MobaXterm, X410)  
-macOS 11.7 (Big Sur)  
+* Uses **straight.el** + **use-package** for reproducible, declarative package management.
 
-# TODOs
-1. Upgrade Emacs to 29.1 and tune the overall configuration
-2. Fix eshell-mode-hook to work
-3. Fix realtime-Markdown-preview to work
-4. Moderate vterm faces or change the theme
-5. Don't let vterm head to the bottom line automatically
-6. Fix Eglot to behave good in C++
-7. Let vterm follow along the current directory
-8. Fix C-x C-b to locate previous buffer at the top
-9. Fix conda environment from being disabled sometimes in eshell
-10. Fix Eglot not to switch to base environment when python files connect to Eglot
-11. Add sticky function name
-12. Transfer global-set-key -> local-set-key for some pakcages
-13. Make Helm child frame be on some managed candidate positions
+# Tested Platforms
+
+* **WSL 2** + **Ubuntu 20.04** (Focal Fossa) with Xming, VcXsrv, GWSL, MobaXterm, X410, WSLg
+* **macOS** 11.7 (Big Sur) → 15 (Sequoia)
+
+# TODO
+
+1. Ensure `vterm` stays in sync with the shell’s CWD.
+2. Make `C‑x C‑b` open the previously visited buffer by default.
+3. Move global key binds to mode hooks where appropriate.
+4. Keep Helm child‑frames aligned with candidate lists.
+
+## Changelog
+
+### 2025
+
+* **June**
+
+  * Persistent keyboard‑macro store & WSL batch‑launch helpers.
+  * ⌥ → Super mapping on macOS; visual indentation guides in Python.
+
+* **May**
+
+  * GPTel integration + helpers; Helpful & `command‑log‑mode` enabled.
+  * Human‑readable sizes in Dired; Helm UX & impatient‑mode fixes.
+
+* **April**
+
+  * Reduced LSP latency; global `kill‑buffer`; removed straight/use‑package cycle.
+  * Added `ellama`, `ztree`; centered Helm frame; disabled large‑file warnings.
+
+### 2024
+
+* **Aug** — Replaced `projectile‑ag` with `helm‑ag`; smoother mouse scrolling.
+* **Jul** — Treemacs & LSP‑Treemacs; Projectile; TRAMP SSH control; UI polish.
+
+### Earlier
+
+* **StradVision 2.1** (2023‑04‑18) — README update.
+* **StradVision 2.0** (2023‑04‑17) — Adopted **straight.el** + **use‑package**.
+* **StradVision 1.0** (2022‑06‑30) — VSCode dark theme.
