@@ -764,7 +764,15 @@ body { max-width: 900px; margin: auto; padding: 2em; }
 (use-package ztree)
 
 ;; large-file-warning-threshold
-(setq large-file-warning-threshold nil)
+(defun my-large-file-warning-threshold ()
+  "Set `large-file-warning-threshold' to nil for local files, default for remote."
+  (when buffer-file-name
+    (setq-local large-file-warning-threshold
+                (if (file-remote-p buffer-file-name)
+                    10000000   ;; threshold in bytes
+                  nil))))
+
+(add-hook 'find-file-hook #'my-large-file-warning-threshold)
 
 ;; ellama
 (use-package ellama
