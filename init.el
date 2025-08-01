@@ -215,14 +215,6 @@
 (use-package ediff
   :custom (ediff-split-window-function 'split-window-horizontally))
 
-;; tern
-(use-package tern
-  :hook (js-mode . (lambda () (tern-mode t))))
-
-;; tern-auto-complete
-(use-package tern-auto-complete
-  :config (tern-ac-setup))
-
 ;; octave
 ;;  Need a language server
 (use-package octave
