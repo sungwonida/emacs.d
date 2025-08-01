@@ -474,11 +474,6 @@
     (delete-trailing-whitespace)))
 (add-hook 'before-save-hook 'prog-delete-trailing-whitespace)
 
-;;; yasnippet
-(use-package yasnippet
-  :init (add-hook 'prog-mode-hook #'yas-minor-mode)
-  :config (yas-reload-all))
-
 ;; Projectile
 (use-package projectile
   :ensure t
