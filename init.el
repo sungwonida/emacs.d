@@ -2,11 +2,17 @@
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
 (load custom-file)
 
-;; Path for the local packages
-(setq local-packages-path (expand-file-name "local/packages" user-emacs-directory))
-(add-to-list 'load-path local-packages-path)
-(let ((default-directory local-packages-path))
-  (normal-top-level-add-subdirs-to-load-path))
+;;; --- Local packages ---------------------------------------------------------
+;; Absolute path to ~/.emacs.d/local/packages
+(defconst local-packages-dir
+  (expand-file-name "local/packages" user-emacs-directory))
+
+;; 1.  Add the top-level dir itself
+(add-to-list 'load-path local-packages-dir)
+
+;; 2.  Add each sub-directory recursively
+(add-to-list 'load-path (expand-file-name "**" local-packages-dir))
+;; ---------------------------------------------------------------------------
 
 (let ((macro-file (expand-file-name "macros/macros.el" user-emacs-directory)))
   (when (file-exists-p macro-file)
@@ -231,31 +237,42 @@
   :hook
   (octave-mode . my-octave-mode-hook))
 
-;; lsp-mode
+;; --- lsp core ---------------------------------------------------------------
 (use-package lsp-mode
   :ensure t
-  :hook ((python-mode . lsp-deferred)
-         (c++-mode . lsp-deferred)
-         (c-mode . lsp-deferred))
   :commands (lsp lsp-deferred)
+  :hook ((python-mode . lsp-deferred)
+         (c-mode      . lsp-deferred)
+         (c++-mode    . lsp-deferred))
   :config
-  (setq lsp-enable-snippet nil
-        lsp-prefer-capf t
+  ;; generic, cross-language defaults
+  (setq lsp-prefer-capf                 t
         lsp-headerline-breadcrumb-enable t
-        lsp-log-io nil  ; Disable heavy IO logging
-        lsp-enable-symbol-highlighting nil
-        lsp-enable-file-watchers nil
-        gc-cons-threshold (* 100 1024 1024)  ; 100MB GC threshold
-        read-process-output-max (* 3 1024 1024)  ; 3MB output buffer)
-        lsp-pylsp-plugins-flake8-ignore ["E501"])
-  (setq lsp-pylsp-plugins-pylint-enabled t
-        lsp-pylsp-plugins-pylint-args ["--disable=C0103,C0301"]
-        lsp-pylsp-plugins-black-enabled t)
-  (let* ((home-dir (file-name-as-directory (getenv "HOME")))
-         (log-root-path (concat home-dir ".pylsp"))
-         (log-path (concat (file-name-as-directory log-root-path)
-                           "pylsp-" (format-time-string "%Y%m%d") ".log")))
-    (setq lsp-pylsp-server-command (list "pylsp" "-vvv" "--log-file" log-path))))  ; Remove "-vvv" after the stabilization
+        lsp-enable-file-watchers        nil
+        lsp-enable-symbol-highlighting  nil
+        lsp-log-io                      nil  ; Disable heavy IO logging
+        lsp-response-timeout            30
+        gc-cons-threshold               (* 100 1024 1024)  ; 100MB GC threshold
+        read-process-output-max         (* 3 1024 1024)))  ; 3MB output buffer)
+
+;; ---------------------------------------------------------------------------
+
+;;; --- lsp language layers  -------------------------------------------------
+(use-package lsp-cpp-clangd-config
+  :straight nil
+  :load-path (lambda () (list local-packages-dir))
+  :after lsp-mode)
+
+(use-package lsp-cpp-clangd-refresh-compile-db
+  :straight nil
+  :load-path (lambda () (list local-packages-dir))
+  :after (cc-mode lsp-mode))
+
+(use-package lsp-python-pyright-config
+  :straight nil
+  :load-path (lambda () (list local-packages-dir))
+  :after lsp-mode)
+;; ---------------------------------------------------------------------------
 
 ;; lsp-ui
 (use-package lsp-ui
