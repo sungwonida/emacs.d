@@ -321,12 +321,6 @@
   :config
   (which-key-mode))
 
-(use-package general
-  :ensure t
-  :config
-  (general-define-key
-   "C-c l" '(:keymap lsp-command-map :which-key "LSP")))
-
 ;; company-box
 (use-package company-box
   :hook (company-mode . company-box-mode))
