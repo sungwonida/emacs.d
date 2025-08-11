@@ -3,18 +3,24 @@
 (load custom-file)
 
 ;;; --- Local packages ---------------------------------------------------------
-;; Absolute path to ~/.emacs.d/local/packages
 (defconst local-packages-dir
   (expand-file-name "local/packages" user-emacs-directory))
 
-;; 1.  Add the top-level dir itself
-(add-to-list 'load-path local-packages-dir)
+;; Add DIR itself if it has loose .el files, and every subdir that has .el files.
+(defun my/add-el-dirs-to-load-path (dir)
+  "Recursively add to `load-path` any subdir of DIR that contains .el files."
+  (when (file-directory-p dir)
+    (when (directory-files dir nil "\\.el\\'")
+      (add-to-list 'load-path dir))
+    (dolist (entry (directory-files dir t "\\`[^.]")) ; skip . and ..
+      (when (file-directory-p entry)
+        (my/add-el-dirs-to-load-path entry)))))
 
-;; 2.  Add each sub-directory recursively
-(add-to-list 'load-path (expand-file-name "**" local-packages-dir))
+;; Do it once at startup
+(my/add-el-dirs-to-load-path local-packages-dir)
 ;; ---------------------------------------------------------------------------
 
-(let ((macro-file (expand-file-name "macros/macros.el" user-emacs-directory)))
+(let ((macro-file (expand-file-name "local/macros/macros.el" user-emacs-directory)))
   (when (file-exists-p macro-file)
     (load-file macro-file)
     ;; Check if the function exists (not variable)
@@ -215,6 +221,12 @@
 (use-package ediff
   :custom (ediff-split-window-function 'split-window-horizontally))
 
+;;; --- treesit --------------------------------------------------------------
+(use-package treesit-compat
+  :straight nil
+  :load-path (lambda () (list local-packages-dir)))
+;; ---------------------------------------------------------------------------
+
 ;; octave
 ;;  Need a language server
 (use-package octave
@@ -229,41 +241,47 @@
   :hook
   (octave-mode . my-octave-mode-hook))
 
-;; --- lsp core ---------------------------------------------------------------
+;;; --- lsp core -------------------------------------------------------------
 (use-package lsp-mode
   :ensure t
   :commands (lsp lsp-deferred)
-  :hook ((python-mode . lsp-deferred)
-         (c-mode      . lsp-deferred)
-         (c++-mode    . lsp-deferred))
+  :hook ((c++-ts-mode    . lsp-deferred)
+         (c-ts-mode      . lsp-deferred)
+         (python-ts-mode . lsp-deferred)
+         (c++-mode       . lsp-deferred)
+         (c-mode         . lsp-deferred)
+         (python-mode    . lsp-deferred))
+  :init
+  (setq lsp-auto-guess-root t)
   :config
   ;; generic, cross-language defaults
-  (setq lsp-prefer-capf                 t
+  (setq lsp-prefer-capf                  t
         lsp-headerline-breadcrumb-enable t
-        lsp-enable-file-watchers        nil
-        lsp-enable-symbol-highlighting  nil
-        lsp-log-io                      nil  ; Disable heavy IO logging
-        lsp-response-timeout            30
-        gc-cons-threshold               (* 100 1024 1024)  ; 100MB GC threshold
-        read-process-output-max         (* 3 1024 1024)))  ; 3MB output buffer)
-
+        lsp-enable-file-watchers         nil
+        lsp-enable-symbol-highlighting   nil
+        lsp-log-io                       nil  ; Disable heavy IO logging
+        lsp-response-timeout             30
+        gc-cons-threshold                (* 100 1024 1024)  ; 100MB GC threshold
+        read-process-output-max          (   * 3 1024 1024)  ; 3MB output buffer)
+        lsp-enable-indentation           nil
+        lsp-enable-on-type-formatting    nil))
 ;; ---------------------------------------------------------------------------
 
-;;; --- lsp language layers  -------------------------------------------------
-(use-package lsp-cpp-clangd-config
+;;; --- language layers ------------------------------------------------------
+(use-package cpp-config-lsp-clangd
   :straight nil
   :load-path (lambda () (list local-packages-dir))
-  :after lsp-mode)
+  :demand t)
 
-(use-package lsp-cpp-clangd-refresh-compile-db
+(use-package python-config-lsp-pyright
   :straight nil
   :load-path (lambda () (list local-packages-dir))
-  :after (cc-mode lsp-mode))
+  :demand t)
 
-(use-package lsp-python-pyright-config
+(use-package yaml-config
   :straight nil
   :load-path (lambda () (list local-packages-dir))
-  :after lsp-mode)
+  :demand t)
 ;; ---------------------------------------------------------------------------
 
 ;; lsp-ui
@@ -489,50 +507,7 @@
 ;; CMake
 (setq cmake-tab-width 4)
 
-;; C
-(add-to-list 'auto-mode-alist '("\\.cpp\\'" . c++-mode))
-
-(defun my-c-mode-common-hook ()
-  (hs-minor-mode t)
-  (define-key c-mode-base-map (kbd "M-o") 'ff-get-other-file)
-  (define-key c-mode-base-map (kbd "M-m") 'helm-semantic-or-imenu)
-  (local-set-key (kbd "C-c u") 'hs-toggle-hiding)
-  (local-set-key (kbd "C-c <down>") 'hs-hide-all)
-  (local-set-key (kbd "C-c <up>") 'hs-show-all))
-(add-hook 'c-mode-common-hook 'my-c-mode-common-hook)
-
-(defun highlight-if-0/1 ()
-  "Modify the face of text in between #if 0 ... #endif."
-  (interactive)
-  (setq cpp-known-face 'default)
-  (setq cpp-unknown-face 'default)
-  (setq cpp-face-type 'dark)
-  (setq cpp-known-writable 't)
-  (setq cpp-unknown-writable 't)
-  (setq cpp-edit-list
-        '((#("1" 0 1
-             (fontified nil))
-           nil
-           (foreground-color . "dim gray")
-           both nil)
-          (#("0" 0 1
-             (fontified nil))
-           (foreground-color . "dim gray")
-           nil
-           both nil)))
-  (cpp-highlight-buffer t))
-
-(defun c-cpp-highlight-if-0/1 ()
-  (when (derived-mode-p 'c-mode 'c++-mode)
-    (highlight-if-0/1)))
-(add-hook 'c-mode-common-hook 'c-cpp-highlight-if-0/1)
-(add-hook 'before-save-hook 'c-cpp-highlight-if-0/1)
-
-;; Python
-(defun my-python-mode-hook ()
-  (define-key python-mode-map (kbd "M-m") 'helm-semantic-or-imenu))
-(add-hook 'python-mode-hook 'my-python-mode-hook)
-(add-hook 'python-mode-hook (lambda () (setq forward-sexp-function nil)))
+;; Lisp
 (define-key lisp-mode-shared-map (kbd "M-m") 'helm-semantic-or-imenu)
 
 ;; smartparens

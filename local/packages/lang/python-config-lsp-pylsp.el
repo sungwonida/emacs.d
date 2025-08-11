@@ -1,7 +1,7 @@
-;;; lsp-python-pylsp-config.el --- Opinionated pylsp + lsp-mode setup  -*- lexical-binding: t; -*-
+;;; python-config-lsp-pylsp.el --- Opinionated pylsp + lsp-mode setup  -*- lexical-binding: t; -*-
 ;;
 ;; This file is *only* about Python-LSP (pylsp) configuration.  Drop it on the
-;; load-path and (require 'lsp-python-pylsp-config) from your init.
+;; load-path and (require 'python-config-lsp-pylsp) from your init.
 ;;
 ;;; Commentary:
 ;;
@@ -57,5 +57,6 @@ Remote (TRAMP) buffers start pylsp with default args to avoid path issues."
   (setq lsp-pylsp-plugins-flake8-ignore ["E501"]
         lsp-pylsp-plugins-black-enabled t))
 
-(provide 'lsp-python-pylsp-config)
-;;; lsp-python-pylsp-config.el ends here
+
+(provide 'python-config-lsp-pylsp)
+;;; python-config-lsp-pylsp.el ends here

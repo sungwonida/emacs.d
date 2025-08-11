@@ -1,4 +1,4 @@
-;;; lsp-python-pyright-config.el --- Pyright + lsp-mode  -*- lexical-binding:t -*-
+;;; python-config-lsp-pyright.el --- Pyright + lsp-mode  -*- lexical-binding:t -*-
 ;;
 ;; Requires Node + pyright CLI.
 ;;
@@ -31,5 +31,20 @@
   :config
   (setq lsp-pyright-langserver-command (my/pyright-command)))
 
-(provide 'lsp-python-pyright-config)
-;;; lsp-python-pyright-config.el ends here
+;;;; 2.  Python helpers ───────────────────────────────────────────────────────
+(defun my/python-common-setup ()
+  "Things I want in both `python-mode' and `python-ts-mode'."
+  (local-set-key (kbd "M-m") #'helm-semantic-or-imenu)
+  (setq-local forward-sexp-function nil))
+
+(add-hook 'python-mode-hook    #'my/python-common-setup)
+(add-hook 'python-ts-mode-hook #'my/python-common-setup)
+
+;;;; 3.  LSP auto-start for new modes  ---------------------------------------
+(with-eval-after-load 'lsp-mode
+  (dolist (hook '(c-ts-mode-hook c++-ts-mode-hook python-ts-mode-hook))
+    (add-hook hook #'lsp-deferred)))
+
+
+(provide 'python-config-lsp-pyright)
+;;; python-config-lsp-pyright.el ends here
