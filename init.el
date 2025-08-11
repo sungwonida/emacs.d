@@ -547,16 +547,6 @@
 ;;   :hook (after-save . selective-tdd-after-save)
 ;;   :bind ([f12] . tdd-mode))
 
-;; Semantic Refactor
-(use-package srefactor
-  :init
-  (defun my-srefactor-mode-hook ()
-	(define-key c-mode-map (kbd "M-s M-RET") 'srefactor-refactor-at-point)
-	(define-key c++-mode-map (kbd "M-s M-RET") 'srefactor-refactor-at-point))
-  :hook
-  (c-mode . my-srefactor-mode-hook)
-  (c++-mode . my-srefactor-mode-hook))
-
 ;; Pandoc
 (if (or (eq system-type 'gnu/linux) (eq system-type 'darwin))
     (setq markdown-command "pandoc"))
