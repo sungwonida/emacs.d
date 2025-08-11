@@ -200,13 +200,16 @@
 (prefer-coding-system 'utf-8)
 (cond
  ((eq system-type 'gnu/linux)
-  (add-to-list 'default-frame-alist '(font . "Monaco-10"))
+  (add-to-list 'default-frame-alist '(font . "Monaco-18"))
   (set-fontset-font t 'hangul (font-spec :name "NanumGothicCoding")))
  ((eq system-type 'darwin)
   (add-to-list 'default-frame-alist '(font . "Monaco-12")))
  ((eq system-type 'windows-nt)
   (add-to-list 'default-frame-alist '(font . "Monaco-9"))
   (unicode-fonts-setup)))
+
+(use-package nerd-icons
+  :ensure t)
 
 (use-package all-the-icons
   :if (display-graphic-p))
@@ -809,8 +812,8 @@ PROCESSOR-FN is a function that takes a file path as argument (defaults to `gpte
       (funcall processor file))
     filtered-files))
 
-;; kill-this-buffer
-(bind-key* (kbd "C-S-k") 'kill-this-buffer)
+;; kill-current-buffer
+(bind-key* (kbd "C-S-k") 'kill-current-buffer)
 
 ;; helpful
 (use-package helpful
