@@ -681,8 +681,33 @@ body { max-width: 900px; margin: auto; padding: 2em; }
 
 ;; astyle
 (use-package astyle
+  :ensure t
   :when (executable-find "astyle")
-  :hook (c-mode-common . astyle-on-save-mode))
+  :init
+  ;; Prefer a project `.astylerc` if present
+  (setq astyle-default-rc-name ".astylerc"
+        astyle-default-args '("--quiet"))  ;; keep noise down; same as suffix=none
+
+  :preface
+  ;; Optional: robust on-save formatter just for C/C++ TS modes
+  (define-minor-mode my/astyle-on-save-mode
+    "Format buffer with astyle on save (C/C++ tree-sitter modes)."
+    :init-value nil
+    :lighter " ⓐfmt"
+    (let ((fn #'astyle-buffer))
+      (if my/astyle-on-save-mode
+          (add-hook 'before-save-hook fn nil t)
+        (remove-hook 'before-save-hook fn t))))
+
+  (defun my/astyle-setup-for-ts ()
+    "Local bindings and optional on-save formatting for C/C++ TS modes."
+    (local-set-key (kbd "C-c C-f") #'astyle-buffer)
+    (local-set-key (kbd "C-c C-r") #'astyle-region)
+    ;; (my/astyle-on-save-mode 1)  ;; Enable per-buffer format on save
+    )
+
+  :hook ((c-ts-mode   . my/astyle-setup-for-ts)
+         (c++-ts-mode . my/astyle-setup-for-ts)))
 
 ;; quelpa
 (use-package quelpa-use-package)
