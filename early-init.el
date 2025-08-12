@@ -38,6 +38,7 @@
 (defcustom my/wl-copy-commands
   '(kill-ring-save kill-region kill-line copy-region-as-kill
     cua-copy-region cua-cut-region cua-copy-rectangle
+    vterm-copy-mode-done magit-copy-buffer-revision
     mouse-save-then-kill)
   "Commands treated as explicit copies to mirror to OS clipboard."
   :type '(repeat symbol))
