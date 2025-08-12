@@ -148,5 +148,11 @@ Uses:  wl-copy --paste-once --type text/plain;charset=utf-8"
              token copy-ok rt)
     ok))
 
-;;; Enable mirroring by default:
-(my/wl-clipboard-mirroring-mode 1)
+;; Enable the Wayland/WSL clipboard mirroring ONLY when in WSL + Wayland
+(when (and (eq system-type 'gnu/linux)
+           (getenv "WSL_DISTRO_NAME")
+           (getenv "WAYLAND_DISPLAY"))
+  (my/wl-clipboard-mirroring-mode 1))
+
+
+;;; early-init.el ends here
