@@ -36,7 +36,7 @@
   :group 'convenience)
 
 (defcustom my/wl-copy-commands
-  '(kill-ring-save kill-region copy-region-as-kill
+  '(kill-ring-save kill-region kill-line copy-region-as-kill
     cua-copy-region cua-cut-region cua-copy-rectangle
     mouse-save-then-kill)
   "Commands treated as explicit copies to mirror to OS clipboard."
