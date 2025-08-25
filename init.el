@@ -285,6 +285,11 @@
   :straight nil
   :load-path (lambda () (list local-packages-dir))
   :demand t)
+
+(use-package cmake-config
+  :straight nil
+  :load-path (lambda () (list local-packages-dir))
+  :demand t)
 ;; ---------------------------------------------------------------------------
 
 ;; lsp-ui
