@@ -684,35 +684,121 @@ body { max-width: 900px; margin: auto; padding: 2em; }
 ;; cuda-mode
 (use-package cuda-mode)
 
-;; astyle
+;; astyle + context-aware RET with correct inner-line indent (C/C++ TS modes)
 (use-package astyle
   :ensure t
   :when (executable-find "astyle")
   :init
-  ;; Prefer a project `.astylerc` if present
   (setq astyle-default-rc-name ".astylerc"
-        astyle-default-args '("--quiet"))  ;; keep noise down; same as suffix=none
+        astyle-default-args '("--quiet"))
 
   :preface
-  ;; Optional: robust on-save formatter just for C/C++ TS modes
-  (define-minor-mode my/astyle-on-save-mode
-    "Format buffer with astyle on save (C/C++ tree-sitter modes)."
-    :init-value nil
-    :lighter " ⓐfmt"
-    (let ((fn #'astyle-buffer))
-      (if my/astyle-on-save-mode
-          (add-hook 'before-save-hook fn nil t)
-        (remove-hook 'before-save-hook fn t))))
+  (defvar my/astyle-after-newline t
+    "If non-nil, RET formats best context (class/ns/defun) in TS C/C++ buffers.")
 
-  (defun my/astyle-setup-for-ts ()
-    "Local bindings and optional on-save formatting for C/C++ TS modes."
-    (local-set-key (kbd "C-c C-f") #'astyle-buffer)
-    (local-set-key (kbd "C-c C-r") #'astyle-region)
-    ;; (my/astyle-on-save-mode 1)  ;; Enable per-buffer format on save
-    )
+  ;; ----- Tree-sitter helpers -----
+  (defun my/ts-ancestor-of-type (node types)
+    "Return first ancestor of NODE whose type is in TYPES (strings), or nil."
+    (while (and node (not (member (treesit-node-type node) types)))
+      (setq node (treesit-parent node)))
+    node)
 
-  :hook ((c-ts-mode   . my/astyle-setup-for-ts)
-         (c++-ts-mode . my/astyle-setup-for-ts)))
+  (defun my/astyle-context-bounds ()
+    "Return (BEG . END) for best formatting context at point.
+Order: class/struct > namespace > function. Fallback: nil."
+    (when (and (fboundp 'treesit-node-at) (treesit-available-p))
+      (let* ((node (treesit-node-at (point)))
+             (class-like (my/ts-ancestor-of-type node '("class_specifier" "struct_specifier")))
+             (ns-like    (and (not class-like)
+                              (my/ts-ancestor-of-type node '("namespace_definition"))))
+             (func-like  (and (not class-like) (not ns-like)
+                              (my/ts-ancestor-of-type node '("function_definition"))))
+             (target (or class-like ns-like func-like)))
+        (when target
+          (cons (treesit-node-start target)
+                (treesit-node-end target))))))
+
+  (defun my/astyle-format-context-or-buffer ()
+    "Format class/namespace/defun with astyle; else whole buffer."
+    (let ((bds (ignore-errors (my/astyle-context-bounds))))
+      (if (and bds (< (car bds) (cdr bds)))
+          (astyle-region (car bds) (cdr bds))
+        (astyle-buffer))))
+
+  ;; ----- Utility helpers -----
+  (defun my/preline-had-empty-braces-p (preline)
+    "Did PRELINE contain an inline empty block like \"{ }\" (spaces allowed)?"
+    (and preline (string-match-p "{[ \t]*}" preline)))
+
+  (defun my/closing-brace-indent-pos-from (anchor)
+    "From ANCHOR line, find the line whose first non-space is '}'.
+Search current line, then next, then previous. Return position at its indentation, or nil."
+    (save-excursion
+      (goto-char anchor)
+      (beginning-of-line)
+      (let ((try (lambda ()
+                   (back-to-indentation)
+                   (when (eq (char-after) ?}) (point)))))
+        (or (funcall try)
+            (progn (forward-line 1) (funcall try))
+            (progn (forward-line -2) (funcall try))))))
+
+  ;; ----- Keys -----
+  (defun my/astyle-tab (arg)
+    "TAB: astyle region if active; else normal indent."
+    (interactive "P")
+    (if (use-region-p)
+        (astyle-region (region-beginning) (region-end))
+      (indent-for-tab-command arg)))
+
+  (defun my/astyle-backtab ()
+    "S-TAB: format whole buffer with astyle."
+    (interactive)
+    (astyle-buffer))
+
+  (defun my/astyle-ret (_arg)
+    "RET behavior:
+- Region active: no newline; format class/ns/defun context.
+- No region: newline+indent, format context, then place point:
+    • If we split inline \"{}\" on the pre-RET line → go to the '}' line.
+    • Else → stay on the inner line and indent it (same as pressing TAB)."
+    (interactive "P")
+    (if (use-region-p)
+        (my/astyle-format-context-or-buffer)
+      (let* ((preline (buffer-substring-no-properties
+                       (line-beginning-position) (line-end-position)))
+             (split-empty-braces (my/preline-had-empty-braces-p preline)))
+        ;; 1) Insert newline; point is now on the inner line.
+        (electric-newline-and-maybe-indent)
+        (when my/astyle-after-newline
+          ;; 2) Anchor inner line *after* newline, then format context.
+          (let ((inner-bol (save-excursion (beginning-of-line) (point-marker))))
+            (set-marker-insertion-type inner-bol nil) ;; keep at BOL even if text is inserted
+            (my/astyle-format-context-or-buffer)
+            (cond
+             (split-empty-braces
+              ;; Jump to the '}' line if we split {}.
+              (let ((pos (my/closing-brace-indent-pos-from inner-bol)))
+                (goto-char (or pos inner-bol))
+                (back-to-indentation)))
+             (t
+              ;; Stay on inner line and indent it (simulate pressing TAB).
+              (goto-char inner-bol)
+              (indent-according-to-mode)
+              (back-to-indentation))))
+          ;; cleanup
+          ))))
+
+  (defun my/astyle-keys-setup ()
+    (local-set-key (kbd "<tab>")      #'my/astyle-tab)
+    (local-set-key (kbd "<backtab>")  #'my/astyle-backtab)  ;; Shift-Tab
+    (local-set-key (kbd "RET")        #'my/astyle-ret)
+    (local-set-key (kbd "<return>")   #'my/astyle-ret)
+    (local-set-key (kbd "C-c C-f")    #'astyle-buffer)
+    (local-set-key (kbd "C-c C-r")    #'astyle-region))
+
+  :hook ((c-ts-mode   . my/astyle-keys-setup)
+         (c++-ts-mode . my/astyle-keys-setup)))
 
 ;; quelpa
 (use-package quelpa-use-package)
