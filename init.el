@@ -684,19 +684,28 @@ body { max-width: 900px; margin: auto; padding: 2em; }
 ;; cuda-mode
 (use-package cuda-mode)
 
-;; astyle + context-aware RET with correct inner-line indent (C/C++ TS modes)
+;; astyle + context-aware RET/TAB for C/C++ Tree-sitter modes
+;; - Formats class/namespace/function context so member funcs keep class indent
+;; - RET (via command remap, not raw key):
+;;   * Region active → NO newline; format context only
+;;   * No region:
+;;       - If pre-RET line had inline "{}" → split & jump to '}' line
+;;       - Else → land on inner line and indent it (as if pressing TAB)
+;; - TAB: format active region; else normal indent
+;; - S-TAB: format whole buffer
+;; - IMPORTANT: RET is NOT bound directly; we remap newline commands so popups keep their RET
 (use-package astyle
   :ensure t
   :when (executable-find "astyle")
   :init
   (setq astyle-default-rc-name ".astylerc"
-        astyle-default-args '("--quiet"))
+        astyle-default-args '("--quiet"))  ;; quiet like suffix=none
 
   :preface
   (defvar my/astyle-after-newline t
     "If non-nil, RET formats best context (class/ns/defun) in TS C/C++ buffers.")
 
-  ;; ----- Tree-sitter helpers -----
+  ;; ---------- Tree-sitter helpers for picking formatting scope ----------
   (defun my/ts-ancestor-of-type (node types)
     "Return first ancestor of NODE whose type is in TYPES (strings), or nil."
     (while (and node (not (member (treesit-node-type node) types)))
@@ -705,7 +714,7 @@ body { max-width: 900px; margin: auto; padding: 2em; }
 
   (defun my/astyle-context-bounds ()
     "Return (BEG . END) for best formatting context at point.
-Order: class/struct > namespace > function. Fallback: nil."
+Order: class/struct > namespace > function. Fallback: nil (caller uses buffer)."
     (when (and (fboundp 'treesit-node-at) (treesit-available-p))
       (let* ((node (treesit-node-at (point)))
              (class-like (my/ts-ancestor-of-type node '("class_specifier" "struct_specifier")))
@@ -725,14 +734,14 @@ Order: class/struct > namespace > function. Fallback: nil."
           (astyle-region (car bds) (cdr bds))
         (astyle-buffer))))
 
-  ;; ----- Utility helpers -----
+  ;; ---------- Small helpers ----------
   (defun my/preline-had-empty-braces-p (preline)
-    "Did PRELINE contain an inline empty block like \"{ }\" (spaces allowed)?"
+    "Return non-nil if PRELINE contains inline empty block like \"{ }\"."
     (and preline (string-match-p "{[ \t]*}" preline)))
 
   (defun my/closing-brace-indent-pos-from (anchor)
-    "From ANCHOR line, find the line whose first non-space is '}'.
-Search current line, then next, then previous. Return position at its indentation, or nil."
+    "From ANCHOR line, find a line whose first non-space is '}'.
+Search current line, then next, then previous. Return pos at its indentation, or nil."
     (save-excursion
       (goto-char anchor)
       (beginning-of-line)
@@ -743,25 +752,26 @@ Search current line, then next, then previous. Return position at its indentatio
             (progn (forward-line 1) (funcall try))
             (progn (forward-line -2) (funcall try))))))
 
-  ;; ----- Keys -----
+  ;; ---------- Keys ----------
   (defun my/astyle-tab (arg)
     "TAB: astyle region if active; else normal indent."
     (interactive "P")
     (if (use-region-p)
-        (astyle-region (region-beginning) (region-end))
+        ;; (astyle-region (region-beginning) (region-end))
+        (my/astyle-ret arg)
       (indent-for-tab-command arg)))
 
   (defun my/astyle-backtab ()
-    "S-TAB: format whole buffer with astyle."
+    "Shift-TAB: format whole buffer with astyle."
     (interactive)
     (astyle-buffer))
 
   (defun my/astyle-ret (_arg)
-    "RET behavior:
-- Region active: no newline; format class/ns/defun context.
-- No region: newline+indent, format context, then place point:
-    • If we split inline \"{}\" on the pre-RET line → go to the '}' line.
-    • Else → stay on the inner line and indent it (same as pressing TAB)."
+    "RET behavior (invoked via command remap, not a raw <return> binding):
+- If region active: NO newline; format class/ns/defun context.
+- If no region: newline+indent, format context, then place point:
+    • If pre-RET line had inline \"{}\" → jump to '}' line.
+    • Else → stay on inner line and indent it (like pressing TAB)."
     (interactive "P")
     (if (use-region-p)
         (my/astyle-format-context-or-buffer)
@@ -773,7 +783,7 @@ Search current line, then next, then previous. Return position at its indentatio
         (when my/astyle-after-newline
           ;; 2) Anchor inner line *after* newline, then format context.
           (let ((inner-bol (save-excursion (beginning-of-line) (point-marker))))
-            (set-marker-insertion-type inner-bol nil) ;; keep at BOL even if text is inserted
+            (set-marker-insertion-type inner-bol nil) ;; stick to BOL
             (my/astyle-format-context-or-buffer)
             (cond
              (split-empty-braces
@@ -782,20 +792,32 @@ Search current line, then next, then previous. Return position at its indentatio
                 (goto-char (or pos inner-bol))
                 (back-to-indentation)))
              (t
-              ;; Stay on inner line and indent it (simulate pressing TAB).
+              ;; Stay on inner line and indent (simulate TAB).
               (goto-char inner-bol)
               (indent-according-to-mode)
               (back-to-indentation))))
-          ;; cleanup
+          ;; marker cleaned by GC
           ))))
 
   (defun my/astyle-keys-setup ()
-    (local-set-key (kbd "<tab>")      #'my/astyle-tab)
-    (local-set-key (kbd "<backtab>")  #'my/astyle-backtab)  ;; Shift-Tab
-    (local-set-key (kbd "RET")        #'my/astyle-ret)
-    (local-set-key (kbd "<return>")   #'my/astyle-ret)
-    (local-set-key (kbd "C-c C-f")    #'astyle-buffer)
-    (local-set-key (kbd "C-c C-r")    #'astyle-region))
+    ;; TAB / S-TAB
+    (local-set-key (kbd "<tab>")     #'my/astyle-tab)
+    (local-set-key (kbd "<backtab>") #'my/astyle-backtab)
+
+    ;; DO NOT bind raw RET; instead, remap newline commands in this buffer.
+    ;; This lets popups (e.g., lsp-ui-peek) keep their own RET.
+    (dolist (cmd '(newline newline-and-indent
+                    electric-newline-and-maybe-indent
+                    reindent-then-newline-and-indent))
+      (local-set-key (vector 'remap cmd) #'my/astyle-ret))
+
+    ;; (Optional) unbind raw RET just in case a mode map had it
+    (local-set-key (kbd "RET") nil)
+    (local-set-key (kbd "<return>") nil)
+
+    ;; Keep quick astyle keys:
+    (local-set-key (kbd "C-c C-f")   #'astyle-buffer)
+    (local-set-key (kbd "C-c C-r")   #'astyle-region))
 
   :hook ((c-ts-mode   . my/astyle-keys-setup)
          (c++-ts-mode . my/astyle-keys-setup)))
