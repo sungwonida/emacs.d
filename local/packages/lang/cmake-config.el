@@ -30,5 +30,9 @@
 ;;    - Module/helper files:
 (add-to-list 'auto-mode-alist '("\\.cmake\\'" . cmake-ts-mode))
 
+(add-hook 'cmake-ts-mode-hook
+          (lambda ()
+            (setq-local cmake-ts-mode-indent-offset 4)))
+
 (provide 'cmake-config)
 ;;; cmake-config.el ends here
