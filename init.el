@@ -150,9 +150,22 @@
   :bind ("C-c g g" . helm-git-grep-at-point))
 
 ;; helm-ag
+(defvar my/search-ignores '("svnet_output" "*.min.js" "compile_commands.json"))
+
+(defun my/helm-ag-options-for (backend)
+  (pcase backend
+    ('ag (mapconcat (lambda (p)
+                      (format "--ignore=%s" (shell-quote-argument p)))
+                    my/search-ignores " "))
+    ('rg (mapconcat (lambda (p)
+                      (format "-g %s" (shell-quote-argument (concat "!" p))))
+                    my/search-ignores " "))))
+
 (use-package helm-ag
   :custom
-  (helm-ag-insert-at-point 'symbol))
+  (helm-ag-insert-at-point 'symbol)
+  (helm-ag-use-grep-ignore-list nil)
+  (helm-ag-command-option (my/helm-ag-options-for 'ag)))
 
 ;; helm-descbinds
 (use-package helm-descbinds
