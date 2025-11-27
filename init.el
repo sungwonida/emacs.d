@@ -57,6 +57,11 @@
 ;; Configure straight.el (without use-package)
 (setq straight-use-package-by-default t)  ; Replace the use-package call
 
+;; Prefer reusing the selected window for anything that uses display-buffer.
+(setq display-buffer-base-action
+      '((display-buffer-reuse-window
+         display-buffer-same-window)))
+
 ;; helm
 (use-package helm
   :config
