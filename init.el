@@ -519,11 +519,18 @@
   :init
   (projectile-mode +1)
   (setq projectile-switch-project-action #'projectile-vc)
+
   :bind (:map projectile-mode-map
-              ("s-p" . projectile-command-map)
-              ("C-c p" . projectile-command-map)
+              ("s-p"        . projectile-command-map)
+              ("C-c p"      . projectile-command-map)
               ("C-c p s s " . helm-ag)
-              ("C-c p s r " . helm-ag-project-root)))
+              ("C-c p s r " . helm-ag-project-root))
+
+  :config
+  (add-to-list 'display-buffer-alist
+               '("\\`\\*projectile-files-errors\\*\\'"
+                 (display-buffer-no-window)
+                 (allow-no-window . t))))
 
 ;; CMake
 (setq cmake-tab-width 4)
