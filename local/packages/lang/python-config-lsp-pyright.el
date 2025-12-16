@@ -31,6 +31,26 @@
   :config
   (setq lsp-pyright-langserver-command (my/pyright-command)))
 
+(with-eval-after-load 'lsp-mode
+  ;; lsp-mode clones local clients for TRAMP by default; that can bake in local
+  ;; absolute paths (e.g., ~/.emacs.d/.cache/lsp/...), which won't exist remotely.
+  (setq lsp-auto-register-remote-clients nil)
+
+  (with-eval-after-load 'lsp-pyright
+    ;; lsp-pyright recommends setting this to "pyright" (or "basedpyright") locally.
+    (setq lsp-pyright-langserver-command "pyright")
+
+    (lsp-register-client
+     (make-lsp-client
+      :new-connection
+      (lsp-tramp-connection
+       (lambda ()
+         '("pyright-langserver" "--stdio")))
+      :major-modes '(python-mode python-ts-mode)
+      :remote? t
+      :server-id 'pyright-tramp
+      :priority 3))))
+
 ;;;; 2.  Python helpers ───────────────────────────────────────────────────────
 (defun my/python-common-setup ()
   "Things I want in both `python-mode' and `python-ts-mode'."
