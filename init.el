@@ -405,6 +405,14 @@
   ("C-c v y" . magit-show-refs-popup)
   ("C-c v l" . magit-log-head))
 
+(defun my-magit-log-with-git-dir (gitdir)
+  "Show Magit log using GITDIR as --git-dir for this invocation."
+  (interactive "DGit dir (the directory that contains HEAD, objects/, refs/, ...): ")
+  (let ((magit-git-global-arguments
+         (cons (concat "--git-dir=" (expand-file-name gitdir))
+               magit-git-global-arguments)))
+    (call-interactively #'magit-log-all)))
+
 ;; exec-path-from-shell
 (use-package exec-path-from-shell
   :config
