@@ -719,25 +719,16 @@ body { max-width: 900px; margin: auto; padding: 2em; }
 ;; cuda-mode
 (use-package cuda-mode)
 
-;; Simpler RET/TAB behavior for C/C++ TS modes
-;; - RET (remapped, not raw key):
-;;   * Region active → NO newline; astyle on class/ns/defun (contextual)
-;;   * No region:
-;;       - If pre-RET line has inline "{}" → split '}' to next line & jump to it (indent only)
-;;       - Else → newline, indent inner line, and reindent ONLY the enclosing {…} block up to point
-;;         (so earlier lines like a;/b; align; lines after the block, e.g., `return;`, don’t move)
-;; - TAB: astyle region if active; else normal indent
-;; - S-TAB: astyle whole buffer
-;; - RET is NOT bound directly; we remap newline commands so popups (lsp-ui-peek) keep their RET.
+;; Astyle in C/C++ modes: trigger only on TAB when region is active.
+;; Plain TAB/RET keep normal mode behavior.
 (use-package astyle
   :ensure t
   :when (executable-find "astyle")
   :init
   (setq astyle-default-rc-name ".astylerc"
-        astyle-default-args '("--quiet"))
+        astyle-custom-args '("--quiet"))
 
   :preface
-  ;; ----- (Optional) context for region-formatting with astyle -----
   (defun my/ts-ancestor-of-type (node types)
     (while (and node (not (member (treesit-node-type node) types)))
       (setq node (treesit-parent node)))
@@ -745,136 +736,111 @@ body { max-width: 900px; margin: auto; padding: 2em; }
 
   (defun my/astyle-context-bounds ()
     "Return (BEG . END) of best context: class/struct > namespace > function."
-    (when (and (fboundp 'treesit-node-at) (treesit-available-p))
-      (let* ((node (treesit-node-at (point)))
-             (class-like (my/ts-ancestor-of-type node '("class_specifier" "struct_specifier")))
-             (ns-like    (and (not class-like)
-                              (my/ts-ancestor-of-type node '("namespace_definition"))))
-             (func-like  (and (not class-like) (not ns-like)
-                              (my/ts-ancestor-of-type node '("function_definition"))))
-             (target (or class-like ns-like func-like)))
-        (when target
-          (cons (treesit-node-start target)
-                (treesit-node-end target))))))
+    (condition-case nil
+        (when (and (fboundp 'treesit-node-at) (treesit-available-p))
+          (let* ((node (treesit-node-at (point)))
+                 (class-like (my/ts-ancestor-of-type node '("class_specifier" "struct_specifier")))
+                 (ns-like (and (not class-like)
+                               (my/ts-ancestor-of-type node '("namespace_definition"))))
+                 (func-like (and (not class-like) (not ns-like)
+                                 (my/ts-ancestor-of-type node '("function_definition"))))
+                 (target (or class-like ns-like func-like)))
+            (when target
+              (cons (treesit-node-start target)
+                    (treesit-node-end target)))))
+      (error nil)))
 
-  (defun my/astyle-format-context-or-buffer ()
-    (let ((bds (ignore-errors (my/astyle-context-bounds))))
-      (if (and bds (< (car bds) (cdr bds)))
-          (astyle-region (car bds) (cdr bds))
-        (astyle-buffer))))
-
-  ;; ----- Simple helpers (no Tree-sitter required for RET path) -----
-  (defun my/preline-had-empty-braces-p (preline)
-    (and preline (string-match-p "{[ \t]*}" preline)))
-
-  (defun my/split-closing-brace-on-prev-line ()
-    "Move the first '}' on previous line to its own line. Return its indent pos, or nil."
+  (defun my/astyle-defun-bounds ()
+    "Return (BEG . END) of current defun, or nil."
     (save-excursion
-      (forward-line -1)
-      (let ((bol (line-beginning-position))
-            (eol (line-end-position))
-            pos)
-        (goto-char eol)
-        (when (re-search-backward "}" bol t)
-          (insert "\n")
-          (setq pos (point))
-          (back-to-indentation)
-          (indent-according-to-mode)
-          (setq pos (point)))
-        pos)))
+      (condition-case nil
+          (progn
+            (end-of-defun)
+            (let ((end (point)))
+              (beginning-of-defun)
+              (let ((beg (point)))
+                (when (< beg end)
+                  (cons beg end)))))
+        (error nil))))
 
-  (defun my/closing-brace-indent-pos-from (anchor)
-    "From ANCHOR line, find a line whose first non-space is '}'. Return its indent pos or nil."
+  (defun my/astyle-brace-block-bounds ()
+    "Return (BEG . END) of nearest enclosing {...} block, or nil."
     (save-excursion
-      (goto-char anchor)
-      (beginning-of-line)
-      (let ((try (lambda ()
-                   (back-to-indentation)
-                   (when (eq (char-after) ?}) (point)))))
-        (or (funcall try)
-            (progn (forward-line 1) (funcall try))
-            (progn (forward-line -2) (funcall try))))))
+      (condition-case nil
+          (progn
+            (unless (eq (char-after) ?{)
+              (backward-up-list 1))
+            (when (eq (char-after) ?{)
+              (let ((beg (point)))
+                (forward-list 1)
+                (let ((end (point)))
+                  (when (< beg end)
+                    (cons beg end))))))
+        (error nil))))
 
-  (defun my/indent-enclosing-brace-up-to-point ()
-    "Reindent only inside the current {…} block, from first content line up to point."
+  (defun my/astyle-local-bounds ()
+    "Pick a safe local formatting context around point."
+    (or (my/astyle-context-bounds)
+        (my/astyle-defun-bounds)
+        (my/astyle-brace-block-bounds)))
+
+  (defun my/astyle-bounds-at (pos)
+    "Return local astyle bounds at POS, or nil."
     (save-excursion
-      (let ((end (point))
-            (done nil))
-        (condition-case nil
-            (while (not done)
-              (backward-up-list 1)
-              (if (eq (char-after) ?{)
-                  (setq done t)))
-          (error (setq done t)))  ;; no list found
-        (when (eq (char-after) ?{)
-          (forward-line 1)
-          (let ((beg (line-beginning-position)))
-            (when (< beg end)
-              (indent-region beg end)))))))
+      (goto-char pos)
+      (my/astyle-local-bounds)))
 
-  ;; ----- Keys -----
+  (defun my/astyle-valid-bounds-p (bds)
+    "Return non-nil when BDS is a valid (BEG . END) range."
+    (and bds (< (car bds) (cdr bds))))
+
+  (defun my/astyle-bounds-enclose-region-p (bds beg end)
+    "Return non-nil when BDS fully contains BEG..END."
+    (and (my/astyle-valid-bounds-p bds)
+         (<= (car bds) beg)
+         (<= end (cdr bds))))
+
+  (defun my/astyle-region-context-bounds (beg end)
+    "Pick local bounds for formatting BEG..END with indentation context."
+    (let* ((rbeg (min beg end))
+           (rend (max beg end))
+           (end-pos (if (> rend rbeg) (1- rend) rend))
+           (from-beg (my/astyle-bounds-at rbeg))
+           (from-end (my/astyle-bounds-at end-pos))
+           (from-point (my/astyle-local-bounds)))
+      (or (and (my/astyle-bounds-enclose-region-p from-beg rbeg rend) from-beg)
+          (and (my/astyle-bounds-enclose-region-p from-end rbeg rend) from-end)
+          (and (my/astyle-bounds-enclose-region-p from-point rbeg rend) from-point)
+          from-beg
+          from-end
+          from-point)))
+
+  (defun my/astyle-format-region-context (beg end)
+    "Format BEG..END using enclosing context so indentation is preserved."
+    (let ((bds (ignore-errors (my/astyle-region-context-bounds beg end))))
+      (if (my/astyle-valid-bounds-p bds)
+          (progn
+            (save-excursion
+              (astyle-region (car bds) (cdr bds)))
+            t)
+        nil)))
+
   (defun my/astyle-tab (arg)
-    "TAB: astyle region if active; else normal indent."
+    "TAB: format selected region with astyle context; else default TAB."
     (interactive "P")
     (if (use-region-p)
-        (astyle-region (region-beginning) (region-end))
+        (let ((beg (region-beginning))
+              (end (region-end)))
+          (unless (my/astyle-format-region-context beg end)
+            (astyle-region beg end)))
       (indent-for-tab-command arg)))
 
-  (defun my/astyle-backtab ()
-    "Shift-TAB: astyle whole buffer."
-    (interactive)
-    (astyle-buffer))
-
-  (defun my/astyle-ret (_arg)
-    "RET (remapped):
-- Region active → NO newline; astyle class/ns/defun.
-- No region:
-    • If pre-RET line had inline \"{}\" → split '}' to its own line & jump to it (indent only).
-    • Else → newline, indent inner line, and reindent ONLY the enclosing {…} up to point."
-    (interactive "P")
-    (if (use-region-p)
-        (my/astyle-format-context-or-buffer)
-      (let* ((preline (buffer-substring-no-properties
-                       (line-beginning-position) (line-end-position)))
-             (split-empty-braces (my/preline-had-empty-braces-p preline)))
-        ;; Insert newline; point on inner line.
-        (electric-newline-and-maybe-indent)
-        (if split-empty-braces
-            (let* ((inner-bol (save-excursion (beginning-of-line) (point)))
-                   (brace-pos (my/split-closing-brace-on-prev-line))
-                   (target (or brace-pos (my/closing-brace-indent-pos-from inner-bol))))
-              (when target
-                (goto-char target)
-                (back-to-indentation)))
-          ;; Normal block: fix inner line and earlier lines within this block only.
-          (let ((target (save-excursion (beginning-of-line) (point-marker))))
-            (set-marker-insertion-type target nil)
-            (indent-according-to-mode)              ;; inner line
-            (my/indent-enclosing-brace-up-to-point) ;; aligns a;/b; under `if`
-            (goto-char target)
-            (set-marker target nil)
-            (back-to-indentation))))))
-
   (defun my/astyle-keys-setup ()
-    ;; TAB / S-TAB
-    (local-set-key (kbd "<tab>")     #'my/astyle-tab)
-    (local-set-key (kbd "<backtab>") #'my/astyle-backtab)
+    (local-set-key (kbd "<tab>") #'my/astyle-tab))
 
-    ;; Remap newline commands (don’t bind raw RET), so popups keep their own RET.
-    (dolist (cmd '(newline newline-and-indent
-                    electric-newline-and-maybe-indent
-                    reindent-then-newline-and-indent))
-      (local-set-key (vector 'remap cmd) #'my/astyle-ret))
-
-    ;; Safety: ensure raw RET isn’t bound here.
-    (local-set-key (kbd "RET") nil)
-    (local-set-key (kbd "<return>") nil)
-
-    ;; Quick astyle keys:
-    (local-set-key (kbd "C-c C-f")   #'astyle-buffer)
-    (local-set-key (kbd "C-c C-r")   #'astyle-region))
-
-  :hook ((c-ts-mode   . my/astyle-keys-setup)
+  :hook ((c-mode      . my/astyle-keys-setup)
+         (c++-mode    . my/astyle-keys-setup)
+         (c-ts-mode   . my/astyle-keys-setup)
          (c++-ts-mode . my/astyle-keys-setup)))
 
 ;; quelpa
