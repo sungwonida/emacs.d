@@ -60,6 +60,10 @@
 
 (eval-when-compile (require 'use-package))   ;; make sure the macro exists
 
+(with-eval-after-load 'treesit
+  (add-to-list 'treesit-language-source-alist
+               '(yaml . ("https://github.com/ikatyang/tree-sitter-yaml"))))
+
 ;; Install the major mode that wraps the grammar
 (use-package yaml-pro
   :straight t                      ;; or :ensure t if you rely on package.el
