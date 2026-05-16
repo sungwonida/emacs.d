@@ -580,7 +580,15 @@
   (add-to-list 'display-buffer-alist
                '("\\`\\*projectile-files-errors\\*\\'"
                  (display-buffer-no-window)
-                 (allow-no-window . t))))
+                 (allow-no-window . t)))
+
+  (defun my/projectile-reset-root-cache ()
+    "Wipe projectile's in-memory project-root cache.
+Use when projectile incorrectly reports a directory as \"not a project\"
+after a .git (or other root marker) was created mid-session."
+    (interactive)
+    (clrhash projectile-project-root-cache)
+    (message "projectile-project-root-cache cleared")))
 
 ;; CMake
 (setq cmake-tab-width 4)
