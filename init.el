@@ -740,6 +740,34 @@ body { max-width: 900px; margin: auto; padding: 2em; }
                 vc-ignore-dir-regexp
                 tramp-file-name-regexp)))
 
+;; --- Recover from stale SSH masters after sleep/wake or Wi-Fi reconnect ---
+;; When macOS sleeps, the SSH ControlMaster's TCP connection dies but the
+;; master process and its socket file (~/.ssh/control-*) remain. Subsequent
+;; TRAMP operations attach to that zombie master and hang. `tramp-cleanup-
+;; this-connection' alone doesn't help because it only clears Emacs-side
+;; state — the dead master is untouched. This command does both.
+(defun my/tramp-reset-all ()
+  "Tear down all TRAMP connections AND stale SSH ControlMaster sockets.
+Run this when TRAMP hangs reconnecting after a sleep/wake cycle."
+  (interactive)
+  (tramp-cleanup-all-connections)
+  (dolist (sock (file-expand-wildcards "~/.ssh/control-*"))
+    ;; Best-effort: ask each master to exit gracefully. The host arg is
+    ;; required by ssh argument parsing but unused — `-S' supplies the
+    ;; actual socket path.
+    (ignore-errors
+      (call-process "ssh" nil nil nil
+                    "-O" "exit"
+                    "-o" "BatchMode=yes"
+                    "-S" sock
+                    "x"))
+    (when (file-exists-p sock)
+      (ignore-errors (delete-file sock))))
+  (message "TRAMP and SSH ControlMaster state reset. Reconnect normally."))
+
+(global-set-key (kbd "C-c t r") #'my/tramp-reset-all)
+;; -------------------------------------------------------------------------
+
 ;; markdown
 (use-package markdown-mode)
 
