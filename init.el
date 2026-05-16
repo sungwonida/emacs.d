@@ -262,16 +262,51 @@
   :hook
   (octave-mode . my-octave-mode-hook))
 
+;;; --- TRAMP remote-file performance guards --------------------------------
+;; Predicate used by hooks/filters below.
+(defun my/file-is-remote-p () (file-remote-p default-directory))
+
+;; lsp-mode: skip starting LSP on remote buffers (referenced from lsp-mode :hook).
+;; Safe here because the major-mode-hook runs once per buffer; we just elect
+;; not to call lsp-deferred — no mode toggling, no hook recursion.
+(defun my/lsp-deferred-unless-remote ()
+  (unless (my/file-is-remote-p) (lsp-deferred)))
+
+;; magit-auto-revert: filter used in magit :config below — skips remote-tracked buffers.
+(defun my/magit-auto-revert-filter-no-remote (buffer)
+  (and (magit-auto-revert-repository-buffer-p buffer)
+       (not (with-current-buffer buffer
+              (file-remote-p default-directory)))))
+
+;; Disable backups/lockfiles/auto-saves AND the heavy minor modes on remote files.
+;; Done from find-file-hook (one fire per visit) — NOT from each mode's *-mode-hook,
+;; because `define-minor-mode` runs the mode-hook on every toggle, so calling
+;; (flycheck-mode -1) from flycheck-mode-hook would re-fire the hook and recurse
+;; until max-lisp-eval-depth is exceeded.
+(setq remote-file-name-inhibit-locks t)   ; Emacs 28+
+(defun my/disable-heavy-modes-on-remote ()
+  (when (and buffer-file-name (file-remote-p buffer-file-name))
+    ;; backups / lockfiles / autosave — each saves one extra TRAMP roundtrip per save.
+    (setq-local make-backup-files nil)
+    (setq-local create-lockfiles nil)
+    (setq-local auto-save-default nil)
+    (auto-save-mode -1)
+    ;; Disable heavy IDE modes if they were turned on by their globalized counterparts.
+    (when (bound-and-true-p flycheck-mode) (flycheck-mode -1))
+    (when (bound-and-true-p company-mode)  (company-mode -1))))
+(add-hook 'find-file-hook #'my/disable-heavy-modes-on-remote)
+;; -------------------------------------------------------------------------
+
 ;;; --- lsp core -------------------------------------------------------------
 (use-package lsp-mode
   :ensure t
   :commands (lsp lsp-deferred)
-  :hook ((c++-ts-mode    . lsp-deferred)
-         (c-ts-mode      . lsp-deferred)
-         (python-ts-mode . lsp-deferred)
-         (c++-mode       . lsp-deferred)
-         (c-mode         . lsp-deferred)
-         (python-mode    . lsp-deferred))
+  :hook ((c++-ts-mode    . my/lsp-deferred-unless-remote)
+         (c-ts-mode      . my/lsp-deferred-unless-remote)
+         (python-ts-mode . my/lsp-deferred-unless-remote)
+         (c++-mode       . my/lsp-deferred-unless-remote)
+         (c-mode         . my/lsp-deferred-unless-remote)
+         (python-mode    . my/lsp-deferred-unless-remote))
   :init
   (setq lsp-auto-guess-root t)
   :config
@@ -343,9 +378,6 @@
                  (company-mode t)
                  (define-key company-mode-map [backtab] 'company-complete)
                  (define-key company-active-map [tab] 'company-complete-selection)))
-  (python-mode-hook . (lambda ()
-                        (when (file-remote-p default-directory)
-                          (company-mode -1))))
   :config
   (setq company-idle-delay 0
         company-minimum-prefix-length 1
@@ -404,7 +436,7 @@
   (setq magit-refresh-verbose t)
   (setq magit-refresh-status-buffer nil)
   (setq auto-revert-buffer-list-filter
-        'magit-auto-revert-repository-buffer-p)
+        #'my/magit-auto-revert-filter-no-remote)
   :bind
   ("C-c v s" . magit-status)
   ("C-c v y" . magit-show-refs-popup)
@@ -499,13 +531,13 @@
   (mydired-sort))
 
 (add-hook 'dired-mode-hook
-          (function (lambda ()
-     		      (load "dired-x")
-                      ;; Set dired-x buffer-local variables here.  For example:
-                      (setq dired-omit-files-p t)
-     		      (setq dired-omit-files "^\\.?#\\|^\\.$\\|^\\.\\.$\\|^\\..+$")
-     		      (setq dired-omit-extensions '("~"))
-                      )))
+          (lambda ()
+            (unless (file-remote-p default-directory)
+              (load "dired-x")
+              ;; Set dired-x buffer-local variables here.  For example:
+              (setq dired-omit-files-p t)
+              (setq dired-omit-files "^\\.?#\\|^\\.$\\|^\\.\\.$\\|^\\..+$")
+              (setq dired-omit-extensions '("~")))))
 
 (defun my-dired-toggle-human-readable ()
   "Toggle human-readable file sizes in current Dired buffer."
@@ -700,7 +732,13 @@ body { max-width: 900px; margin: auto; padding: 2em; }
 ;; use the customizations in ~/.ssh/config
 (customize-set-variable 'tramp-use-ssh-controlmaster-options "~/.ssh/config")
 (with-eval-after-load 'tramp
-  (add-to-list 'tramp-remote-path 'tramp-own-remote-path))
+  (add-to-list 'tramp-remote-path 'tramp-own-remote-path)
+  ;; Skip VC entirely on remote paths (canonical TRAMP manual fix).
+  ;; Local VC is unaffected; remote dirs no longer trigger .git/.hg/.svn/... probes.
+  (setq vc-ignore-dir-regexp
+        (format "\\(%s\\)\\|\\(%s\\)"
+                vc-ignore-dir-regexp
+                tramp-file-name-regexp)))
 
 ;; markdown
 (use-package markdown-mode)
