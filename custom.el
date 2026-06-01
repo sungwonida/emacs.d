@@ -7,16 +7,10 @@
  '(ac-auto-start nil)
  '(c-basic-offset 4)
  '(c-default-style
-   '((c-mode . "gnu")
-     (c++-mode . "gnu")
-     (java-mode . "java")
-     (awk-mode . "awk")
-     (other . "gnu")))
+   '((c-mode . "gnu") (c++-mode . "gnu") (java-mode . "java")
+     (awk-mode . "awk") (other . "gnu")))
  '(conda-anaconda-home
-   (concat
-    (file-name-as-directory
-     (getenv "HOME"))
-    "miniconda3"))
+   (concat (file-name-as-directory (getenv "HOME")) "miniconda3"))
  '(cua-enable-cua-keys nil)
  '(cua-mode t nil (cua-base))
  '(cua-rectangle-mark-key [C-M-return])
@@ -27,6 +21,7 @@
  '(indent-tabs-mode nil)
  '(ns-alternate-modifier 'super)
  '(ns-command-modifier 'meta)
+ '(package-vc-selected-packages '((ghostel :url "https://github.com/dakra/ghostel")))
  '(show-paren-mode t)
  '(tab-width 4))
 (custom-set-faces

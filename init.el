@@ -779,6 +779,14 @@ Run this when TRAMP hangs reconnecting after a sleep/wake cycle."
   :hook (eshell-mode . (lambda ()
     		             (define-key eshell-mode-map (kbd "C-c C-h") 'helm-eshell-history))))
 
+;; ghostel
+(use-package ghostel
+  :straight (ghostel :type git :host github :repo "dakra/ghostel"
+                     :files (:defaults
+                             "etc" "src"
+                             "build.zig" "build.zig.zon"
+                             "build.sh" "Makefile")))
+
 ;; cuda-mode
 (use-package cuda-mode)
 
