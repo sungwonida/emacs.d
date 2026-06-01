@@ -733,26 +733,41 @@ body { max-width: 900px; margin: auto; padding: 2em; }
                 tramp-file-name-regexp)))
 
 ;; --- Recover from stale SSH masters after sleep/wake or Wi-Fi reconnect ---
-;; When macOS sleeps, the SSH ControlMaster's TCP connection dies but the
-;; master process and its socket file (~/.ssh/control-*) remain. Subsequent
-;; TRAMP operations attach to that zombie master and hang. `tramp-cleanup-
-;; this-connection' alone doesn't help because it only clears Emacs-side
-;; state — the dead master is untouched. This command does both.
+;; When macOS sleeps (or Wi-Fi/VPN flaps), a ControlMaster's TCP dies but the
+;; master process and its socket file remain. A subsequent TRAMP op attaches
+;; to that zombie master and hangs until ssh keepalives notice (~minutes), or
+;; trips over a dead socket FILE that delete-process left behind ("disabling
+;; multiplexing" noise) and stalls connection setup.
+;;
+;; IMPORTANT: with `tramp-use-connection-share' = t (the macOS default), TRAMP
+;; injects its OWN "-o ControlPath=tramp.%C" and on macOS that is a RELATIVE
+;; path, so TRAMP's masters live at `tramp.*' under `temporary-file-directory'
+;; (e.g. ~/.cache/emacs/) — NOT in ~/.ssh.  The ~/.ssh/control-* sockets only
+;; hold the ProxyJump *hop* masters (those use ~/.ssh/config).  The old version
+;; of this command cleaned only ~/.ssh/control-*, so for a DIRECT host like
+;; `data' it never removed TRAMP's actual stale socket.  Clean both locations.
 (defun my/tramp-reset-all ()
   "Tear down all TRAMP connections AND stale SSH ControlMaster sockets.
-Run this when TRAMP hangs reconnecting after a sleep/wake cycle."
+Run this when TRAMP hangs reconnecting after a sleep/wake cycle, or when a
+remote that previously worked suddenly stalls mid-operation."
   (interactive)
+  ;; 1. Drop Emacs-side connection state + cached connection properties.
   (tramp-cleanup-all-connections)
-  (dolist (sock (file-expand-wildcards "~/.ssh/control-*"))
-    ;; Best-effort: ask each master to exit gracefully. The host arg is
-    ;; required by ssh argument parsing but unused — `-S' supplies the
-    ;; actual socket path.
+  ;; 2. Gracefully exit, then unlink, every ControlMaster socket in both
+  ;;    locations.  `-O exit' is a local control-socket op (it does not touch
+  ;;    the network), so it returns fast even on a TCP-dead master; the `x'
+  ;;    host arg is required by ssh's parser but unused — `-S' supplies the
+  ;;    real path.
+  (dolist (sock (append
+                 (file-expand-wildcards
+                  (expand-file-name "tramp.*" temporary-file-directory))
+                 (when (bound-and-true-p small-temporary-file-directory)
+                   (file-expand-wildcards
+                    (expand-file-name "tramp.*" small-temporary-file-directory)))
+                 (file-expand-wildcards (expand-file-name "~/.ssh/control-*"))))
     (ignore-errors
       (call-process "ssh" nil nil nil
-                    "-O" "exit"
-                    "-o" "BatchMode=yes"
-                    "-S" sock
-                    "x"))
+                    "-O" "exit" "-o" "BatchMode=yes" "-S" sock "x"))
     (when (file-exists-p sock)
       (ignore-errors (delete-file sock))))
   (message "TRAMP and SSH ControlMaster state reset. Reconnect normally."))
