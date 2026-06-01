@@ -775,6 +775,41 @@ remote that previously worked suddenly stalls mid-operation."
 (global-set-key (kbd "C-c t r") #'my/tramp-reset-all)
 ;; -------------------------------------------------------------------------
 
+;;; --- Stop helm-find-files from auto-connecting (freezing) on remote paths ---
+;; helm computes candidates from a 0.05s idle timer as you type, and
+;; `helm-find-files-get-candidates' deliberately binds `non-essential' to nil so
+;; TRAMP OPENS the connection mid-typing (helm's own comment there: "the tramp
+;; connection is triggered").  Inside that timer the minibuffer is occupied, so
+;; any slow open — unreachable ProxyJump, password prompt, dead ControlMaster —
+;; freezes ALL of Emacs until C-g.  Every TRAMP hang we hit entered through here
+;; (`timer-event-handler' -> helm-check-minibuffer-input -> file-directory-p).
+;;
+;; TRAMP already refuses to open a NEW connection when `non-essential' is non-nil:
+;; `tramp-maybe-open-connection' does (unless (tramp-connectable-p vec)
+;; (throw 'non-essential ...)).  Rather than fight helm's internal nil binding at
+;; each probe site (helm-ff-set-pattern, helm-ff--transform-pattern-for-completion,
+;; an inner expand-file-name, ...), gate the single chokepoint they all funnel
+;; through — `tramp-connectable-p' — for the duration of candidate computation:
+;; report a not-yet-open host as non-connectable.  Net effect: typing a remote
+;; path never auto-connects; the connection opens when you press RET, a normal
+;; command context where TRAMP can prompt for a password and C-g aborts cleanly.
+;; Already-open connections still complete, and host-name completion (/ssh:<TAB>,
+;; which never connects) is unaffected.
+(defvar my/ff-completing nil
+  "Non-nil while helm is computing `find-files' candidates.")
+(defun my/ff-completing-around (orig &rest args)
+  (let ((my/ff-completing t)) (apply orig args)))
+(defun my/tramp-connectable-p-around (orig vec-or-filename)
+  "During helm completion, treat an unopened host as non-connectable."
+  (if my/ff-completing
+      (let ((non-essential t)) (funcall orig vec-or-filename))
+    (funcall orig vec-or-filename)))
+(with-eval-after-load 'tramp
+  (advice-add 'tramp-connectable-p :around #'my/tramp-connectable-p-around))
+(with-eval-after-load 'helm-files
+  (advice-add 'helm-find-files-get-candidates :around #'my/ff-completing-around))
+;; -------------------------------------------------------------------------
+
 ;; markdown
 (use-package markdown-mode)
 
