@@ -723,8 +723,6 @@ body { max-width: 900px; margin: auto; padding: 2em; }
 
 ;; tramp
 (setq tramp-verbose 1)
-;; use the customizations in ~/.ssh/config
-(customize-set-variable 'tramp-use-ssh-controlmaster-options "~/.ssh/config")
 (with-eval-after-load 'tramp
   (add-to-list 'tramp-remote-path 'tramp-own-remote-path)
   ;; Skip VC entirely on remote paths (canonical TRAMP manual fix).
