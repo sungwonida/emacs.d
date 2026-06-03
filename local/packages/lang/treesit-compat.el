@@ -23,7 +23,8 @@
               (js-mode         . js-ts-mode)
               (typescript-mode . typescript-ts-mode)
               (sh-mode         . bash-ts-mode)
-              (cmake-mode      . cmake-ts-mode)))
+              (cmake-mode      . cmake-ts-mode)
+              (lua-mode        . lua-ts-mode)))
 
       ;; 3. Where grammars aren’t bundled with Emacs, tell treesit-auto
       (setq treesit-language-source-alist
@@ -32,7 +33,8 @@
               (python  "https://github.com/tree-sitter/tree-sitter-python")
               (yaml    "https://github.com/ikatyang/tree-sitter-yaml")
               (bash    "https://github.com/tree-sitter/tree-sitter-bash")
-              (cmake   "https://github.com/uyha/tree-sitter-cmake")))
+              (cmake   "https://github.com/uyha/tree-sitter-cmake")
+              (lua     "https://github.com/tree-sitter-grammars/tree-sitter-lua")))
 
       ;; 4. (Optional) richer highlighting: 0–4, higher = more faces
       (setq treesit-font-lock-level 4))
