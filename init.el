@@ -400,10 +400,9 @@
 (use-package helm-lsp
   :commands helm-lsp-workspace-symbol)
 
-(use-package which-key
-  :ensure t
-  :config
-  (which-key-mode))
+;; NOTE: which-key is intentionally not enabled: helm-descbinds-mode
+;; (enabled above) replaces the C-h-after-prefix flow and hard-blocks
+;; `which-key-mode' (see `helm-descbinds-disable-which-key').
 
 ;; company-box
 (use-package company-box
