@@ -212,6 +212,18 @@
 (set-language-environment "Korean")
 (prefer-coding-system 'utf-8)
 
+;;; --- macOS 한글 IME 단축키 호환 ----------------------------------------------
+;; 시스템 한글(2벌식) 입력 중에도 수식키(C-/M-/s-)와 프리픽스 시퀀스(C-x o,
+;; M-s h r, C-c v l ...)가 동작하도록 하는 모듈.  key-translation-map 자모
+;; 역번역 + sis(macism) 입력소스 자동전환.  메커니즘/한계/확장법은 모듈
+;; Commentary 참고: local/packages/macos/korean-ime-keys.el
+(use-package korean-ime-keys
+  :if (eq system-type 'darwin)
+  :straight nil
+  :load-path (lambda () (list local-packages-dir))
+  :demand t)
+;; ---------------------------------------------------------------------------
+
 (use-package nerd-icons
   :ensure t)
 
@@ -1098,7 +1110,11 @@ PROCESSOR-FN is a function that takes a file path as argument (defaults to `gpte
     filtered-files))
 
 ;; kill-current-buffer
-(bind-key* (kbd "C-S-k") 'kill-current-buffer)
+;; 주의: C-S-k는 영문(ABC) 모드에서만 동작. 한글 IME에서는 NS 포트가
+;; Ctrl+Shift+k의 shift를 소실시켜 Ctrl+k와 동일한 이벤트(C-ㅏ)가 됨
+;; (실측 확인, elisp 복구 불가) → 한/영 공통으로 동작하는 s-k(Option+k) 병행.
+(bind-key* (kbd "C-S-k") 'kill-current-buffer)  ; 영문 모드 전용
+(bind-key* (kbd "s-k") 'kill-current-buffer)    ; 한/영 공통 (s-ㅏ→s-k 번역으로 생존)
 
 ;; helpful
 (use-package helpful
