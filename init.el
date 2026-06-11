@@ -1205,13 +1205,8 @@ overlay-start(=터미널 커서)부터 preedit 표시폭 이상이 될 때까지
          (c-ts-mode   . my/astyle-keys-setup)
          (c++-ts-mode . my/astyle-keys-setup)))
 
-;; quelpa
-(use-package quelpa-use-package)
-
 ;; topsy
 (use-package topsy
-  :after quelpa-use-package
-  :quelpa (topsy :fetcher github :repo "alphapapa/topsy.el")
   :hook
   (magit-section-mode . topsy-mode))
 

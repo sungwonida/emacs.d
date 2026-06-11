@@ -21,7 +21,6 @@
  '(indent-tabs-mode nil)
  '(ns-alternate-modifier 'super)
  '(ns-command-modifier 'meta)
- '(package-vc-selected-packages '((ghostel :url "https://github.com/dakra/ghostel")))
  '(show-paren-mode t)
  '(tab-width 4))
 (custom-set-faces
