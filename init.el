@@ -853,9 +853,15 @@ remote that previously worked suddenly stalls mid-operation."
                              "build.zig" "build.zig.zon"
                              "build.sh" "Makefile"))
   :custom
-  ;; copy-mode를 vterm-copy-mode처럼: M-w는 복사 후 모드 유지, 종료는
-  ;; C-c C-t로만. fast-exit가 t면 M-w/아무 키나 누를 때 빠져나가버린다.
-  (ghostel-readonly-fast-exit nil))
+  ;; copy-mode를 vterm-copy-mode처럼: M-w는 복사 후 모드 유지(fast-exit가
+  ;; t면 M-w/아무 self-insert 키나 RET에서 빠져나가버린다). 종료는 q로만.
+  (ghostel-readonly-fast-exit nil)
+  :config
+  ;; fast-exit가 nil이면 copy/emacs 모드는 `ghostel-readonly-mode-map'을 쓰는데
+  ;; 이 맵엔 q 바인딩이 없다(읽기전용이라 q는 그냥 무시됨). q 하나만 종료
+  ;; 트리거로 추가 — fast-exit t의 "아무 키나 종료"는 피하면서 q는 살린다.
+  ;; (이 맵은 copy/emacs 모드가 공유하므로 emacs 모드에서도 q로 나간다.)
+  (define-key ghostel-readonly-mode-map (kbd "q") #'ghostel-readonly-exit))
 
 ;;; --- 터미널(vterm/ghostel) IME·렌더링 수정 모듈 -----------------------------
 ;; macOS NS 포트의 IME preedit 3종 수정(0열 점프 / 커서 위치 / 폭 밀림).
