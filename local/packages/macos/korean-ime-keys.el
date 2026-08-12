@@ -16,6 +16,8 @@
 ;;      수식 조합 목록(`my/korean-translated-modifier-combos')을 순회하므로
 ;;      조합 추가는 리스트 한 줄이면 된다.  수식 없는 맨자모는 매칭되지 않아
 ;;      한글 입력/조합은 그대로 유지된다.
+;;      자모가 아닌 자리(grave -> ₩)는 별도 테이블
+;;      `my/korean-layout-punct->latin' 이 같은 방식으로 처리한다.
 ;;
 ;;   2. sis (smart-input-source) + macism (프리픽스 뒤 '수식 없는 연속 키'):
 ;;      C-x o 의 o, M-s h r 의 h r 같은 키는 IME가 한글로 조합해 버리는데,
@@ -72,24 +74,52 @@
 \(super) = Option 키(custom.el에서 ns-alternate-modifier='super).
 super는 shift와 달리 수식 비트가 보존되므로 한글 모드에서 정상 동작한다.")
 
-(defun my/install-dubeolsik-key-translations ()
-  "`my/korean-translated-modifier-combos' × `my/dubeolsik-jamo->latin' 의 모든
-<수식>-<자모> 를 <수식>-<latin> 으로 `key-translation-map' 에 등록한다.
-수식 없는 맨자모는 건드리지 않으므로 한글 self-insert 는 영향 없음.
+(defun my/install-key-translations (table combos)
+  "COMBOS × TABLE 의 모든 <수식>-<한글레이아웃 글자> 를 <수식>-<latin> 으로
+`key-translation-map' 에 등록한다.  TABLE 은 (한글자 . latin자) alist.
+수식 없는 맨글자는 건드리지 않으므로 한글 self-insert 는 영향 없음.
 shift 포함 콤보는 Emacs 정규형이 'S- + 소문자'(C-S-k)이므로 latin을 소문자로
 정규화한다.  단, 이 빌드의 NS 포트는 caseless 자모에서 shift 비트를 소실시킴이
 실측으로 확인됨(한글모드 Ctrl+Shift+k == Ctrl+k, 둘 다 C-ㅏ로 도착) — 따라서
 shift 콤보 엔트리는 실제로는 발화하지 않는 무해한 보험용이다.  한글모드에서
 C-S- 단축키가 필요하면 비-shift 콤보(s-k 등)를 병행 바인딩할 것."
-  (dolist (combo my/korean-translated-modifier-combos)
-    (dolist (pair my/dubeolsik-jamo->latin)
+  (dolist (combo combos)
+    (dolist (pair table)
       (let ((latin (if (memq 'shift combo)
                        (downcase (cdr pair))
                      (cdr pair))))
         (define-key key-translation-map
                     (vector (append combo (list (car pair))))
                     (vector (append combo (list latin))))))))
+
+(defun my/install-dubeolsik-key-translations ()
+  "자모 역번역을 `key-translation-map' 에 등록한다."
+  (my/install-key-translations my/dubeolsik-jamo->latin
+                               my/korean-translated-modifier-combos))
 (my/install-dubeolsik-key-translations)
+
+;;;; 1b. key-translation-map: 자모가 아닌데 글자가 바뀌는 키 (grave -> ₩)
+
+(defconst my/korean-layout-punct->latin
+  '((?₩ . ?\`)      ; U+20A9 WON SIGN
+    (?￦ . ?\`))     ; U+FFE6 FULLWIDTH WON SIGN (입력소스 변종 대비)
+  "한글 레이아웃에서 자모가 아닌 글자로 바뀌는 키 -> 같은 자리의 QWERTY 글자.
+macOS 2벌식은 grave(`) 자리에서 백틱 대신 ₩ 를 내보낸다(한글 모드에서 백틱이
+안 쳐지는 것으로 유명한 그 동작).  그래서 자모 테이블엔 걸리지 않고
+`s-`' 가 `s-₩' 로 도착해 undefined 가 된다.")
+
+(defvar my/korean-translated-punct-modifier-combos
+  '((super))
+  "문장부호 역번역을 적용할 수식 조합.  기본은 super(Option)만.
+`s-`' = `other-frame'(프레임 전환, term/ns-win.el)을 한글 모드에서도 쓰기 위함.
+control/meta 까지 넓히지 않는 이유: 한글 모드의 C-` / M-`(=Cmd+`, `tmm-menubar')
+동작까지 바꾸게 되므로 필요할 때만 추가한다.")
+
+(defun my/install-korean-punct-key-translations ()
+  "`my/korean-layout-punct->latin' 역번역을 `key-translation-map' 에 등록한다."
+  (my/install-key-translations my/korean-layout-punct->latin
+                               my/korean-translated-punct-modifier-combos))
+(my/install-korean-punct-key-translations)
 
 ;;;; 2. sis: 프리픽스 뒤 '수식 없는 연속 키' (C-x o, M-s h r ...)
 
