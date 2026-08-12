@@ -1172,5 +1172,23 @@ PROCESSOR-FN is a function that takes a file path as argument (defaults to `gpte
                                       while_statement)))
   :hook ((python-mode python-base-mode) . indent-bars-mode))
 
+;; Nerd Font 글리프 폴백 — starship 프롬프트(vterm/ghostel)의 powerline/아이콘
+;; 글리프가 기본 폰트에 없어 hex 박스로 깨지는 것을 방지.
+;; powerline 기본 세트(E0A0~E0B3)는 D2Coding이 자체 내장하므로 D2Coding으로
+;; 명시 고정 — 기본 폰트 글리프는 셀 치수와 정확히 일치해 ghostel의 글리프
+;; 축소 보정(display height 스케일)이 아예 개입하지 않는다. Meslo로 덮어쓰면
+;; 셀(14px)보다 큰 15px 글리프가 되어 축소 보정·클램프를 타고, 스크롤백에서
+;; 프롬프트 이음새가 변형되는 원인이 된다.
+;; U+F8FF(Apple 로고)는 Nerd Font/D2Coding에 없어(폴백 실패 → American
+;; Typewriter 같은 임의 폰트로 표시됨) Apple 로고를 가진 고정폭 Monaco로 고정.
+(defun my/setup-nerd-font-fallback (&optional frame)
+  (when (display-graphic-p frame)
+    (set-fontset-font t '(#xe000 . #xe09f) "MesloLGS Nerd Font Mono" frame)     ; BMP PUA 앞부분
+    (set-fontset-font t '(#xe0a0 . #xe0b3) "D2Coding" frame)                    ; powerline 기본 세트
+    (set-fontset-font t '(#xe0b4 . #xf8fe) "MesloLGS Nerd Font Mono" frame)     ; BMP PUA 나머지
+    (set-fontset-font t #xf8ff "Monaco" frame)                                  ; Apple 로고
+    (set-fontset-font t '(#xf0000 . #xfffff) "MesloLGS Nerd Font Mono" frame))) ; SPUA-A (MD icons)
+(add-hook 'after-make-frame-functions #'my/setup-nerd-font-fallback)
+(my/setup-nerd-font-fallback)
 
 ;;; init.el ends here
