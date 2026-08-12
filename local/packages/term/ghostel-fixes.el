@@ -23,6 +23,13 @@
 ;;      upstream 추적: https://github.com/dakra/ghostel/issues/400
 ;;   4. (보험) break-glass: (4차)가 패키지 업데이트로 무력화될 때만 주석
 ;;      해제하는 픽셀 anchor 비활성 스위치.
+;;   5. (5차) 잔류 마우스 트래킹 모드 차단·청소: tmux 등 TUI가 비정상 종료해
+;;      DECRST를 못 보내면 마우스 모드가 남아, 셸 프롬프트에서 휠을 굴릴 때
+;;      SGR 리포트가 pty로 새어 "65;50;44M…"이 찍히고 스크롤이 죽는다.
+;;      → pty 포그라운드가 셸 자신이면(=실행 중인 앱 없음) 포워딩을 막고
+;;      유휴 시점에 이벤트 모드를 DECRST.  M-x my/ghostel-reset-mouse-modes.
+;;      업스트림 버그는 아니며(0.35~0.49에 관련 이슈·수정 없음) 실제 터미널도
+;;      같은 상황에선 같은 증상 — 표준 처방이 `reset'인 영역의 UX 개선.
 ;;
 ;; Requirements
 ;; ------------
@@ -34,7 +41,14 @@
 ;; - 내부 심볼 의존: ghostel--redraw-now(구 ghostel--delayed-redraw),
 ;;   ghostel--cursor-pos, ghostel--cursor-char-pos, ghostel--buffer-editable-p,
 ;;   ghostel--anchor-window, ghostel--window-anchored-p, ghostel--input-mode,
-;;   ghostel--pixel-anchor-supported-p.  소실 시 lwarn으로 알림.
+;;   ghostel--pixel-anchor-supported-p, ghostel--forward-scroll-event,
+;;   ghostel--mouse-tracking-active-p(>=0.42.0 제거됨 — 없으면 조용히 생략),
+;;   ghostel--write-vt(구 ghostel--write-input), ghostel--mode-enabled.
+;;   소실 시 lwarn으로 알림.
+;; - (5차)는 macOS에서 ghostel이 셸을 /usr/bin/login 래퍼로 띄우는 것에 의존해
+;;   fg pgrp 기준선을 잡는다.  기동 방식이 바뀌어도 기준선이 자기교정되므로
+;;   무해하지만, 마우스 포워딩이 이상하면 M-x my/ghostel-reset-mouse-modes 로
+;;   즉시 복구하고 my/ghostel-mouse-forward-require-command 를 nil로 두면 된다.
 ;; - 렌더러 display prop 모양 ((min-width (N)) (height S))이 바뀌면 (4차)는
 ;;   조용히 no-op → 출렁임 재발 시 break-glass 활성화 후 재진단.
 ;; - 폰트/배율 변경 후엔 M-x my/ghostel-clamp-reset-cache.
@@ -293,6 +307,223 @@ adjustGlyph). (space :width 0)(claim된 칸)이나 다른 display는 건드리�
 ;;       (setq ghostel--pixel-anchor-supported-p nil)
 ;;     (lwarn 'my/ghostel :warning
 ;;            "ghostel--pixel-anchor-supported-p 없음 — break-glass 미적용")))
+
+
+;;; --- (5차) ghostel: TUI가 남긴 마우스 트래킹 모드로 셸에서 휠이 새는 문제 ---
+;;; 증상: tmux(`set -g mouse on')를 쓰고 나온 뒤 *tmux 밖* 일반 셸에서 휠을
+;;; 굴리면 "65;50;44M65;50;44M…" 같은 문자가 프롬프트에 찍히고 화면은 전혀
+;;; 스크롤되지 않는다.  찍히는 건 ghostel이 pty로 보낸 SGR 마우스 리포트
+;;; ESC[<64;COL;ROW M 에서 readline이 ESC[< 를 먹고 남은 리터럴이다.
+;;;
+;;; 원인(batch 실측으로 확정): ghostel의 휠 포워딩 게이트 자체는 정상이다 —
+;;; ghostel--forward-scroll-event → ghostel--mouse-event → (Zig)
+;;; mouse_encode.shouldReport 는 DEC 이벤트 모드가 .none이면 0바이트를 내고
+;;; nil을 반환, 상위 인터셉트가 ghostel--redispatch-scroll-event 로 로컬
+;;; 스크롤에 폴백한다.  실측: 모드 전부 off → forward-ret=nil, sent=<NOTHING>;
+;;; 1002+1006 on → forward-ret=t, sent="ESC[<64;21;11M".  즉 바이트가 나갔다는
+;;; 것은 1000/1002/1003 중 하나가 *실제로* 켜져 있다는 뜻이고, 형식이
+;;; SGR(1006)인 것은 그 모드를 켠 주체가 tmux임을 가리킨다.  tmux는 종료·디태치
+;;; 때 DECRST를 보내지만 SSH가 끊기거나 비정상 종료하면 그 리셋이 ghostel에
+;;; 도달하지 못한다 → "잔류 모드"로 남아 셸에서까지 휠이 pty로 새어 나간다.
+;;; (일반 터미널도 같은 상황에선 같은 증상이며 보통 `reset'으로 푼다.)
+;;;
+;;; 판별자 선택 — alt-screen이 아니라 "pty 포그라운드 프로세스 그룹":
+;;; 처음엔 alt-screen 여부로 갈랐으나 실측 리뷰에서 세 군데가 깨졌다.
+;;;  * 비정상 종료는 ESC[?1002l 과 함께 ESC[?1049l 도 잃는다 → alt-screen까지
+;;;    켜진 채 남아(프롬프트가 alt 화면 위에 그려짐) alt 판별은 통과해 버리고,
+;;;    t→nil 전환이 없으니 청소도 영영 안 돈다(즉 목표 시나리오에서 무력).
+;;;  * `fzf --height'·Bubble Tea·Ink 같은 인라인 TUI는 primary screen에서
+;;;    마우스를 쓴다 → alt 게이트는 이들을 부당하게 막는다.
+;;;  * tmux `set -ga terminal-overrides ",*:smcup@:rmcup@"' 나 GNU screen은
+;;;    아예 primary screen에서 돈다 → 고치려던 워크플로가 오히려 깨진다.
+;;; 반면 `process-running-child-p'(tcgetpgrp 1회)는 "지금 pty 포그라운드가
+;;; 셸 자신인가"를 직접 답한다.  셸이 포그라운드면 화면 위에 마우스를 원할
+;;; 프로그램이 아예 없으므로 그 마우스 모드는 정의상 잔류물이다.  OS가 알 수
+;;; 없으면 t(=자식 있음)를 돌려주므로 그런 플랫폼에선 기존 동작이 유지된다.
+;;;
+;;; 해법 2단:
+;;;  (a) 게이트 — 셸이 포그라운드일 때(=프롬프트)만 포워딩을 막고 ghostel
+;;;      자체 스크롤백을 스크롤한다.  실행 중인 TUI(tmux/vim/less/htop,
+;;;      인라인 TUI 포함)는 전부 포그라운드 자식이므로 영향이 없다.
+;;;  (b) 청소 — 같은 조건에서 잔류 마우스 *이벤트* 모드에 DECRST를 먹여
+;;;      실제로 꺼 준다(ghostel--write-vt/--write-input 은 pty가 아니라 터미널
+;;;      파서에만 쓰므로 셸 입력줄이 오염되지 않는다).  redraw 꼬리에서 바로
+;;;      쓰면 파서가 이스케이프 시퀀스 중간일 때 리터럴이 찍히므로(실측)
+;;;      유휴 타이머로 미뤄 조건을 재확인한 뒤 쓴다.
+;;; 이미 막힌 버퍼는 M-x my/ghostel-reset-mouse-modes 로 즉시 복구
+;;; (C-u 를 주면 alt-screen에 갇힌 경우 rmcup까지 함께 보낸다).
+;;;
+;;; 인코딩 모드(1005/1006/1015/1016)는 일부러 건드리지 않는다: 살아남은 앱이
+;;; 이벤트 모드만 다시 켜면 조용히 X10으로 강등돼 223열 넘는 좌표가 깨진다.
+;;;
+;;; 주의: 내부 심볼 의존 — ghostel--forward-scroll-event,
+;;; ghostel--mouse-tracking-active-p(>=0.42.0에서 제거됨 — 없으면 조용히 생략),
+;;; ghostel--write-vt(구 ghostel--write-input), ghostel--mode-enabled.
+;;; 소실 시 lwarn으로 알림.
+
+(declare-function ghostel--write-vt "ghostel-module")
+(declare-function ghostel--write-input "ghostel-module")
+(declare-function ghostel--mode-enabled "ghostel-module")
+(defvar ghostel--term)
+(defvar ghostel--process)
+
+(defcustom my/ghostel-mouse-forward-require-command t
+  "非nil이면 pty 포그라운드에 실제 프로그램이 있을 때만 마우스를 포워딩한다.
+셸 프롬프트에서는 휠이 항상 ghostel 자체 스크롤백을 스크롤한다.
+nil로 두면 (a) 게이트가 꺼지고 아래 (b) 자동 청소에만 의존한다."
+  :type 'boolean
+  :group 'ghostel)
+
+(defconst my/ghostel--mouse-mode-reset "\e[?9l\e[?1000l\e[?1002l\e[?1003l"
+  "DEC 마우스 *이벤트* 모드(9/1000/1002/1003)만 끄는 시퀀스.
+인코딩 모드(1005/1006/1015/1016)는 일부러 남긴다 — 살아남은 앱이 이벤트
+모드만 다시 켜면 X10으로 강등돼 223열 넘는 좌표가 깨지기 때문.
+1001(highlight tracking)은 libghostty 미구현이라 넣지 않는다(경고 발생).")
+
+(defconst my/ghostel--alt-screen-exit "\e[?1049l\e[?1047l"
+  "alt-screen에서 primary로 되돌리는 시퀀스.
+정상 동작 중인 TUI에 먹이면 화면이 어긋나므로 prefix-arg로만 보낸다.")
+
+(defun my/ghostel--vt-writer ()
+  "터미널 파서에 raw 바이트를 먹이는 모듈 함수. 없으면 nil.
+0.34 이후 업스트림에서 `ghostel--write-input' → `ghostel--write-vt' 로
+이름이 바뀌었다.  `ghostel--write-pty' 는 셸 stdin으로 나가므로 절대 쓰지 않는다."
+  (cond ((fboundp 'ghostel--write-vt) #'ghostel--write-vt)
+        ((fboundp 'ghostel--write-input) #'ghostel--write-input)))
+
+(defvar-local my/ghostel--shell-pgid nil
+  "이 버퍼 pty의 셸 프로세스 그룹 ID 추정치 = 지금까지 관측한 최소 fg pgrp.
+셸은 이 버퍼에서 가장 먼저 생기고 pid는 증가하므로, 셸이 띄우는 어떤
+명령의 pgid보다도 작다.  따라서 최소값이 곧 셸이며, 더 작은 값을 보면
+자동으로 내려가 스스로 교정된다(첫 관측이 명령 실행 중이었어도 프롬프트로
+돌아오는 순간 바로잡힌다).")
+
+(defun my/ghostel--fg-pgrp ()
+  "pty 포그라운드 프로세스 그룹.
+nil = Emacs가 띄운 프로세스 자신, 정수 = 그 pgid, t = OS가 알 수 없음."
+  (ignore-errors
+    (and (bound-and-true-p ghostel--process)
+         (process-live-p ghostel--process)
+         (process-running-child-p ghostel--process))))
+
+(defun my/ghostel--shell-at-prompt-p ()
+  "pty 포그라운드가 셸 자신이면 非nil(= 실행 중인 앱이 없다).
+macOS에서 ghostel은 셸을 `/usr/bin/login' 래퍼로 띄우므로 Emacs가 아는
+프로세스(login)와 실제 셸의 pid가 다르다 → `process-running-child-p' 는
+프롬프트에서도 셸의 pgid를 돌려준다(실측).  그래서 nil 하나로 판정하지
+않고 `my/ghostel--shell-pgid' 기준선과 비교한다.  래퍼가 없는 구성에서는
+프롬프트에서 nil이 나오므로 그 경우도 함께 참으로 취급한다.
+OS가 알 수 없으면(t) nil을 돌려 기존 동작(포워딩)을 유지한다."
+  (let ((fg (my/ghostel--fg-pgrp)))
+    (cond
+     ((null fg) t)                      ; fg == Emacs가 띄운 프로세스 자신
+     ((not (integerp fg)) nil)          ; t = OS가 모름 → 기존 동작 유지
+     (t
+      ;; 기준선 갱신(단조 감소) — 예측 자체가 기준선을 만든다.
+      (when (or (null my/ghostel--shell-pgid) (< fg my/ghostel--shell-pgid))
+        (setq my/ghostel--shell-pgid fg))
+      (eql fg my/ghostel--shell-pgid)))))
+
+(defun my/ghostel--mouse-modes-stale-p ()
+  "마우스 이벤트 모드(9/1000/1002/1003)가 하나라도 켜져 있으면 非nil."
+  (and (bound-and-true-p ghostel--term)
+       (fboundp 'ghostel--mode-enabled)
+       (or (ghostel--mode-enabled ghostel--term 1000)
+           (ghostel--mode-enabled ghostel--term 1002)
+           (ghostel--mode-enabled ghostel--term 1003)
+           (ghostel--mode-enabled ghostel--term 9))))
+
+(defun my/ghostel--mouse-forwardable-p ()
+  "지금 이 버퍼에서 마우스 이벤트를 터미널로 넘겨도 되는지."
+  (or (not my/ghostel-mouse-forward-require-command)
+      (not (my/ghostel--shell-at-prompt-p))))
+
+;;;###autoload
+(defun my/ghostel-reset-mouse-modes (&optional exit-alt-screen)
+  "현재 ghostel 버퍼에 남은 DEC 마우스 트래킹 모드를 강제 해제.
+prefix arg(\\[universal-argument])를 주면 alt-screen에서도 빠져나온다(rmcup) —
+SSH가 끊겨 tmux의 복원 버스트를 통째로 못 받아 화면이 alt에 물린 경우에 사용.
+pty에는 아무것도 보내지 않고 터미널 상태만 되돌린다(입력줄 안전)."
+  (interactive "P")
+  (let ((writer (my/ghostel--vt-writer)))
+    (unless (and (derived-mode-p 'ghostel-mode)
+                 (bound-and-true-p ghostel--term) writer)
+      (user-error "ghostel 버퍼가 아니거나 터미널 핸들/VT writer가 없음"))
+    (funcall writer ghostel--term
+             (concat my/ghostel--mouse-mode-reset
+                     (and exit-alt-screen my/ghostel--alt-screen-exit)))
+    (message "ghostel: 마우스 트래킹 모드 해제%s"
+             (if exit-alt-screen " + alt-screen 이탈" ""))))
+
+;;; (a) 게이트: 셸 프롬프트에서는 마우스를 pty로 넘기지 않는다.
+;;; 두 advice의 가드를 분리한다 — ghostel--mouse-tracking-active-p 는
+;;; >=0.42.0에서 제거됐지만 ghostel--forward-scroll-event 는 남아 있으므로,
+;;; 묶어서 검사하면 휠 게이트까지 통째로 미설치돼 버린다.
+(with-eval-after-load 'ghostel
+  (if (fboundp 'ghostel--forward-scroll-event)
+      (progn
+        (defun my/ghostel--forward-scroll-gate (orig event button)
+          "프롬프트에서는 휠을 포워딩하지 않고 nil을 돌려 로컬 스크롤로 폴백."
+          (when (my/ghostel--mouse-forwardable-p)
+            (funcall orig event button)))
+        (advice-add 'ghostel--forward-scroll-event :around
+                    #'my/ghostel--forward-scroll-gate))
+    (lwarn 'my/ghostel :warning
+           "ghostel--forward-scroll-event 없음(패키지 업데이트?) — 휠 게이트 미설치, 셸에서 휠이 샐 수 있음")))
+
+(with-eval-after-load 'ghostel
+  (when (fboundp 'ghostel--mouse-tracking-active-p)
+    (defun my/ghostel--mouse-tracking-gate (orig)
+      "프롬프트에서는 클릭/드래그도 터미널로 넘기지 않는다."
+      (and (my/ghostel--mouse-forwardable-p)
+           (funcall orig)))
+    (advice-add 'ghostel--mouse-tracking-active-p :around
+                #'my/ghostel--mouse-tracking-gate)))
+
+;;; (b) 청소: 프롬프트에 있고 잔류 모드가 있으면 유휴 시점에 DECRST.
+(defvar-local my/ghostel--mouse-cleanup-timer nil
+  "예약된 잔류 마우스 모드 청소 타이머(중복 예약 방지).")
+
+(defun my/ghostel--mouse-cleanup-needed-p ()
+  "이 버퍼에 잔류 마우스 모드가 있고 지금 그것을 꺼도 안전하면 非nil."
+  (and (derived-mode-p 'ghostel-mode)
+       (bound-and-true-p ghostel--term)
+       (my/ghostel--shell-at-prompt-p)
+       (my/ghostel--mouse-modes-stale-p)))
+
+(defun my/ghostel--flush-mouse-cleanup (buffer)
+  "유휴 시점에 조건을 재확인한 뒤에만 DECRST를 파서에 먹인다.
+redraw 꼬리에서 바로 쓰면 파서가 이스케이프 시퀀스 중간일 때 리터럴이
+화면에 찍힌다(실측) — 그래서 여기서 쓴다."
+  (ignore-errors
+    (when (buffer-live-p buffer)
+      (with-current-buffer buffer
+        (setq my/ghostel--mouse-cleanup-timer nil)
+        (when-let* (((my/ghostel--mouse-cleanup-needed-p))
+                    (writer (my/ghostel--vt-writer)))
+          (funcall writer ghostel--term my/ghostel--mouse-mode-reset))))))
+
+(defun my/ghostel--schedule-mouse-cleanup (buffer &rest _)
+  "redraw 후 잔류 마우스 모드가 보이면 유휴 청소를 1회 예약.
+`ghostel--redraw-now' 는 0.39.0부터 선택 인자 FORCE를 받으므로 &rest 로
+흡수한다 — :after advice는 apply로 불려서 arity가 어긋나면 본문의
+`ignore-errors' *밖에서* wrong-number-of-arguments 가 난다."
+  (ignore-errors
+    (when (buffer-live-p buffer)
+      (with-current-buffer buffer
+        (when (and (not my/ghostel--mouse-cleanup-timer)
+                   (my/ghostel--mouse-cleanup-needed-p))
+          (setq my/ghostel--mouse-cleanup-timer
+                (run-with-idle-timer
+                 0.2 nil #'my/ghostel--flush-mouse-cleanup buffer)))))))
+
+(with-eval-after-load 'ghostel
+  (let ((fn (cond ((fboundp 'ghostel--redraw-now) 'ghostel--redraw-now)
+                  ((fboundp 'ghostel--delayed-redraw) 'ghostel--delayed-redraw))))
+    (if fn
+        (advice-add fn :after #'my/ghostel--schedule-mouse-cleanup)
+      (lwarn 'my/ghostel :warning
+             "ghostel--redraw-now 없음(패키지 업데이트?) — 잔류 마우스 모드 자동 청소 미설치"))))
 
 (provide 'ghostel-fixes)
 ;;; ghostel-fixes.el ends here
