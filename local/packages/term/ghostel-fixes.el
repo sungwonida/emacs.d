@@ -23,11 +23,17 @@
 ;;      upstream 추적: https://github.com/dakra/ghostel/issues/400
 ;;   4. (보험) break-glass: (4차)가 패키지 업데이트로 무력화될 때만 주석
 ;;      해제하는 픽셀 anchor 비활성 스위치.
-;;   5. (5차) 잔류 마우스 트래킹 모드 차단·청소: tmux 등 TUI가 비정상 종료해
-;;      DECRST를 못 보내면 마우스 모드가 남아, 셸 프롬프트에서 휠을 굴릴 때
-;;      SGR 리포트가 pty로 새어 "65;50;44M…"이 찍히고 스크롤이 죽는다.
-;;      → pty 포그라운드가 셸 자신이면(=실행 중인 앱 없음) 포워딩을 막고
-;;      유휴 시점에 이벤트 모드를 DECRST.  M-x my/ghostel-reset-mouse-modes.
+;;   5. (5차) 잔류 터미널 모드 차단·청소: tmux 등 TUI가 비정상 종료해
+;;      DECRST를 못 보내면 모드가 남는다.  두 가지 증상이 같은 뿌리다.
+;;      (5a) 잔류 *마우스* 모드 → 셸 프롬프트에서 휠을 굴리면 SGR 리포트가
+;;           pty로 새어 "65;50;44M…"이 찍히고 스크롤이 죽는다.
+;;      (5b) 잔류 *alt-screen* → alt-screen은 VT 설계상 스크롤백이 없어서,
+;;           그 뒤에 띄운 프로그램(claude 등, 자기는 alt-screen을 전혀 안 씀)의
+;;           출력이 전부 '현재 한 페이지'에만 그려지고 스크롤백에 안 쌓인다.
+;;           결과: ghostel copy-mode에서 방향키·휠이 한 화면 밖으로 못 나감.
+;;      → pty 포그라운드가 셸 자신이면(=실행 중인 앱 없음) 마우스 포워딩을
+;;      막고, 유휴 시점에 이벤트 모드와 잔류 alt-screen을 DECRST.
+;;      이미 물린 버퍼는 C-u M-x my/ghostel-reset-mouse-modes 로 즉시 복구.
 ;;      업스트림 버그는 아니며(0.35~0.49에 관련 이슈·수정 없음) 실제 터미널도
 ;;      같은 상황에선 같은 증상 — 표준 처방이 `reset'인 영역의 UX 개선.
 ;;
@@ -380,9 +386,10 @@ nil로 두면 (a) 게이트가 꺼지고 아래 (b) 자동 청소에만 의존�
 모드만 다시 켜면 X10으로 강등돼 223열 넘는 좌표가 깨지기 때문.
 1001(highlight tracking)은 libghostty 미구현이라 넣지 않는다(경고 발생).")
 
-(defconst my/ghostel--alt-screen-exit "\e[?1049l\e[?1047l"
-  "alt-screen에서 primary로 되돌리는 시퀀스.
-정상 동작 중인 TUI에 먹이면 화면이 어긋나므로 prefix-arg로만 보낸다.")
+(defconst my/ghostel--alt-screen-exit "\e[?1049l\e[?1047l\e[?47l"
+  "alt-screen에서 primary로 되돌리는 시퀀스(1049/1047/47 전부).
+정상 동작 중인 TUI에 먹이면 화면이 어긋나므로, 대화형 명령에서는
+prefix-arg로만 보내고 자동 청소는 '셸이 포그라운드'일 때만 보낸다.")
 
 (defun my/ghostel--vt-writer ()
   "터미널 파서에 raw 바이트를 먹이는 모듈 함수. 없으면 nil.
@@ -438,6 +445,37 @@ OS가 알 수 없으면(t) nil을 돌려 기존 동작(포워딩)을 유지한�
   (or (not my/ghostel-mouse-forward-require-command)
       (not (my/ghostel--shell-at-prompt-p))))
 
+(defcustom my/ghostel-reset-alt-screen-when-idle t
+  "非nil이면 잔류 alt-screen도 셸 프롬프트에서 자동으로 해제한다.
+마우스 모드와 완전히 같은 이유·같은 게이트다: 비정상 종료한 TUI는
+`ESC[?1002l' 과 함께 `ESC[?1049l' 도 잃어버리기 때문에 alt-screen이 켜진
+채 남는다.  alt-screen 은 VT 설계상 스크롤백이 없으므로, 그 뒤에 실행하는
+프로그램의 출력이 전부 '현재 한 페이지'에만 그려지고 스크롤백에 쌓이지
+않는다 → ghostel copy-mode에서 방향키·휠이 한 화면 밖으로 못 나간다.
+셸이 포그라운드면(=실행 중인 앱 없음) 그 alt-screen 은 정의상 잔류물이라
+꺼도 안전하다.  끄는 순간 화면이 primary 로 돌아가 직전 프롬프트 그림이
+사라지는 1회성 이질감이 있으나, 다음 프롬프트 출력에서 자연히 복구된다."
+  :type 'boolean
+  :group 'ghostel)
+
+(defun my/ghostel--alt-screen-stale-p ()
+  "alt-screen(1049/1047/47)이 켜져 있으면 非nil."
+  (and (bound-and-true-p ghostel--term)
+       (fboundp 'ghostel--mode-enabled)
+       (or (ghostel--mode-enabled ghostel--term 1049)
+           (ghostel--mode-enabled ghostel--term 1047)
+           (ghostel--mode-enabled ghostel--term 47))))
+
+(defun my/ghostel--residual-reset-string ()
+  "이 버퍼에서 지금 꺼야 할 잔류 모드의 DECRST 시퀀스.  없으면 nil.
+호출자가 '셸이 포그라운드'임을 이미 확인했다고 가정한다."
+  (let ((s (concat (and (my/ghostel--mouse-modes-stale-p)
+                        my/ghostel--mouse-mode-reset)
+                   (and my/ghostel-reset-alt-screen-when-idle
+                        (my/ghostel--alt-screen-stale-p)
+                        my/ghostel--alt-screen-exit))))
+    (and (> (length s) 0) s)))
+
 ;;;###autoload
 (defun my/ghostel-reset-mouse-modes (&optional exit-alt-screen)
   "현재 ghostel 버퍼에 남은 DEC 마우스 트래킹 모드를 강제 해제.
@@ -485,23 +523,27 @@ pty에는 아무것도 보내지 않고 터미널 상태만 되돌린다(입력�
   "예약된 잔류 마우스 모드 청소 타이머(중복 예약 방지).")
 
 (defun my/ghostel--mouse-cleanup-needed-p ()
-  "이 버퍼에 잔류 마우스 모드가 있고 지금 그것을 꺼도 안전하면 非nil."
+  "이 버퍼에 잔류 모드(마우스/alt-screen)가 있고 지금 꺼도 안전하면 非nil."
   (and (derived-mode-p 'ghostel-mode)
        (bound-and-true-p ghostel--term)
        (my/ghostel--shell-at-prompt-p)
-       (my/ghostel--mouse-modes-stale-p)))
+       (my/ghostel--residual-reset-string)))
 
 (defun my/ghostel--flush-mouse-cleanup (buffer)
   "유휴 시점에 조건을 재확인한 뒤에만 DECRST를 파서에 먹인다.
 redraw 꼬리에서 바로 쓰면 파서가 이스케이프 시퀀스 중간일 때 리터럴이
-화면에 찍힌다(실측) — 그래서 여기서 쓴다."
+화면에 찍힌다(실측) — 그래서 여기서 쓴다.
+끌 대상은 유휴 시점에 다시 계산한다(그 사이 모드가 바뀌었을 수 있다)."
   (ignore-errors
     (when (buffer-live-p buffer)
       (with-current-buffer buffer
         (setq my/ghostel--mouse-cleanup-timer nil)
-        (when-let* (((my/ghostel--mouse-cleanup-needed-p))
+        (when-let* (((derived-mode-p 'ghostel-mode))
+                    ((bound-and-true-p ghostel--term))
+                    ((my/ghostel--shell-at-prompt-p))
+                    (reset (my/ghostel--residual-reset-string))
                     (writer (my/ghostel--vt-writer)))
-          (funcall writer ghostel--term my/ghostel--mouse-mode-reset))))))
+          (funcall writer ghostel--term reset))))))
 
 (defun my/ghostel--schedule-mouse-cleanup (buffer &rest _)
   "redraw 후 잔류 마우스 모드가 보이면 유휴 청소를 1회 예약.
