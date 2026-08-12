@@ -28,9 +28,10 @@
 ;;      (5a) 잔류 *마우스* 모드 → 셸 프롬프트에서 휠을 굴리면 SGR 리포트가
 ;;           pty로 새어 "65;50;44M…"이 찍히고 스크롤이 죽는다.
 ;;      (5b) 잔류 *alt-screen* → alt-screen은 VT 설계상 스크롤백이 없어서,
-;;           그 뒤에 띄운 프로그램(claude 등, 자기는 alt-screen을 전혀 안 씀)의
-;;           출력이 전부 '현재 한 페이지'에만 그려지고 스크롤백에 안 쌓인다.
-;;           결과: ghostel copy-mode에서 방향키·휠이 한 화면 밖으로 못 나감.
+;;           그 뒤에 띄운 프로그램의 출력이 전부 '현재 한 페이지'에만 그려지고
+;;           스크롤백에 안 쌓인다.  결과: copy-mode에서 방향키·휠이 한 화면
+;;           밖으로 못 나감.  ※ 앱이 *살아서 정당하게* 켜 둔 alt-screen은 여기
+;;           해당 없음(게이트가 막는다) — 그건 (6차)가 따로 다룬다.
 ;;      → pty 포그라운드가 셸 자신이면(=실행 중인 앱 없음) 마우스 포워딩을
 ;;      막고, 유휴 시점에 이벤트 모드와 잔류 alt-screen을 DECRST.
 ;;      이미 물린 버퍼는 C-u M-x my/ghostel-reset-mouse-modes 로 즉시 복구.
@@ -566,6 +567,137 @@ redraw 꼬리에서 바로 쓰면 파서가 이스케이프 시퀀스 중간일 
         (advice-add fn :after #'my/ghostel--schedule-mouse-cleanup)
       (lwarn 'my/ghostel :warning
              "ghostel--redraw-now 없음(패키지 업데이트?) — 잔류 마우스 모드 자동 청소 미설치"))))
+
+
+;;; --- (6차) alt-screen을 쓰는 앱의 출력을 스크롤백으로 흘려보내기 ------------
+;;; 문제: alt-screen(대체 화면)은 VT 설계상 스크롤백이 없다.  그래서 alt-screen을
+;;; 쓰는 앱(claude 실측: 기동 0.4초에 ESC[?1049h + ESC[?1002h + ESC[?1006h)의
+;;; 출력은 전부 '현재 한 페이지'에만 그려지고 터미널 스크롤백에 쌓이지 않는다.
+;;; 결과: ghostel copy-mode에서 방향키·휠이 한 화면 밖으로 못 나간다(버퍼에
+;;; 그 내용이 아예 존재하지 않는다 — 키맵 문제가 아님).
+;;;
+;;; 이건 (5차)의 '잔류 모드'와 다르다.  앱이 살아서 정당하게 켜 둔 것이라
+;;; (5차)의 게이트(셸이 포그라운드일 때만 청소)는 의도대로 발화하지 않는다.
+;;;
+;;; 해법: tmux의 `smcup@:rmcup@' 과 같은 처방을 터미널 쪽에서 한다 — pty 출력이
+;;; 파서에 닿기 전에 alt-screen 전환 시퀀스를 지운다.  앱은 자기가 대체 화면에
+;;; 있다고 믿고 계속 그리지만 실제로는 primary에 그려지므로 출력이 스크롤백에
+;;; 쌓이고 copy-mode 스크롤이 정상 동작한다.
+;;;
+;;; 적용 범위를 좁힌 이유: 전역으로 켜면 vim/less/htop 같은 앱이 종료 후 화면을
+;;; 복원하지 못하고 스크롤백을 어지럽힌다(smcup@의 알려진 대가).  그래서 기본은
+;;; nil이고, `my/ghostel-suppress-alt-screen' 에 포그라운드 명령 이름 정규식을
+;;; 나열한 경우에만 그 앱에 대해 억제한다(실측: claude의 comm 은 "claude",
+;;; 원격 tmux는 "ssh" — 원격 tmux는 서버 쪽 terminal-overrides로 따로 처리).
+;;;
+;;; 바이트 스트림을 건드리므로 청크 경계가 관건이다.  ESC[?1049h 는 8바이트라
+;;; 두 청크에 걸쳐 도착할 수 있어, 뒤쪽 최대 7바이트가 대상 시퀀스의 진부분
+;;; 접두사면 다음 청크까지 보류한다(carry).  ESC[?25l 처럼 접두사가 아닌 건
+;;; 그대로 통과한다.
+;;;
+;;; 주의: 내부 심볼 의존 — ghostel--filter.  소실 시 lwarn으로 알림.
+
+(defcustom my/ghostel-suppress-alt-screen nil
+  "alt-screen 전환(ESC[?1049h 등)을 억제할 대상.
+nil          억제하지 않음(기본).
+t            모든 앱 — vim/less/htop도 화면 복원을 못 하게 되므로 주의.
+정규식 리스트  pty 포그라운드 프로세스 그룹 리더의 명령 이름(ps -o comm=)이
+             하나라도 매치하면 그 앱에 대해서만 억제.
+
+억제하면 그 앱의 출력이 primary 화면에 그려져 터미널 스크롤백에 쌓이므로
+ghostel copy-mode에서 방향키·휠로 이전 내용까지 스크롤할 수 있다.  대가는
+그 앱이 종료돼도 화면이 복원되지 않고 출력이 스크롤백에 남는다는 점이다."
+  :type '(choice (const :tag "억제 안 함" nil)
+                 (const :tag "모든 앱" t)
+                 (repeat :tag "명령 이름 정규식" regexp))
+  :group 'ghostel)
+
+(defconst my/ghostel--alt-screen-decsets
+  '("\e[?1049h" "\e[?1049l" "\e[?1047h" "\e[?1047l" "\e[?47h" "\e[?47l")
+  "제거 대상 alt-screen 전환 시퀀스.
+결합형(CSI ?1049;1002h)은 다루지 않는다 — claude/tmux 모두 개별로 보낸다(실측).")
+
+(defvar-local my/ghostel--alt-carry ""
+  "청크 경계에 걸쳐 보류 중인 부분 시퀀스.")
+
+(defvar-local my/ghostel--alt-suppress-cache nil
+  "(FG-PGRP . BOOLEAN) — 포그라운드가 그대로면 ps 재조회를 피한다.")
+
+(defun my/ghostel--fg-command ()
+  "pty 포그라운드 프로세스 그룹 리더의 명령 이름.  못 구하면 nil."
+  (let ((fg (my/ghostel--fg-pgrp)))
+    (when (integerp fg)
+      (with-temp-buffer
+        (when (eq 0 (ignore-errors
+                      (call-process "ps" nil t nil "-o" "comm="
+                                    "-p" (number-to-string fg))))
+          (let ((s (string-trim (buffer-string))))
+            (and (> (length s) 0) (file-name-nondirectory s))))))))
+
+(defun my/ghostel--suppress-alt-screen-p ()
+  "지금 이 버퍼에서 alt-screen 전환을 억제해야 하면 非nil."
+  (let ((opt my/ghostel-suppress-alt-screen))
+    (cond
+     ((null opt) nil)
+     ((eq opt t) t)
+     ((consp opt)
+      (let ((fg (my/ghostel--fg-pgrp)))
+        (if (and my/ghostel--alt-suppress-cache
+                 (equal (car my/ghostel--alt-suppress-cache) fg))
+            (cdr my/ghostel--alt-suppress-cache)
+          (let* ((cmd (my/ghostel--fg-command))
+                 (hit (and cmd (and (seq-some (lambda (re) (string-match-p re cmd))
+                                              opt)
+                                    t))))
+            (setq my/ghostel--alt-suppress-cache (cons fg hit))
+            hit))))
+     (t nil))))
+
+(defun my/ghostel--strip-alt-screen (s)
+  "S에서 alt-screen 전환 시퀀스를 제거해 (CLEAN . CARRY) 로 반환.
+CARRY는 대상 시퀀스의 진부분 접두사인 꼬리로, 다음 청크 앞에 다시 붙인다."
+  (let ((clean s))
+    (dolist (seq my/ghostel--alt-screen-decsets)
+      (setq clean (string-replace seq "" clean)))
+    (let* ((maxn (1- (apply #'max (mapcar #'length my/ghostel--alt-screen-decsets))))
+           (n (min maxn (length clean)))
+           (carry ""))
+      (while (> n 0)
+        (let ((tail (substring clean (- (length clean) n))))
+          (if (seq-some (lambda (seq)
+                          (and (< n (length seq)) (string-prefix-p tail seq)))
+                        my/ghostel--alt-screen-decsets)
+              (setq carry tail
+                    clean (substring clean 0 (- (length clean) n))
+                    n 0)
+            (setq n (1- n)))))
+      (cons clean carry))))
+
+(defun my/ghostel--filter-suppress-alt (orig process output)
+  "`ghostel--filter' 앞에서 alt-screen 전환 시퀀스를 걷어낸다.
+pty로는 아무것도 보내지 않는다 — 파서에 들어갈 바이트만 손본다."
+  (let ((buf (and (processp process) (process-buffer process))))
+    (if (not (buffer-live-p buf))
+        (funcall orig process output)
+      (let (clean handled)
+        (with-current-buffer buf
+          (when (and (derived-mode-p 'ghostel-mode)
+                     my/ghostel-suppress-alt-screen
+                     (my/ghostel--suppress-alt-screen-p))
+            (let ((res (my/ghostel--strip-alt-screen
+                        (concat my/ghostel--alt-carry output))))
+              (setq clean (car res)
+                    my/ghostel--alt-carry (cdr res)
+                    handled t))))
+        (cond
+         ((not handled) (funcall orig process output))
+         ((> (length clean) 0) (funcall orig process clean)))))))
+
+(with-eval-after-load 'ghostel
+  (if (fboundp 'ghostel--filter)
+      (advice-add 'ghostel--filter :around #'my/ghostel--filter-suppress-alt)
+    (lwarn 'my/ghostel :warning
+           "ghostel--filter 없음(패키지 업데이트?) — alt-screen 억제 미설치")))
 
 (provide 'ghostel-fixes)
 ;;; ghostel-fixes.el ends here

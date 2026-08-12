@@ -879,7 +879,14 @@ remote that previously worked suddenly stalls mid-operation."
 (use-package ghostel-fixes
   :straight nil
   :load-path (lambda () (list local-packages-dir))
-  :demand t)
+  :demand t
+  :custom
+  ;; claude는 기동 0.4초에 ESC[?1049h로 대체 화면에 들어간다(실측).  대체 화면은
+  ;; 스크롤백이 없어서 대화 내용이 '현재 한 페이지'에만 그려지고, ghostel
+  ;; copy-mode에서 방향키·휠이 그 밖으로 못 나간다.  전환 시퀀스를 걷어내 출력이
+  ;; primary 화면(=스크롤백)으로 흐르게 한다 — tmux의 smcup@:rmcup@와 같은 처방.
+  ;; 명령 이름으로 좁혀서 vim/less/htop의 화면 복원은 그대로 둔다.
+  (my/ghostel-suppress-alt-screen '("\\`claude\\'")))
 ;; ---------------------------------------------------------------------------
 
 ;; cuda-mode
