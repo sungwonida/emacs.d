@@ -861,7 +861,12 @@ remote that previously worked suddenly stalls mid-operation."
   ;; 이 맵엔 q 바인딩이 없다(읽기전용이라 q는 그냥 무시됨). q 하나만 종료
   ;; 트리거로 추가 — fast-exit t의 "아무 키나 종료"는 피하면서 q는 살린다.
   ;; (이 맵은 copy/emacs 모드가 공유하므로 emacs 모드에서도 q로 나간다.)
-  (define-key ghostel-readonly-mode-map (kbd "q") #'ghostel-readonly-exit))
+  (define-key ghostel-readonly-mode-map (kbd "q") #'ghostel-readonly-exit)
+  ;; C-g도 종료 트리거로 (fast-exit 맵엔 있지만 이 맵엔 없다). 수식키는
+  ;; korean-ime-keys.el의 자모 역번역이 걸려 있어 한글 모드에서도 C-ㅎ → C-g로
+  ;; 도착하므로, 입력소스와 무관하게 항상 먹히는 탈출구가 된다.
+  ;; (맨 `q'가 한글 모드에서 왜 안 먹는지와 그 해법은 같은 모듈 3번 계층 참고.)
+  (define-key ghostel-readonly-mode-map (kbd "C-g") #'ghostel-readonly-exit))
 
 ;;; --- 터미널(vterm/ghostel) IME·렌더링 수정 모듈 -----------------------------
 ;; macOS NS 포트의 IME preedit 3종 수정(0열 점프 / 커서 위치 / 폭 밀림).

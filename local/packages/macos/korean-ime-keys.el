@@ -25,6 +25,11 @@
 ;;      OS 입력소스 자동전환: `sis-global-respect-mode'가 프리픽스/minibuffer
 ;;      진입 시 ABC로 바꿨다가 끝나면 한글로 복원한다(수동 CMD+SPC 제어는 유지).
 ;;
+;;   3. sis + ghostel 읽기전용(모달) 모드 ('수식 없는 한 글자' 명령):
+;;      copy/emacs 모드의 q·n·p 처럼 프리픽스 없이 단독으로 명령인 키도 (2)와
+;;      같은 이유로 한글 모드에서 죽는다.  프리픽스가 없어 sis의 respect-mode가
+;;      걸리지 않으므로, 모드 진입/종료에 직접 훅을 걸어 입력소스를 전환한다.
+;;
 ;; Requirements
 ;; ------------
 ;; - macOS NS 포트 (GNU Emacs 30.x, emacs-app cask).  macOS 전용 —
@@ -50,6 +55,18 @@
 ;;   단축키가 필요하면 비-shift 콤보(s-k 등)를 병행 바인딩할 것.
 ;; - super(Option)는 shift와 달리 수식 비트가 보존되므로 정상 동작한다
 ;;   (한글모드 Option+k → s-ㅏ → s-k 번역, GUI 실측 검증됨).
+;; - '수식 없는 맨 글자'는 자모 역번역으로 절대 고칠 수 없다.  한글 모드에서
+;;   맨 `q'는 IME 조합(marked text)에 먹혀 `?ㅂ' 키 이벤트 자체가 발생하지
+;;   않는다 — NS 포트는 조합 중 텍스트를 ns-put-working-text →
+;;   `ns-insert-working-text' 로 처리하는데, 이건 make-overlay + after-string
+;;   이라 read-only 버퍼에서도 에러 없이 조용히 preedit만 띄운다
+;;   (term/ns-win.el).  `q'를 한 번 눌러도 이벤트가 없고 두 번 눌러야 첫 ㅂ이
+;;   확정되는데, 그때 두 번째 ㅂ이 조합 중으로 남아 모드를 나간 뒤 셸로
+;;   입력돼 버린다.  → (2)/(3)의 입력소스 전환만이 해법이다.
+;; - (3)은 ghostel 버퍼를 나가지 않고 모드를 바꾸는 경로만 복원한다.  copy-mode
+;;   상태로 다른 버퍼로 넘어가면 그 순간엔 ABC 인 채인데, sis의
+;;   `sis--restore-from-buffer'가 새 버퍼의 기억값으로 곧바로 복원하므로
+;;   실사용상 문제되지 않는다.
 
 ;;; Code:
 
@@ -146,6 +163,79 @@ control/meta 까지 넓히지 않는 이유: 한글 모드의 C-` / M-`(=Cmd+`, 
   (sis-global-cursor-color-mode 1)          ; (선택) 한/영 상태를 커서 색으로
   (sis-global-context-mode 1)               ; (선택) 버퍼 문맥 따라 자동 전환
   )
+
+;;;; 3. ghostel 읽기전용(copy/emacs) 모드 동안 입력소스를 ABC로
+
+;; ghostel copy/emacs 모드는 read-only 모달 모드라 `q'(종료)처럼 수식 없는 한
+;; 글자가 그대로 명령이다.  한글 모드에선 그 키가 IME 조합에 먹혀 명령 루프에
+;; 도착조차 않는다(위 Limitations 참고) — 키맵으로는 못 고친다.  그래서 (2)와
+;; 같은 처방을 모드 단위로 적용한다: 진입 때 ABC로 바꾸고 나갈 때 되돌린다.
+;; 덕분에 `q' 뿐 아니라 copy-mode의 모든 키가 영문 모드와 똑같이 동작한다.
+;;
+;; sis 내부 상태와의 정합성: 공개 명령 `sis-set-english'/`sis-set-other'만
+;; 쓴다.  둘 다 `sis--for-buffer-locked'를 풀고 `sis--update-state'를 거쳐
+;; 버퍼의 기억값(`sis--for-buffer')까지 같이 갱신하므로, respect-mode의
+;; post-command 복원이 우리 전환을 되돌리지 않는다.
+;;
+;; 주의: 내부 심볼 의존 — ghostel--enter-readonly(진입 단일 관문),
+;; ghostel-semi-char-mode / ghostel-char-mode / ghostel-line-mode(종료 경로.
+;; `ghostel-readonly-exit'는 결국 이 셋 중 하나를 호출한다).  소실 시 lwarn.
+
+(defcustom my/korean-ime-force-english-in-readonly-term t
+  "非nil 이면 ghostel 읽기전용(copy/emacs) 모드 동안 입력소스를 ABC로 강제한다.
+모드를 나갈 때, 우리가 바꿨고 그 사이 사용자가 직접 한글로 되돌리지 않았다면
+진입 전 입력소스로 복원한다."
+  :type 'boolean
+  :group 'sis)
+
+(defvar-local my/korean-ime--source-before-readonly nil
+  "읽기전용 모드 진입 때 우리가 ABC로 바꿨다면 그 직전 입력소스(`other').
+바꾸지 않았으면 nil.  버퍼 로컬이라 ghostel 버퍼마다 독립적으로 추적된다.")
+
+(defun my/korean-ime--current-lang ()
+  "현재 OS 입력소스를 `english' / `other' 로 반환한다(sis 없으면 nil).
+`sis--current'는 유휴 타이머로만 갱신돼 오래됐을 수 있으므로 실제 상태를 읽는다."
+  (when (fboundp 'sis--get)
+    (sis--get))
+  (bound-and-true-p sis--current))
+
+(defun my/korean-ime--readonly-force-english (&rest _)
+  "ghostel 읽기전용 모드 진입 시 입력소스를 ABC로 바꾼다.
+copy↔emacs 토글처럼 이미 읽기전용 안에서의 재진입이면 아무것도 하지 않는다
+\(최초 진입 때 기억해 둔 원래 입력소스를 덮어쓰면 복원이 깨지므로)."
+  (when (and my/korean-ime-force-english-in-readonly-term
+             (fboundp 'sis-set-english)
+             (not my/korean-ime--source-before-readonly)
+             (eq (my/korean-ime--current-lang) 'other))
+    (setq my/korean-ime--source-before-readonly 'other)
+    (sis-set-english)))
+
+(defun my/korean-ime--readonly-restore (&rest _)
+  "읽기전용 모드를 나갈 때 진입 전 입력소스로 되돌린다.
+모드 중에 사용자가 직접 한글로 바꿔 뒀다면(현재가 `english'가 아니면) 손대지
+않는다 — 수동 조작이 항상 이긴다."
+  (when my/korean-ime--source-before-readonly
+    (let ((saved my/korean-ime--source-before-readonly))
+      (setq my/korean-ime--source-before-readonly nil)
+      (when (and (eq saved 'other)
+                 (fboundp 'sis-set-other)
+                 (eq (my/korean-ime--current-lang) 'english))
+        (sis-set-other)))))
+
+(with-eval-after-load 'ghostel
+  ;; 진입: copy 모드도 emacs 모드도 `ghostel--enter-readonly'를 지난다.
+  (if (fboundp 'ghostel--enter-readonly)
+      (advice-add 'ghostel--enter-readonly :after
+                  #'my/korean-ime--readonly-force-english)
+    (lwarn 'my/korean-ime :warning
+           "ghostel--enter-readonly 없음(패키지 업데이트?) — 읽기전용 모드 입력소스 전환 미설치"))
+  ;; 종료: 읽기전용을 벗어나는 모드는 이 셋뿐이다.  emacs 모드는 여전히
+  ;; 읽기전용이라 대상이 아니다(ABC 유지가 맞다).
+  (dolist (fn '(ghostel-semi-char-mode ghostel-char-mode ghostel-line-mode))
+    (if (fboundp fn)
+        (advice-add fn :after #'my/korean-ime--readonly-restore)
+      (lwarn 'my/korean-ime :warning
+             "%s 없음(패키지 업데이트?) — 이 경로에선 입력소스가 복원되지 않음" fn))))
 
 (provide 'korean-ime-keys)
 ;;; korean-ime-keys.el ends here
