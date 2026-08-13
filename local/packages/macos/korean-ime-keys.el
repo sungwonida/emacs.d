@@ -30,6 +30,12 @@
 ;;      같은 이유로 한글 모드에서 죽는다.  프리픽스가 없어 sis의 respect-mode가
 ;;      걸리지 않으므로, 모드 진입/종료에 직접 훅을 걸어 입력소스를 전환한다.
 ;;
+;;   4. `read-event' 로 직접 키를 읽는 명령의 역번역 누락 보정:
+;;      (1)의 역번역은 `key-translation-map' 이라 명령 루프
+;;      (`read-key-sequence')를 지나는 키에만 적용된다.  명령이 스스로
+;;      `read-event' 로 키를 읽으면 번역을 건너뛰어 자모가 그대로 도착한다.
+;;      해당 명령을 `read-key'(= read-key-sequence 경유) 로 읽게 돌린다.
+;;
 ;; Requirements
 ;; ------------
 ;; - macOS NS 포트 (GNU Emacs 30.x, emacs-app cask).  macOS 전용 —
@@ -236,6 +242,50 @@ copy↔emacs 토글처럼 이미 읽기전용 안에서의 재진입이면 아�
         (advice-add fn :after #'my/korean-ime--readonly-restore)
       (lwarn 'my/korean-ime :warning
              "%s 없음(패키지 업데이트?) — 이 경로에선 입력소스가 복원되지 않음" fn))))
+
+;;;; 4. ghostel-send-next-key (C-c C-q) 가 자모 역번역을 거치게
+
+;; `C-c C-q C-y' 로 터미널에 리터럴 C-y 를 보내 zsh yank 를 부르는 흐름이 한글
+;; 모드에서만 죽는다.  원인은 IME 가 아니라 읽는 방법이다: `ghostel-send-next-key'
+;; 는 `read-event' 로 다음 키를 읽는데, `key-translation-map' 은
+;; `read-key-sequence' 단계에서 적용되므로 `read-event' 는 번역을 건너뛴다.
+;; 실측: C-ㅛ(67121499) 를 넣으면 read-event 는 67121499 를 그대로 돌려주고
+;; (`C-ㅛ -> [25]' 등록이 되어 있는데도), read-key 는 25(C-y) 를 돌려준다.
+;; 번역이 안 되면 ghostel 의 인코더는 base 가 128 이상이라 key-name 을 못 만들고
+;; "unrecognized key" 만 남긴 채 아무것도 안 보낸다 — 그래서 "안 먹는" 걸로 보인다.
+;;
+;; `read-key' 로 바꾼 이유: 업스트림이 `read-event' 를 고른 근거는 "프리픽스 키가
+;; 다음 키를 기다리지 않고 즉시 반환되어야 한다" 인데, `read-key' 는 자체
+;; overriding map(`read-key-full-map', [t] 바인딩)을 깔아 그 성질을 그대로
+;; 유지한다(실측: read-key C-x -> 24 즉시 반환).  영문 모드 동작도 그대로다
+;; (번역 대상이 없으면 read-key 는 원래 이벤트를 그대로 돌려준다).
+;;
+;; 주의: 내부 심볼 의존 — ghostel-send-next-key.  또 `key-translation-map' 항목이
+;; 1키→N키(N>1)로 번역되면 `read-key' 는 첫 이벤트만 돌려준다.  이 모듈의 번역은
+;; 전부 1키→1키라 해당 없음.
+
+(defcustom my/korean-ime-translate-send-next-key t
+  "非nil 이면 `ghostel-send-next-key' 가 `key-translation-map' 을 거쳐 키를 읽는다.
+한글 모드에서 `C-c C-q C-y'(터미널로 리터럴 C-y 전송)가 동작하려면 필요하다."
+  :type 'boolean
+  :group 'sis)
+
+(defun my/korean-ime--send-next-key-translated (orig &rest args)
+  "ORIG(`ghostel-send-next-key')가 역번역된 키를 받도록 미리 읽어 넘긴다.
+`read-key' 로 읽어(= `read-key-sequence' 경유 → 번역 적용) 그 결과를
+`unread-command-events' 에 넣어 두면, ORIG 안의 `read-event' 가 그것을
+그대로 집어 간다.  ARGS 는 그대로 전달한다."
+  (if (not my/korean-ime-translate-send-next-key)
+      (apply orig args)
+    (let ((unread-command-events (list (read-key "Send key: "))))
+      (apply orig args))))
+
+(with-eval-after-load 'ghostel
+  (if (fboundp 'ghostel-send-next-key)
+      (advice-add 'ghostel-send-next-key :around
+                  #'my/korean-ime--send-next-key-translated)
+    (lwarn 'my/korean-ime :warning
+           "ghostel-send-next-key 없음(패키지 업데이트?) — C-c C-q 역번역 미설치")))
 
 (provide 'korean-ime-keys)
 ;;; korean-ime-keys.el ends here
