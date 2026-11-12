@@ -892,6 +892,17 @@ remote that previously worked suddenly stalls mid-operation."
 ;; 않는다.  터미널 쪽에서 고칠 수 있는 문제가 아님.  자세한 건 모듈 (6차) 참고.
 ;; ---------------------------------------------------------------------------
 
+;; ssh 너머(원격 tmux 포함) Claude Code에 C-v로 로컬 클립보드 이미지 붙여넣기.
+;; ssh 버퍼 + 클립보드에 이미지 → 원격 ~/.cache/claude-paste/ 로 올리고 그
+;; 경로를 bracketed paste (Claude Code가 이미지로 첨부).  그 외엔 raw ^V 그대로.
+;; 상세는 local/packages/term/ghostel-ssh-image-paste.el Commentary 참고.
+(use-package ghostel-ssh-image-paste
+  :if (eq system-type 'darwin)
+  :straight nil
+  :after ghostel
+  :load-path (lambda () (list local-packages-dir))
+  :demand t)
+
 ;; cuda-mode
 (use-package cuda-mode)
 
